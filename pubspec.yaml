@@ -92,11 +92,11 @@ flutter:
   fonts:
     - family: UTMCooperBlack
       fonts:
-        - asset: fonts/UTMCooperBlack.ttf
+        - asset: assets/fonts/UTMCooperBlack.ttf
           weight: 900
     - family: UTMCooperBlack
       fonts:
-        - asset: fonts/UTMCooperBlackItalic.ttf
+        - asset: assets/fonts/UTMCooperBlackItalic.ttf
           style: italic
           weight: 900
     # - family: Trajan Pro
