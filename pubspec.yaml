@@ -1,0 +1,109 @@
+name: topkiddo
+description: A new Flutter project.
+
+# The following line prevents the package from being accidentally published to
+# pub.dev using `pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^0.1.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter.
+flutter:
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  assets:
+    - assets/images/background/Bg_Ipad.jpg
+    - assets/images/background/bg_iphone.jpg
+    - assets/images/background/BG-ipad-full.jpg
+    - assets/images/background/BG-iphone-full.jpg
+    - assets/images/background/foriPadBG-compressed.jpg
+    - assets/images/background/foriPhoneBG-compressed.jpg
+    - assets/images/button/add_short.svg
+    - assets/images/button/back-button.svg
+    - assets/images/button/bar-long.svg
+    - assets/images/button/close-button.svg
+    - assets/images/button/enlish-flag.svg
+    - assets/images/button/vietnames-flag.svg
+    - assets/images/button/logout.svg
+    - assets/images/lesson/6thang.svg
+    - assets/images/lesson/12thang.svg
+    - assets/images/lesson/trondoi.svg
+    - assets/images/lesson/buynow-button.svg
+    - assets/images/login_page/fb-button.svg
+    - assets/images/login_page/g+button.svg
+    - assets/images/login_page/loginboard.svg
+    - assets/images/login_page/loginbutton1.svg
+    - assets/images/login_page/main-loginbutton.svg
+    - assets/images/login_page/main-newuserbutton.svg
+    - assets/images/login_page/new-userbutton.svg
+    - assets/images/login_page/register-button.svg
+    - assets/images/login_page/registerboard.svg
+    - assets/images/topic/choose-button.svg
+    - assets/images/topic/designed-courses.svg
+    - assets/images/topic/expressions.svg
+    - assets/images/topic/flexible.svg
+    - assets/images/namegame.png
+
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/assets-and-images/#resolution-aware.
+
+  # For details regarding adding assets from package dependencies, see
+  # https://flutter.dev/assets-and-images/#from-packages
+
+  # To add custom fonts to your application, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  fonts:
+    - family: UTMCooperBlack
+      fonts:
+        - asset: fonts/UTMCooperBlack.ttf
+          weight: 900
+    - family: UTMCooperBlack
+      fonts:
+        - asset: fonts/UTMCooperBlackItalic.ttf
+          style: italic
+          weight: 900
+    # - family: Trajan Pro
+    #   fonts:
+    #     - asset: fonts/TrajanPro.ttf
+    #     - asset: fonts/TrajanPro_Bold.ttf
+    #       weight: 700
+  
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/custom-fonts/#from-packages
