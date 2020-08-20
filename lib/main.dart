@@ -1,6 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
-import './screens/splash_screen.dart';
+// import './screens/splash_screen.dart';
+import './screens/loginhome_screen.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -14,9 +16,8 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.landscapeRight,
     ]);
     return MaterialApp(
-      title: 'Topkiddo App',
-      debugShowCheckedModeBanner: false,
-      home: SplashScreen()
-    );
+        title: 'Topkiddo App',
+        debugShowCheckedModeBanner: false,
+        home: LoginHomeScreen());
   }
 }
