@@ -17,10 +17,12 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 version: 1.0.0+1
 
+
 environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
+#  flutter_svg: ^0.18.0
   flutter:
     sdk: flutter
 
@@ -28,6 +30,7 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.3
+  # flutter_svg: ^0.17.4
 
 dev_dependencies:
   flutter_test:
@@ -54,7 +57,9 @@ flutter:
     - assets/images/background/foriPhoneBG-compressed.jpg
     - assets/images/button/add_short.svg
     - assets/images/button/back-button.svg
+    - assets/images/button/back-button.png
     - assets/images/button/bar-long.svg
+    - assets/images/button/bar-long.png
     - assets/images/button/close-button.svg
     - assets/images/button/enlish-flag.svg
     - assets/images/button/vietnames-flag.svg
@@ -67,8 +72,11 @@ flutter:
     - assets/images/login_page/g+button.svg
     - assets/images/login_page/loginboard.svg
     - assets/images/login_page/loginbutton1.svg
+    - assets/images/login_page/loginbutton1.png
     - assets/images/login_page/main-loginbutton.svg
+    - assets/images/login_page/main-loginbutton.png
     - assets/images/login_page/main-newuserbutton.svg
+    - assets/images/login_page/main-newuserbutton.png
     - assets/images/login_page/new-userbutton.svg
     - assets/images/login_page/register-button.svg
     - assets/images/login_page/registerboard.svg
