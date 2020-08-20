@@ -55,35 +55,30 @@ flutter:
     - assets/images/background/BG-iphone-full.jpg
     - assets/images/background/foriPadBG-compressed.jpg
     - assets/images/background/foriPhoneBG-compressed.jpg
-    - assets/images/button/add_short.svg
-    - assets/images/button/back-button.svg
+    - assets/images/button/add_short.png
     - assets/images/button/back-button.png
-    - assets/images/button/bar-long.svg
     - assets/images/button/bar-long.png
-    - assets/images/button/close-button.svg
-    - assets/images/button/enlish-flag.svg
-    - assets/images/button/vietnames-flag.svg
-    - assets/images/button/logout.svg
-    - assets/images/lesson/6thang.svg
-    - assets/images/lesson/12thang.svg
-    - assets/images/lesson/trondoi.svg
-    - assets/images/lesson/buynow-button.svg
-    - assets/images/login_page/fb-button.svg
-    - assets/images/login_page/g+button.svg
-    - assets/images/login_page/loginboard.svg
-    - assets/images/login_page/loginbutton1.svg
+    - assets/images/button/close-button.png
+    - assets/images/button/enlish-flag.png
+    - assets/images/button/vietnames-flag.png
+    - assets/images/button/logout.png
+    - assets/images/lesson/6thang.png
+    - assets/images/lesson/12thang.png
+    - assets/images/lesson/trondoi.png
+    - assets/images/lesson/buynow-button.png
+    - assets/images/login_page/fb-button.png
+    - assets/images/login_page/g+button.png
+    - assets/images/login_page/loginboard.png
     - assets/images/login_page/loginbutton1.png
-    - assets/images/login_page/main-loginbutton.svg
     - assets/images/login_page/main-loginbutton.png
-    - assets/images/login_page/main-newuserbutton.svg
     - assets/images/login_page/main-newuserbutton.png
-    - assets/images/login_page/new-userbutton.svg
-    - assets/images/login_page/register-button.svg
-    - assets/images/login_page/registerboard.svg
-    - assets/images/topic/choose-button.svg
-    - assets/images/topic/designed-courses.svg
-    - assets/images/topic/expressions.svg
-    - assets/images/topic/flexible.svg
+    - assets/images/login_page/new-userbutton.png
+    - assets/images/login_page/register-button.png
+    - assets/images/login_page/registerboard.png
+    - assets/images/topic/choose-button.png
+    - assets/images/topic/designed-courses.png
+    - assets/images/topic/expressions.png
+    - assets/images/topic/flexible.png
     - assets/images/namegame.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -112,6 +107,6 @@ flutter:
     #     - asset: fonts/TrajanPro.ttf
     #     - asset: fonts/TrajanPro_Bold.ttf
     #       weight: 700
-  
+
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
