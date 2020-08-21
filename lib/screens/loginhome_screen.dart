@@ -3,6 +3,7 @@ import '../theme/style.dart';
 import '../components/back.dart';
 import '../components/settings.dart';
 import 'login_screen.dart';
+
 class LoginHomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -40,21 +41,25 @@ class LoginHomeScreen extends StatelessWidget {
                               height: 15.0,
                             ),
                             GestureDetector(
-                                child: Container(
-                                    width: 200,
-                                    height: 50,
-                                    decoration: BoxDecoration(
-                                      // color: Colors.black,
-                                      image: DecorationImage(
-                                          image: AssetImage(
-                                              "assets/images/login_page/main-loginbutton.png"),
-                                          fit: BoxFit.fitWidth),
-                                      // button text
-                                    )),
-                                onTap: () {
-                                  Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => LoginScreen()));
-                                },
-                              ),
+                              child: Container(
+                                  width: 200,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    // color: Colors.black,
+                                    image: DecorationImage(
+                                        image: AssetImage(
+                                            "assets/images/login_page/main-loginbutton.png"),
+                                        fit: BoxFit.fitWidth),
+                                    // button text
+                                  )),
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            LoginScreen()));
+                              },
+                            ),
                             SizedBox(
                               height: 15.0,
                             ),

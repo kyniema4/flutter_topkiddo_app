@@ -3,6 +3,7 @@ import '../theme/style.dart';
 import '../components/back.dart';
 import '../components/settings.dart';
 import 'home_screen.dart';
+
 class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -36,7 +37,7 @@ class LoginScreen extends StatelessWidget {
                         Container(
                           height: 292,
                           width: 285,
-                          decoration: new BoxDecoration(color: Colors.pink),
+                          // decoration: new BoxDecoration(color: Colors.pink),
                           child: Stack(
                             children: <Widget>[
                               Positioned(
@@ -159,7 +160,12 @@ class LoginScreen extends StatelessWidget {
                                             // button text
                                           )),
                                       onTap: () {
-                                        Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => HomeScreen()));
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder:
+                                                    (BuildContext context) =>
+                                                        HomeScreen()));
                                       }),
                                 ),
                               )
