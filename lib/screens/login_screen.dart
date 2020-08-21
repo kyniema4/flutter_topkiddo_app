@@ -28,16 +28,22 @@ class LoginScreen extends StatelessWidget {
                   Expanded(
                     flex: 3,
                     child: Container(
+                        // decoration: new BoxDecoration(color: Colors.red),
                         child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         Container(
                           height: 292,
+                          width: 285,
+                          decoration: new BoxDecoration(color: Colors.pink),
                           child: Stack(
                             children: <Widget>[
                               Positioned(
+                                left: 0,
+                                right: 0,
                                 child: Align(
-                                  alignment: Alignment.topLeft,
+                                  alignment: Alignment.center,
                                   child: Image.asset(
                                     'assets/images/login_page/loginboard.png',
                                     height: 275,

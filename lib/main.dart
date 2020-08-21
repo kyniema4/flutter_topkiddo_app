@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
-import './screens/loginhome_screen.dart';
+import './screens/login_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -17,6 +17,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         title: 'Topkiddo App',
         debugShowCheckedModeBanner: false,
-        home: LoginHomeScreen());
+        home: LoginScreen());
   }
 }
