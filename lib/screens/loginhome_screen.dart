@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/style.dart';
 import '../components/back.dart';
 import '../components/settings.dart';
-
+import 'login_screen.dart';
 class LoginHomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -52,8 +52,9 @@ class LoginHomeScreen extends StatelessWidget {
                                       // button text
                                     )),
                                 onTap: () {
-                                  print("you clicked my");
-                                }),
+                                  Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => LoginScreen()));
+                                },
+                              ),
                             SizedBox(
                               height: 15.0,
                             ),
