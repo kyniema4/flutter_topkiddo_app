@@ -62,6 +62,7 @@ flutter:
     - assets/images/button/bar-long.png
     - assets/images/button/close-button.png
     - assets/images/button/enlish-flag.png
+    - assets/images/button/menu-button.png
     - assets/images/button/vietnames-flag.png
     - assets/images/button/logout.png
     - assets/images/lesson/6thang.png
@@ -99,7 +100,7 @@ flutter:
       fonts:
         - asset: assets/fonts/UTMCooperBlack.ttf
           weight: 900
-    - family: UTMCooperBlack
+    - family: UTMCooperBlackItalic
       fonts:
         - asset: assets/fonts/UTMCooperBlackItalic.ttf
           style: italic
