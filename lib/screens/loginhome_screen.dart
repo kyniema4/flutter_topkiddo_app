@@ -37,163 +37,168 @@ class LoginHomeScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   Expanded(
-                    flex: 1,
-                    child: Container(
-                      height: 50,
-                      width: 180,
-                      decoration: BoxDecoration(color: Colors.pink),
-                      child: Row(
-                        children: <Widget>[
-                          new Container(
-                            height: 10,
-                            width: 50,
-                            color: Colors.yellow,
-                          ),
+                      flex: 2,
+                      child: Column(
+                        children: [
                           Container(
-                            color: Colors.red,
-                            height: 10,
-                            width: 50,
-                          ),
-                          Positioned(
-                            child: new CircleAvatar(
-                              radius: 30,
-                              backgroundColor: Colors.green,
+                            padding: new EdgeInsets.only(top: 20),
+                            height: MediaQuery.of(context).size.height,
+                            // decoration: new BoxDecoration(color: Colors.pink),
+                            child: Stack(
+                              children: <Widget>[
+                                Positioned(
+                                  left: -110,
+                                  child: Align(
+                                    alignment: Alignment.topLeft,
+                                    child: Image.asset(
+                                      'assets/images/button/bar-long.png',
+                                      height: 40,
+                                      width: 200,
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  left: 35,
+                                  child: GestureDetector(
+                                      child: Container(
+                                          width: 40,
+                                          height: 40,
+                                          decoration: BoxDecoration(
+                                            image: DecorationImage(
+                                                image: AssetImage(
+                                                  'assets/images/button/back-button.png',
+                                                ),
+                                                fit: BoxFit.fitWidth),
+                                            // button text
+                                          )),
+                                      onTap: () {
+                                        print("");
+                                      }),
+                                )
+                              ],
                             ),
-                            left: 0.0,
-                            top: 10.0,
-                          ),
+                          )
                         ],
-                      ),
-                    ),
-
-                    // Positioned(
-                    //   child: Container(
-                    //     height: 30,
-                    //     width: 150,
-                    //     decoration: BoxDecoration(
-                    //       image: DecorationImage(
-                    //         image: AssetImage(
-                    //           'assets/images/button/bar-long.png',
-                    //         ),
-                    //         fit: BoxFit.fitWidth,
-                    //       ),
-                    //     ),
-                    //   ),
-                    //   left: -100,
-                    //   top: 0,
-                    // )
-                    // Image.asset('assets/images/button/bar-long.png',
-                    //     scale: 3),
-                    // Container(
-                    //   height: 20,
-                    //   width: 100,
-                    //   decoration: BoxDecoration(
-                    //     image: DecorationImage(
-                    //       image: AssetImage(
-                    //         'assets/images/button/bar-long.png',
-                    //       ),
-                    //       fit: BoxFit.cover,
-                    //     ),
-                    //   ),
-                    // child: GestureDetector(
-                    //     child: Container(
-                    //         width: 40,
-                    //         height: 40,
-                    //         decoration: BoxDecoration(
-                    //           // color: Colors.black,
-                    //           image: DecorationImage(
-                    //               image: AssetImage(
-                    //                   "assets/images/button/back-button.png"),
-                    //               fit: BoxFit.cover),
-                    //           // button text
-                    //         )),
-                    //     onTap: () {
-                    //       print("you clicked my");
-                    //     })
-                    // ),
-                    // Image.asset('assets/images/button/bar-long.png',
-                    //     width: 100),
-                  ),
+                      )),
                   Expanded(
-                    flex: 2,
-                    child: Center(
-                        child: Column(
-                      children: <Widget>[
-                        Image.asset('assets/images/namegame.png',
-                            fit: BoxFit.contain,
-                            height: MediaQuery.of(context).size.height / 5),
-                        GestureDetector(
-                            child: Container(
-                                width: 100,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: Colors.black,
-                                  image: DecorationImage(
-                                      image: AssetImage(
-                                          "assets/images/login_page/main-loginbutton.png"),
-                                      fit: BoxFit.cover),
-                                  // button text
-                                )),
-                            onTap: () {
-                              print("you clicked my");
-                            }),
-                        GestureDetector(
-                            child: Container(
-                                width: 100,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: Colors.black,
-                                  image: DecorationImage(
-                                      image: AssetImage(
-                                          "assets/images/login_page/main-newuserbutton.png"),
-                                      fit: BoxFit.cover),
-                                  // button text
-                                )),
-                            onTap: () {
-                              print("you clicked my");
-                            })
-                      ],
-                    )),
-                  ),
-                  Expanded(
-                      flex: 1,
+                      flex: 3,
                       child: Container(
-                        child: Row(
+                        // decoration: new BoxDecoration(color: Colors.red),
+                        child: Center(
+                            child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
-                            Image.asset('assets/images/button/bar-long.png',
-                                width: 100),
+                            Image.asset(
+                              'assets/images/namegame.png',
+                              fit: BoxFit.contain,
+                              height: 140,
+                            ),
+                            SizedBox(
+                              height: 15.0,
+                            ),
                             GestureDetector(
                                 child: Container(
-                                    width: 40,
-                                    height: 40,
+                                    width: 200,
+                                    height: 50,
                                     decoration: BoxDecoration(
                                       // color: Colors.black,
                                       image: DecorationImage(
                                           image: AssetImage(
-                                              "assets/images/button/back-button.png"),
-                                          fit: BoxFit.cover),
+                                              "assets/images/login_page/main-loginbutton.png"),
+                                          fit: BoxFit.fitWidth),
                                       // button text
                                     )),
                                 onTap: () {
                                   print("you clicked my");
                                 }),
+                            SizedBox(
+                              height: 15.0,
+                            ),
                             GestureDetector(
                                 child: Container(
-                                    width: 40,
-                                    height: 40,
+                                    width: 200,
+                                    height: 50,
                                     decoration: BoxDecoration(
-                                      // color: Colors.black,
                                       image: DecorationImage(
                                           image: AssetImage(
-                                              "assets/images/button/back-button.png"),
-                                          fit: BoxFit.cover),
+                                              "assets/images/login_page/main-newuserbutton.png"),
+                                          fit: BoxFit.fitWidth),
                                       // button text
                                     )),
                                 onTap: () {
                                   print("you clicked my");
                                 })
                           ],
-                        ),
+                        )),
+                      )),
+                  Expanded(
+                      flex: 2,
+                      child: Column(
+                        children: [
+                          Container(
+                            padding: new EdgeInsets.only(top: 20),
+                            height: MediaQuery.of(context).size.height,
+                            // decoration: new BoxDecoration(color: Colors.pink),
+                            child: Stack(
+                              children: <Widget>[
+                                Positioned(
+                                  right: -60,
+                                  child: Align(
+                                    alignment: Alignment.topLeft,
+                                    child: Image.asset(
+                                      'assets/images/button/bar-long.png',
+                                      height: 40,
+                                      width: 200,
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  right: 30,
+                                  child: Row(
+                                    children: [
+                                      GestureDetector(
+                                          child: Container(
+                                              width: 40,
+                                              height: 40,
+                                              decoration: BoxDecoration(
+                                                image: DecorationImage(
+                                                    image: AssetImage(
+                                                      'assets/images/button/musicon-button.png',
+                                                    ),
+                                                    fit: BoxFit.fitWidth),
+                                                // button text
+                                              )),
+                                          onTap: () {
+                                            print("");
+                                          }),
+                                      SizedBox(
+                                        width: 15.0,
+                                      ),
+                                      GestureDetector(
+                                          child: Container(
+                                              width: 40,
+                                              height: 40,
+                                              decoration: BoxDecoration(
+                                                image: DecorationImage(
+                                                    image: AssetImage(
+                                                      'assets/images/button/setting-button.png',
+                                                    ),
+                                                    fit: BoxFit.fitWidth),
+                                                // button text
+                                              )),
+                                          onTap: () {
+                                            print("");
+                                          }),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
                       )),
                 ],
               )),

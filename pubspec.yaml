@@ -57,6 +57,8 @@ flutter:
     - assets/images/background/foriPhoneBG-compressed.jpg
     - assets/images/button/add_short.png
     - assets/images/button/back-button.png
+    - assets/images/button/setting-button.png
+    - assets/images/button/musicon-button.png
     - assets/images/button/bar-long.png
     - assets/images/button/close-button.png
     - assets/images/button/enlish-flag.png
