@@ -1,11 +1,9 @@
-// import 'dart:async';
 import 'package:flutter/material.dart';
-// import 'package:flutter_svg/flutter_svg.dart';
-// import 'loginhome_screen.dart';
+import '../theme/style.dart';
+import '../components/back.dart';
+import '../components/settings.dart';
 
 class LoginHomeScreen extends StatelessWidget {
-  // final double topWidgetHeight = 200.0;
-  // final double avatarRadius = 50.0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -13,78 +11,21 @@ class LoginHomeScreen extends StatelessWidget {
       body: Stack(
         children: [
           Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image:
-                    AssetImage('assets/images/background/BG-iphone-full.jpg'),
-                fit: BoxFit.cover,
-              ),
-            ),
+            decoration: backgroundImage,
             child: null,
           ),
           Container(
-              // color: Color.fromRGBO(0, 0, 0, 0.49),
-              decoration: BoxDecoration(
-                  gradient: RadialGradient(
-                radius: 0.95,
-                colors: [
-                  Color.fromRGBO(0, 0, 0, 0.2),
-                  Color.fromRGBO(0, 0, 0, 0.45),
-                  Color.fromRGBO(0, 0, 0, 0.75),
-                ],
-              )),
+              decoration: blackBackground,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   Expanded(
-                      flex: 2,
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: new EdgeInsets.only(top: 20),
-                            height: MediaQuery.of(context).size.height,
-                            // decoration: new BoxDecoration(color: Colors.pink),
-                            child: Stack(
-                              children: <Widget>[
-                                Positioned(
-                                  left: -110,
-                                  child: Align(
-                                    alignment: Alignment.topLeft,
-                                    child: Image.asset(
-                                      'assets/images/button/bar-long.png',
-                                      height: 40,
-                                      width: 200,
-                                      fit: BoxFit.fitWidth,
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  left: 35,
-                                  child: GestureDetector(
-                                      child: Container(
-                                          width: 40,
-                                          height: 40,
-                                          decoration: BoxDecoration(
-                                            image: DecorationImage(
-                                                image: AssetImage(
-                                                  'assets/images/button/back-button.png',
-                                                ),
-                                                fit: BoxFit.fitWidth),
-                                            // button text
-                                          )),
-                                      onTap: () {
-                                        print("");
-                                      }),
-                                )
-                              ],
-                            ),
-                          )
-                        ],
-                      )),
+                    flex: 2,
+                    child: Back(),
+                  ),
                   Expanded(
                       flex: 3,
                       child: Container(
-                        // decoration: new BoxDecoration(color: Colors.red),
                         child: Center(
                             child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -134,72 +75,9 @@ class LoginHomeScreen extends StatelessWidget {
                         )),
                       )),
                   Expanded(
-                      flex: 2,
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: new EdgeInsets.only(top: 20),
-                            height: MediaQuery.of(context).size.height,
-                            // decoration: new BoxDecoration(color: Colors.pink),
-                            child: Stack(
-                              children: <Widget>[
-                                Positioned(
-                                  right: -60,
-                                  child: Align(
-                                    alignment: Alignment.topLeft,
-                                    child: Image.asset(
-                                      'assets/images/button/bar-long.png',
-                                      height: 40,
-                                      width: 200,
-                                      fit: BoxFit.fitWidth,
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  right: 30,
-                                  child: Row(
-                                    children: [
-                                      GestureDetector(
-                                          child: Container(
-                                              width: 40,
-                                              height: 40,
-                                              decoration: BoxDecoration(
-                                                image: DecorationImage(
-                                                    image: AssetImage(
-                                                      'assets/images/button/musicon-button.png',
-                                                    ),
-                                                    fit: BoxFit.fitWidth),
-                                                // button text
-                                              )),
-                                          onTap: () {
-                                            print("");
-                                          }),
-                                      SizedBox(
-                                        width: 15.0,
-                                      ),
-                                      GestureDetector(
-                                          child: Container(
-                                              width: 40,
-                                              height: 40,
-                                              decoration: BoxDecoration(
-                                                image: DecorationImage(
-                                                    image: AssetImage(
-                                                      'assets/images/button/setting-button.png',
-                                                    ),
-                                                    fit: BoxFit.fitWidth),
-                                                // button text
-                                              )),
-                                          onTap: () {
-                                            print("");
-                                          }),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                        ],
-                      )),
+                    flex: 2,
+                    child: Settings(),
+                  )
                 ],
               )),
         ],

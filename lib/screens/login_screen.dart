@@ -1,96 +1,38 @@
-// import 'dart:async';
 import 'package:flutter/material.dart';
-// import 'package:flutter_svg/flutter_svg.dart';
-// import 'loginhome_screen.dart';
+import '../theme/style.dart';
+import '../components/back.dart';
+import '../components/settings.dart';
 
 class LoginScreen extends StatelessWidget {
-  // final double topWidgetHeight = 200.0;
-  // final double avatarRadius = 50.0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomPadding: false,
       backgroundColor: Colors.white,
       body: Stack(
         children: [
           Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image:
-                    AssetImage('assets/images/background/BG-iphone-full.jpg'),
-                fit: BoxFit.cover,
-              ),
-            ),
+            decoration: backgroundImage,
             child: null,
           ),
           Container(
               // color: Color.fromRGBO(0, 0, 0, 0.49),
-              decoration: BoxDecoration(
-                  gradient: RadialGradient(
-                radius: 0.95,
-                colors: [
-                  Color.fromRGBO(0, 0, 0, 0.2),
-                  Color.fromRGBO(0, 0, 0, 0.45),
-                  Color.fromRGBO(0, 0, 0, 0.75),
-                ],
-              )),
+              decoration: blackBackground,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   Expanded(
-                      flex: 2,
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: new EdgeInsets.only(top: 20),
-                            height: MediaQuery.of(context).size.height,
-                            // decoration: new BoxDecoration(color: Colors.pink),
-                            child: Stack(
-                              children: <Widget>[
-                                Positioned(
-                                  left: -110,
-                                  child: Align(
-                                    alignment: Alignment.topLeft,
-                                    child: Image.asset(
-                                      'assets/images/button/bar-long.png',
-                                      height: 40,
-                                      width: 200,
-                                      fit: BoxFit.fitWidth,
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  left: 35,
-                                  child: GestureDetector(
-                                      child: Container(
-                                          width: 40,
-                                          height: 40,
-                                          decoration: BoxDecoration(
-                                            image: DecorationImage(
-                                                image: AssetImage(
-                                                  'assets/images/button/back-button.png',
-                                                ),
-                                                fit: BoxFit.fitWidth),
-                                            // button text
-                                          )),
-                                      onTap: () {
-                                        print("");
-                                      }),
-                                )
-                              ],
-                            ),
-                          )
-                        ],
-                      )),
+                    flex: 2,
+                    child: Back(),
+                  ),
                   Expanded(
                     flex: 3,
                     child: Container(
                         child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         Container(
                           height: 292,
-                          decoration: new BoxDecoration(color: Colors.red),
                           child: Stack(
                             children: <Widget>[
                               Positioned(
@@ -103,45 +45,51 @@ class LoginScreen extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              Positioned(child: Text('LOGIN')),
                               Positioned(
-                                // top: 0,
-
+                                  top: 8,
+                                  left: 0,
+                                  right: 0,
+                                  child: Text('LOGIN',
+                                      textAlign: TextAlign.center,
+                                      style: styleTitle)),
+                              Positioned(
                                 child: Container(
-                                  margin: new EdgeInsets.only(top: 20.0),
+                                  height: 40,
+                                  margin: new EdgeInsets.only(
+                                      top: 49.0, left: 45, right: 45),
                                   child: TextField(
-                                    // autofocus: false,
-                                    // style: TextStyle(
-                                    //     fontSize: 22.0, color: Color(0xFFbdc6cf)),
+                                    keyboardType: TextInputType.number,
+                                    autofocus: false,
+                                    style: styleTextInput,
                                     decoration: InputDecoration(
-                                        filled: true,
-                                        fillColor: Colors.pink,
-                                        // contentPadding: const EdgeInsets.only(
-                                        //     left: 14.0, bottom: 8.0, top: 8.0),
-                                        // focusedBorder: OutlineInputBorder(
-                                        //   borderSide:
-                                        //       BorderSide(color: Colors.white),
-                                        //   borderRadius:
-                                        //       BorderRadius.circular(25.7),
-                                        // ),
-                                        // enabledBorder: UnderlineInputBorder(
-                                        //   borderSide:
-                                        //       BorderSide(color: Colors.white),
-                                        //   borderRadius:
-                                        //       BorderRadius.circular(25.7),
-                                        // ),
-                                        // border: InputBorder.none,
-                                        hintText: 'Phone number'),
+                                        contentPadding: contentPadding,
+                                        focusedBorder: styleOutline,
+                                        enabledBorder: styleUnderline,
+                                        border: InputBorder.none,
+                                        hintText: 'Phone number',
+                                        hintStyle: styleTextInput),
                                   ),
                                 ),
                               ),
-                              //     // Positioned(
-                              //     //   child: TextField(
-                              //     //     decoration: InputDecoration(
-                              //     //         border: InputBorder.none,
-                              //     //         hintText: 'Password'),
-                              //     //   ),
-                              //     // ),
+                              Positioned(
+                                child: Container(
+                                  height: 40,
+                                  margin: new EdgeInsets.only(
+                                      top: 96.0, left: 45, right: 45),
+                                  child: TextField(
+                                    obscureText: true,
+                                    autofocus: false,
+                                    style: styleTextInput,
+                                    decoration: InputDecoration(
+                                        contentPadding: contentPadding,
+                                        focusedBorder: styleOutline,
+                                        enabledBorder: styleUnderline,
+                                        border: InputBorder.none,
+                                        hintText: 'Password',
+                                        hintStyle: styleTextInput),
+                                  ),
+                                ),
+                              ),
                               Positioned(
                                 bottom: 70,
                                 right: 0.0,
@@ -216,72 +164,9 @@ class LoginScreen extends StatelessWidget {
                     )),
                   ),
                   Expanded(
-                      flex: 2,
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: new EdgeInsets.only(top: 20),
-                            height: MediaQuery.of(context).size.height,
-                            // decoration: new BoxDecoration(color: Colors.pink),
-                            child: Stack(
-                              children: <Widget>[
-                                Positioned(
-                                  right: -60,
-                                  child: Align(
-                                    alignment: Alignment.topLeft,
-                                    child: Image.asset(
-                                      'assets/images/button/bar-long.png',
-                                      height: 40,
-                                      width: 200,
-                                      fit: BoxFit.fitWidth,
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  right: 30,
-                                  child: Row(
-                                    children: [
-                                      GestureDetector(
-                                          child: Container(
-                                              width: 40,
-                                              height: 40,
-                                              decoration: BoxDecoration(
-                                                image: DecorationImage(
-                                                    image: AssetImage(
-                                                      'assets/images/button/musicon-button.png',
-                                                    ),
-                                                    fit: BoxFit.fitWidth),
-                                                // button text
-                                              )),
-                                          onTap: () {
-                                            print("");
-                                          }),
-                                      SizedBox(
-                                        width: 15.0,
-                                      ),
-                                      GestureDetector(
-                                          child: Container(
-                                              width: 40,
-                                              height: 40,
-                                              decoration: BoxDecoration(
-                                                image: DecorationImage(
-                                                    image: AssetImage(
-                                                      'assets/images/button/setting-button.png',
-                                                    ),
-                                                    fit: BoxFit.fitWidth),
-                                                // button text
-                                              )),
-                                          onTap: () {
-                                            print("");
-                                          }),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                        ],
-                      )),
+                    flex: 2,
+                    child: Settings(),
+                  )
                 ],
               )),
         ],
