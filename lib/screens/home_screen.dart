@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../theme/style.dart';
+import 'loginhome_screen.dart';
 class HomeScreen extends StatefulWidget{
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -228,7 +229,11 @@ class TopButton extends StatelessWidget {
                   Positioned(
                     right: 0,
                     width: 75,
-                    child: FlatButton(onPressed: () {}, child: Image.asset('assets/images/button/logout.png', fit: BoxFit.contain))
+                    child: FlatButton(
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => LoginHomeScreen()));
+                      }, 
+                      child: Image.asset('assets/images/button/logout.png', fit: BoxFit.contain))
                   ),
                   Positioned(
                     left: 10,

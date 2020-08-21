@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/style.dart';
 import '../components/back.dart';
 import '../components/settings.dart';
-
+import 'home_screen.dart';
 class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -153,7 +153,7 @@ class LoginScreen extends StatelessWidget {
                                             // button text
                                           )),
                                       onTap: () {
-                                        print("");
+                                        Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => HomeScreen()));
                                       }),
                                 ),
                               )
