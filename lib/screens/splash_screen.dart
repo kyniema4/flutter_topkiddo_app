@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'loginhome_screen.dart';
-
+import '../theme/style.dart';
 class SplashScreen extends StatefulWidget {
   @override
   _SplashScreenState createState() => _SplashScreenState();
@@ -12,7 +12,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Timer(
-        Duration(seconds: 10),
+        Duration(seconds: 5),
         () => Navigator.of(context).pushReplacement(MaterialPageRoute(
             builder: (BuildContext context) => LoginHomeScreen())));
   }
@@ -24,30 +24,15 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Stack(
         children: [
           Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image:
-                    AssetImage('assets/images/background/BG-iphone-full.jpg'),
-                fit: BoxFit.cover,
-              ),
-            ),
+            decoration: backgroundImage,
             child: null,
           ),
           Container(
-            // color: Color.fromRGBO(0, 0, 0, 0.49),
-            decoration: BoxDecoration(
-                gradient: RadialGradient(
-              radius: 0.95,
-              colors: [
-                Color.fromRGBO(0, 0, 0, 0.2),
-                Color.fromRGBO(0, 0, 0, 0.45),
-                Color.fromRGBO(0, 0, 0, 0.75),
-              ],
-            )),
+            decoration: blackBackground,
             child: Center(
               child: Image.asset('assets/images/namegame.png',
-                  fit: BoxFit.contain,
-                  height: MediaQuery.of(context).size.height / 1.7),
+                fit: BoxFit.contain,
+                height: MediaQuery.of(context).size.height / 1.7),
             ),
           ),
         ],
@@ -55,3 +40,4 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 }
+
