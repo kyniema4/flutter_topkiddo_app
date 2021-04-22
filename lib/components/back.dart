@@ -37,7 +37,7 @@ class Back extends StatelessWidget {
                           // button text
                         )),
                     onTap: () {
-                      print("");
+                      Navigator.pop(context);
                     }),
               )
             ],

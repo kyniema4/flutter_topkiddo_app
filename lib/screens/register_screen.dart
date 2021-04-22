@@ -4,7 +4,7 @@ import '../components/back.dart';
 import '../components/settings.dart';
 import 'home_screen.dart';
 
-class LoginScreen extends StatelessWidget {
+class RegisterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -54,7 +54,7 @@ class LoginScreen extends StatelessWidget {
                                         child: Align(
                                           alignment: Alignment.center,
                                           child: Image.asset(
-                                            'assets/images/login_page/loginboard.png',
+                                            'assets/images/login_page/registerboard.png',
                                             height: 275,
                                             fit: BoxFit.fitWidth,
                                           ),
@@ -64,7 +64,7 @@ class LoginScreen extends StatelessWidget {
                                           top: 6,
                                           left: 0,
                                           right: 0,
-                                          child: Text('LOGIN',
+                                          child: Text('REGISTER',
                                               textAlign: TextAlign.center,
                                               style: styleTitle)),
                                       Positioned(
@@ -106,46 +106,22 @@ class LoginScreen extends StatelessWidget {
                                         ),
                                       ),
                                       Positioned(
-                                        bottom: 70,
-                                        right: 0.0,
-                                        left: 0.0,
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            GestureDetector(
-                                                child: Container(
-                                                    width: 50,
-                                                    height: 50,
-                                                    decoration: BoxDecoration(
-                                                      image: DecorationImage(
-                                                          image: AssetImage(
-                                                            'assets/images/login_page/fb-button.png',
-                                                          ),
-                                                          fit: BoxFit.fitWidth),
-                                                      // button text
-                                                    )),
-                                                onTap: () {
-                                                  print("");
-                                                }),
-                                            SizedBox(
-                                              width: 20.0,
-                                            ),
-                                            GestureDetector(
-                                                child: Container(
-                                                    width: 50,
-                                                    height: 50,
-                                                    decoration: BoxDecoration(
-                                                      image: DecorationImage(
-                                                          image: AssetImage(
-                                                            'assets/images/login_page/g+button.png',
-                                                          ),
-                                                          fit: BoxFit.fitWidth),
-                                                      // button text
-                                                    )),
-                                                onTap: () {
-                                                  print("");
-                                                }),
-                                          ],
+                                        child: Container(
+                                          height: 40,
+                                          margin: new EdgeInsets.only(
+                                              top: 145.0, left: 45, right: 45),
+                                          child: TextField(
+                                            obscureText: true,
+                                            autofocus: false,
+                                            style: styleTextInput,
+                                            decoration: InputDecoration(
+                                                contentPadding: contentPadding,
+                                                focusedBorder: styleOutline,
+                                                enabledBorder: styleUnderline,
+                                                border: InputBorder.none,
+                                                hintText: 'Confirm Password',
+                                                hintStyle: styleTextInput),
+                                          ),
                                         ),
                                       ),
                                       Positioned(
@@ -162,7 +138,7 @@ class LoginScreen extends StatelessWidget {
                                                     // color: Colors.grey,
                                                     image: DecorationImage(
                                                         image: AssetImage(
-                                                          'assets/images/login_page/loginbutton1.png',
+                                                          'assets/images/login_page/register-button.png',
                                                         ),
                                                         fit: BoxFit.fitWidth),
                                                     // button text
@@ -177,6 +153,7 @@ class LoginScreen extends StatelessWidget {
                                               }),
                                         ),
                                       )
+                                    
                                     ],
                                   ),
                                 )
