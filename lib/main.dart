@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import './screens/splash_screen.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,9 +15,12 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-    return MaterialApp(
-        title: 'Topkiddo App',
-        debugShowCheckedModeBanner: false,
-        home: SplashScreen());
+    return ScreenUtilInit(
+        designSize: Size(360, 690),
+        allowFontScaling: false,
+        builder: () => MaterialApp(
+            title: 'Topkiddo App',
+            debugShowCheckedModeBanner: false,
+            home: SplashScreen()));
   }
 }

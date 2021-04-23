@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class Settings extends StatelessWidget {
   @override
@@ -6,49 +7,47 @@ class Settings extends StatelessWidget {
     return Column(
       children: [
         Container(
-          padding: new EdgeInsets.only(top: 20),
+          padding: new EdgeInsets.only(top: 19),
           height: MediaQuery.of(context).size.height,
-          // decoration: new BoxDecoration(color: Colors.pink),
           child: Stack(
             children: <Widget>[
               Positioned(
-                right: -60,
+                right: -24.w,
                 child: Align(
                   alignment: Alignment.topLeft,
                   child: Image.asset(
                     'assets/images/button/bar-long.png',
-                    height: 40,
-                    width: 200,
+                    height: 17.w,
+                    width: 80.w,
                     fit: BoxFit.fitWidth,
                   ),
                 ),
               ),
               Positioned(
-                right: 30,
+                right: 12.w,
                 child: Row(
                   children: [
                     GestureDetector(
                         child: Container(
-                            width: 40,
-                            height: 40,
+                            width: 16.w,
+                            height: 17.w,
                             decoration: BoxDecoration(
                               image: DecorationImage(
                                   image: AssetImage(
                                     'assets/images/button/musicon-button.png',
                                   ),
                                   fit: BoxFit.fitWidth),
-                              // button text
                             )),
                         onTap: () {
                           print("");
                         }),
                     SizedBox(
-                      width: 15.0,
+                      width: 6.w,
                     ),
                     GestureDetector(
                         child: Container(
-                            width: 40,
-                            height: 40,
+                            width: 16.w,
+                            height: 17.w,
                             decoration: BoxDecoration(
                               image: DecorationImage(
                                   image: AssetImage(

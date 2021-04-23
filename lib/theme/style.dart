@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'theme.dart' as Theme;
 
 final backgroundImage = BoxDecoration(
@@ -12,9 +14,9 @@ final blackBackground = BoxDecoration(
     gradient: RadialGradient(
   radius: 0.95,
   colors: [
-    Color.fromRGBO(0, 0, 0, 0.2),
-    Color.fromRGBO(0, 0, 0, 0.45),
-    Color.fromRGBO(0, 0, 0, 0.7),
+    Color.fromRGBO(0, 0, 0, 0.01),
+    Color.fromRGBO(0, 0, 0, 0.4),
+    Color.fromRGBO(0, 0, 0, 0.6),
   ],
 ));
 final styleTitle = TextStyle(

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'loginhome_screen.dart';
 import '../theme/style.dart';
+
 class SplashScreen extends StatefulWidget {
   @override
   _SplashScreenState createState() => _SplashScreenState();
@@ -30,9 +31,12 @@ class _SplashScreenState extends State<SplashScreen> {
           Container(
             decoration: blackBackground,
             child: Center(
-              child: Image.asset('assets/images/namegame.png',
+              child: Image.asset(
+                'assets/images/namegame.png',
                 fit: BoxFit.contain,
-                height: MediaQuery.of(context).size.height / 1.7),
+                width: MediaQuery.of(context).size.width / 2.5,
+                // height: MediaQuery.of(context).size.height / 1.7
+              ),
             ),
           ),
         ],
@@ -40,4 +44,3 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 }
-

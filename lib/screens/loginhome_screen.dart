@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import '../theme/style.dart';
-import '../components/back.dart';
+import '../theme/theme.dart' as Theme;
 import '../components/settings.dart';
 import 'login_screen.dart';
 import 'register_screen.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 class LoginHomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -22,7 +27,7 @@ class LoginHomeScreen extends StatelessWidget {
                 children: <Widget>[
                   Expanded(
                     flex: 2,
-                    child: Back(),
+                    child: Container(),
                   ),
                   Expanded(
                       flex: 3,
@@ -35,17 +40,17 @@ class LoginHomeScreen extends StatelessWidget {
                             Image.asset(
                               'assets/images/namegame.png',
                               fit: BoxFit.contain,
-                              height: 140,
+                              width: width / 3.1,
+                              // height: height > 600 ? 230 : 140,
                             ),
                             SizedBox(
-                              height: 15.0,
+                              height: 8.w,
                             ),
                             GestureDetector(
                               child: Container(
-                                  width: 200,
-                                  height: 50,
+                                  width: 90.w,
+                                  height: 22.w,
                                   decoration: BoxDecoration(
-                                    // color: Colors.black,
                                     image: DecorationImage(
                                         image: AssetImage(
                                             "assets/images/login_page/main-loginbutton.png"),
@@ -61,12 +66,12 @@ class LoginHomeScreen extends StatelessWidget {
                               },
                             ),
                             SizedBox(
-                              height: 15.0,
+                              height: 4.w,
                             ),
                             GestureDetector(
                                 child: Container(
-                                    width: 200,
-                                    height: 50,
+                                    width: 90.w,
+                                    height: 22.w,
                                     decoration: BoxDecoration(
                                       image: DecorationImage(
                                           image: AssetImage(
@@ -76,10 +81,10 @@ class LoginHomeScreen extends StatelessWidget {
                                     )),
                                 onTap: () {
                                   Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (BuildContext context) =>
-                                            RegisterScreen()));
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (BuildContext context) =>
+                                              RegisterScreen()));
                                 })
                           ],
                         )),

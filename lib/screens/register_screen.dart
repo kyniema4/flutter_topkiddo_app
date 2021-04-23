@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
+import '../theme/theme.dart' as Theme;
 import '../theme/style.dart';
 import '../components/back.dart';
 import '../components/settings.dart';
 import 'home_screen.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class RegisterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
     return Container(
-      color: Colors.white,
-      child: SafeArea(
-        child: Scaffold(
-          resizeToAvoidBottomPadding: false,
-          backgroundColor: Colors.white,
-          body: ListView(
-            children: [
-              Expanded(
-                child: Stack(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: GestureDetector(
+            onTap: () => FocusScope.of(context).unfocus(),
+            child: SingleChildScrollView(
+              child: Stack(
                 children: [
                   Container(
                     width: MediaQuery.of(context).size.width,
@@ -37,15 +38,13 @@ class RegisterScreen extends StatelessWidget {
                           Expanded(
                             flex: 3,
                             child: Container(
-                                // decoration: new BoxDecoration(color: Colors.red),
                                 child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
                                 Container(
-                                  height: 292,
-                                  width: 285,
-                                  // decoration: new BoxDecoration(color: Colors.pink),
+                                  height: 117.w,
+                                  width: 114.w,
                                   child: Stack(
                                     children: <Widget>[
                                       Positioned(
@@ -55,7 +54,6 @@ class RegisterScreen extends StatelessWidget {
                                           alignment: Alignment.center,
                                           child: Image.asset(
                                             'assets/images/login_page/registerboard.png',
-                                            height: 275,
                                             fit: BoxFit.fitWidth,
                                           ),
                                         ),
@@ -66,61 +64,108 @@ class RegisterScreen extends StatelessWidget {
                                           right: 0,
                                           child: Text('REGISTER',
                                               textAlign: TextAlign.center,
-                                              style: styleTitle)),
+                                              style: TextStyle(
+                                                  color: Theme.Colors.yellow200,
+                                                  fontSize: height > 600
+                                                      ? 15.sp
+                                                      : 25.sp,
+                                                  fontFamily:
+                                                      'UTMCooperBlack'))),
                                       Positioned(
+                                        top: 20.w,
+                                        left: 18.w,
+                                        right: 18.w,
                                         child: Container(
-                                          height: 40,
-                                          margin: new EdgeInsets.only(
-                                              top: 49.0, left: 45, right: 45),
+                                          height: 14.w,
                                           child: TextField(
                                             keyboardType: TextInputType.number,
                                             autofocus: false,
                                             style: styleTextInput,
                                             decoration: InputDecoration(
-                                                contentPadding: contentPadding,
+                                                isCollapsed: true,
+                                                contentPadding:
+                                                    EdgeInsets.symmetric(
+                                                        vertical: 2.w,
+                                                        horizontal: 6.w),
                                                 focusedBorder: styleOutline,
                                                 enabledBorder: styleUnderline,
                                                 border: InputBorder.none,
                                                 hintText: 'Phone number',
-                                                hintStyle: styleTextInput),
+                                                hintStyle: TextStyle(
+                                                    fontSize: height > 600
+                                                        ? 14.sp
+                                                        : 23.sp,
+                                                    color:
+                                                        Theme.Colors.orange500,
+                                                    fontFamily:
+                                                        'UTMCooperBlack')),
                                           ),
                                         ),
                                       ),
                                       Positioned(
+                                        top: 39.w,
+                                        left: 18.w,
+                                        right: 18.w,
                                         child: Container(
-                                          height: 40,
-                                          margin: new EdgeInsets.only(
-                                              top: 96.0, left: 45, right: 45),
+                                          height: 14.w,
                                           child: TextField(
                                             obscureText: true,
                                             autofocus: false,
                                             style: styleTextInput,
                                             decoration: InputDecoration(
-                                                contentPadding: contentPadding,
+                                                isCollapsed: true,
+                                                contentPadding:
+                                                    EdgeInsets.symmetric(
+                                                        vertical: 2.w,
+                                                        horizontal: 6.w),
                                                 focusedBorder: styleOutline,
                                                 enabledBorder: styleUnderline,
                                                 border: InputBorder.none,
                                                 hintText: 'Password',
-                                                hintStyle: styleTextInput),
+                                                hintStyle: TextStyle(
+                                                    fontSize: height > 600
+                                                        ? 14.sp
+                                                        : 23.sp,
+                                                    color:
+                                                        Theme.Colors.orange500,
+                                                    fontFamily:
+                                                        'UTMCooperBlack')),
                                           ),
                                         ),
                                       ),
                                       Positioned(
+                                        top: 58.5.w,
+                                        left: 18.w,
+                                        right: 18.w,
                                         child: Container(
-                                          height: 40,
-                                          margin: new EdgeInsets.only(
-                                              top: 145.0, left: 45, right: 45),
+                                          height: 14.w,
                                           child: TextField(
                                             obscureText: true,
                                             autofocus: false,
-                                            style: styleTextInput,
+                                            style: TextStyle(
+                                                fontSize: height > 600
+                                                    ? 14.sp
+                                                    : 23.sp,
+                                                color: Theme.Colors.orange500,
+                                                fontFamily: 'UTMCooperBlack'),
                                             decoration: InputDecoration(
-                                                contentPadding: contentPadding,
+                                                isCollapsed: true,
+                                                contentPadding:
+                                                    EdgeInsets.symmetric(
+                                                        vertical: 2.w,
+                                                        horizontal: 6.w),
                                                 focusedBorder: styleOutline,
                                                 enabledBorder: styleUnderline,
                                                 border: InputBorder.none,
                                                 hintText: 'Confirm Password',
-                                                hintStyle: styleTextInput),
+                                                hintStyle: TextStyle(
+                                                    fontSize: height > 600
+                                                        ? 14.sp
+                                                        : 23.sp,
+                                                    color:
+                                                        Theme.Colors.orange500,
+                                                    fontFamily:
+                                                        'UTMCooperBlack')),
                                           ),
                                         ),
                                       ),
@@ -132,8 +177,8 @@ class RegisterScreen extends StatelessWidget {
                                           alignment: Alignment.bottomCenter,
                                           child: GestureDetector(
                                               child: Container(
-                                                  width: 160,
-                                                  height: 40,
+                                                  width: 62.w,
+                                                  height: 15.w,
                                                   decoration: BoxDecoration(
                                                     // color: Colors.grey,
                                                     image: DecorationImage(
@@ -147,13 +192,12 @@ class RegisterScreen extends StatelessWidget {
                                                 Navigator.push(
                                                     context,
                                                     MaterialPageRoute(
-                                                        builder:
-                                                            (BuildContext context) =>
-                                                                HomeScreen()));
+                                                        builder: (BuildContext
+                                                                context) =>
+                                                            HomeScreen()));
                                               }),
                                         ),
                                       )
-                                    
                                     ],
                                   ),
                                 )
@@ -167,11 +211,8 @@ class RegisterScreen extends StatelessWidget {
                         ],
                       )),
                 ],
-              )
               ),
-            ],
-          ),
-        )
+            )),
       ),
     );
   }

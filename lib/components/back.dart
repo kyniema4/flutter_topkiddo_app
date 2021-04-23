@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class Back extends StatelessWidget {
   @override
@@ -6,35 +7,33 @@ class Back extends StatelessWidget {
     return Column(
       children: [
         Container(
-          padding: new EdgeInsets.only(top: 20),
+          padding: new EdgeInsets.only(top: 19),
           height: MediaQuery.of(context).size.height,
           child: Stack(
             children: <Widget>[
               Positioned(
-                left: -110,
+                left: -44.w,
                 child: Align(
-                  alignment: Alignment.topLeft,
                   child: Image.asset(
                     'assets/images/button/bar-long.png',
-                    height: 40,
-                    width: 200,
+                    height: 17.w,
+                    width: 80.w,
                     fit: BoxFit.fitWidth,
                   ),
                 ),
               ),
               Positioned(
-                left: 35,
+                left: 14.w,
                 child: GestureDetector(
                     child: Container(
-                        width: 40,
-                        height: 40,
+                        width: 16.w,
+                        height: 17.w,
                         decoration: BoxDecoration(
                           image: DecorationImage(
                               image: AssetImage(
                                 'assets/images/button/back-button.png',
                               ),
                               fit: BoxFit.fitWidth),
-                          // button text
                         )),
                     onTap: () {
                       Navigator.pop(context);
