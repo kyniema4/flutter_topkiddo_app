@@ -7,53 +7,54 @@ class Settings extends StatelessWidget {
     return Column(
       children: [
         Container(
-          padding: new EdgeInsets.only(top: 19),
+          padding: new EdgeInsets.only(top: 10.w),
           height: MediaQuery.of(context).size.height,
           child: Stack(
             children: <Widget>[
               Positioned(
-                right: -24.w,
+                top: 4.5.w,
+                right: -40.w,
                 child: Align(
-                  alignment: Alignment.topLeft,
-                  child: Image.asset(
-                    'assets/images/button/bar-long.png',
-                    height: 17.w,
-                    width: 80.w,
-                    fit: BoxFit.fitWidth,
-                  ),
-                ),
+                    child: Image.asset(
+                  'assets/images/button/bar-long.png',
+                  height: 12.w,
+                  fit: BoxFit.fill,
+                )),
               ),
               Positioned(
-                right: 12.w,
+                top: 1.w,
+                right: 16.w,
                 child: Row(
                   children: [
                     GestureDetector(
                         child: Container(
-                            width: 16.w,
-                            height: 17.w,
+                            // width: 16.w,
+                            // height: 17.w,
+                            width: 20.w,
+                            height: 20.w,
                             decoration: BoxDecoration(
                               image: DecorationImage(
                                   image: AssetImage(
                                     'assets/images/button/musicon-button.png',
                                   ),
-                                  fit: BoxFit.fitWidth),
+                                  fit: BoxFit.contain),
                             )),
                         onTap: () {
                           print("");
                         }),
                     SizedBox(
-                      width: 6.w,
+                      width: 8.w,
                     ),
                     GestureDetector(
                         child: Container(
-                            width: 16.w,
-                            height: 17.w,
+                            width: 20.w,
+                            height: 20.w,
                             decoration: BoxDecoration(
                               image: DecorationImage(
                                   image: AssetImage(
                                     'assets/images/button/setting-button.png',
                                   ),
-                                  fit: BoxFit.fitWidth),
+                                  fit: BoxFit.contain),
                               // button text
                             )),
                         onTap: () {

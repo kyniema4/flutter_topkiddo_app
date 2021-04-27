@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.landscapeRight,
     ]);
     return ScreenUtilInit(
-        designSize: Size(360, 690),
+        designSize: Size(375, 812),
         allowFontScaling: false,
         builder: () => MaterialApp(
             title: 'Topkiddo App',

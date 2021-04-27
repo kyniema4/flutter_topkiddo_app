@@ -1,6 +1,7 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import '../theme/style.dart';
+import '../theme/theme.dart' as Theme;
+
 import 'loginhome_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -14,195 +15,131 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _pressed2 = true;
   bool _pressed3 = true;
 
+  _showHomeItem(BuildContext context, imageBg, String title, String content,
+      bool _pressId) {
+    double height = MediaQuery.of(context).size.height;
+
+    return Container(
+      width: 92.w,
+      height: 125.w,
+      margin: EdgeInsets.symmetric(horizontal: 15),
+      child: Stack(children: [
+        Image.asset(
+          imageBg,
+          fit: BoxFit.contain,
+        ),
+        Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+                height: 17.w,
+                alignment: Alignment.center,
+                child: Text(title,
+                    style: TextStyle(
+                        color: Theme.Colors.yellow200,
+                        fontSize: height > 600 ? 25.sp : 30.sp,
+                        fontFamily: 'UTMCooperBlack'),
+                    textAlign: TextAlign.center))),
+        Positioned(
+            top: 26.w,
+            left: 0,
+            right: 0,
+            child: Container(
+                height: 30.w,
+                margin: EdgeInsets.symmetric(horizontal: 15.w),
+                alignment: Alignment.center,
+                child: Text(
+                  content,
+                  style: TextStyle(
+                      color: Theme.Colors.orange500,
+                      fontSize: height > 600 ? 20.sp : 28.sp,
+                      fontFamily: 'UTMCooperBlack'),
+                  textAlign: TextAlign.center,
+                ))),
+        Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: AnimatedOpacity(
+                opacity: _pressId ? 1.0 : 0.85,
+                duration: Duration(milliseconds: 200),
+                child: GestureDetector(
+                    child: Container(
+                      // color: Colors.blue,
+                      height: 16.w,
+                      child: Image.asset(
+                          'assets/images/topic/choose-button.png',
+                          fit: BoxFit.contain),
+                    ),
+                    onTap: () {
+                      setState(() {
+                        _pressId = !_pressId;
+                      });
+                    })))
+      ]),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      body: Stack(
-        children: [
-          Container(
-            decoration: backgroundImage,
-            child: null,
-          ),
-          Container(
-              decoration: blackBackground,
+    return Container(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Stack(
+          alignment: Alignment.center,
+          children: [
+            Container(
+              width: width,
               height: height,
-              child: Stack(
-                children: <Widget>[
-                  TopButton(),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      SizedBox(height: 48.0),
-                      Container(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 15),
-                              child:
-                                  Stack(overflow: Overflow.visible, children: [
-                                Image.asset(
-                                    'assets/images/topic/designed-courses.png',
-                                    fit: BoxFit.contain,
-                                    height: width / 3.18),
-                                Positioned(
-                                    top: 0,
-                                    left: 0,
-                                    right: 0,
-                                    height: width / 22.5,
-                                    child: Container(
-                                        alignment: Alignment.center,
-                                        child: Text('LESSON',
-                                            style: titleBoardHome,
-                                            textAlign: TextAlign.center))),
-                                Positioned(
-                                    top: width / 15,
-                                    left: 0,
-                                    right: 0,
-                                    height: width / 12.5,
-                                    child: Container(
-                                        margin: EdgeInsets.symmetric(
-                                            horizontal: 25.0),
-                                        alignment: Alignment.center,
-                                        child: Text(
-                                          'Designed Courses',
-                                          style: nameBoardHome,
-                                          textAlign: TextAlign.center,
-                                        ))),
-                                Positioned(
-                                    bottom: -12,
-                                    left: 0,
-                                    right: 0,
-                                    height: width / 22,
-                                    child: AnimatedOpacity(
-                                        opacity: _pressed ? 1.0 : 0.85,
-                                        duration: Duration(milliseconds: 200),
-                                        child: GestureDetector(
-                                            child: Image.asset(
-                                                'assets/images/topic/choose-button.png',
-                                                fit: BoxFit.contain),
-                                            onTap: () {
-                                              setState(() {
-                                                _pressed = !_pressed;
-                                              });
-                                            })))
-                              ]),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 15),
-                              child:
-                                  Stack(overflow: Overflow.visible, children: [
-                                Image.asset('assets/images/topic/flexible.png',
-                                    fit: BoxFit.contain, height: width / 3.18),
-                                Positioned(
-                                    top: 0,
-                                    left: 0,
-                                    right: 0,
-                                    height: width / 22.5,
-                                    child: Container(
-                                        alignment: Alignment.center,
-                                        child: Text('LESSON',
-                                            style: titleBoardHome,
-                                            textAlign: TextAlign.center))),
-                                Positioned(
-                                    top: width / 15,
-                                    left: 0,
-                                    right: 0,
-                                    height: width / 12.5,
-                                    child: Container(
-                                        margin: EdgeInsets.symmetric(
-                                            horizontal: 25.0),
-                                        alignment: Alignment.center,
-                                        child: Text(
-                                          'Flexible Learning',
-                                          style: nameBoardHome,
-                                          textAlign: TextAlign.center,
-                                        ))),
-                                Positioned(
-                                    bottom: -12,
-                                    left: 0,
-                                    right: 0,
-                                    height: width / 22,
-                                    child: AnimatedOpacity(
-                                        opacity: _pressed2 ? 1.0 : 0.85,
-                                        duration: Duration(milliseconds: 200),
-                                        child: GestureDetector(
-                                            child: Image.asset(
-                                                'assets/images/topic/choose-button.png',
-                                                fit: BoxFit.contain),
-                                            onTap: () {
-                                              setState(() {
-                                                _pressed2 = !_pressed2;
-                                              });
-                                            })))
-                              ]),
-                            ),
-                            Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 15),
-                                child: Stack(
-                                    overflow: Overflow.visible,
-                                    children: [
-                                      Image.asset(
-                                          'assets/images/topic/expressions.png',
-                                          fit: BoxFit.contain,
-                                          height: width / 3.18),
-                                      Positioned(
-                                          top: 0,
-                                          left: 0,
-                                          right: 0,
-                                          height: width / 22.5,
-                                          child: Container(
-                                              alignment: Alignment.center,
-                                              child: Text(
-                                                'TRANSLATE',
-                                                style: titleBoardHome,
-                                                textAlign: TextAlign.center,
-                                              ))),
-                                      Positioned(
-                                          top: width / 15,
-                                          left: 0,
-                                          right: 0,
-                                          height: width / 12.5,
-                                          child: Container(
-                                              margin: EdgeInsets.symmetric(
-                                                  horizontal: 25.0),
-                                              alignment: Alignment.center,
-                                              child: Text(
-                                                'Expressions and Phrases',
-                                                style: nameBoardHome,
-                                                textAlign: TextAlign.center,
-                                              ))),
-                                      Positioned(
-                                          bottom: -12,
-                                          left: 0,
-                                          right: 0,
-                                          height: width / 22,
-                                          child: AnimatedOpacity(
-                                              opacity: _pressed3 ? 1.0 : 0.85,
-                                              duration:
-                                                  Duration(milliseconds: 200),
-                                              child: GestureDetector(
-                                                  child: Image.asset(
-                                                      'assets/images/topic/choose-button.png',
-                                                      fit: BoxFit.contain),
-                                                  onTap: () {
-                                                    setState(() {
-                                                      _pressed3 = !_pressed3;
-                                                    });
-                                                  })))
-                                    ]))
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ],
-              )),
-        ],
+              decoration: backgroundImage,
+              child: null,
+            ),
+            Container(
+                height: height,
+                decoration: blackBackground,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      child: TopButton(),
+                    ),
+                    Expanded(
+                      flex: 5,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.max,
+                        children: <Widget>[
+                          _showHomeItem(
+                              context,
+                              'assets/images/topic/designed-courses.png',
+                              'LESSON',
+                              'Designed Courses',
+                              _pressed),
+                          _showHomeItem(
+                              context,
+                              'assets/images/topic/flexible.png',
+                              'LESSON',
+                              'Flexible Learning',
+                              _pressed2),
+                          _showHomeItem(
+                              context,
+                              'assets/images/topic/expressions.png',
+                              'TRANSLATE',
+                              'Expressions and Phrases',
+                              _pressed3),
+                        ],
+                      ),
+                    )
+                  ],
+                )),
+          ],
+        ),
       ),
     );
   }
@@ -211,95 +148,98 @@ class _HomeScreenState extends State<HomeScreen> {
 class TopButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    return Positioned(
-        height: 19.w,
-        width: width,
-        top: 19,
-        child: Container(
-          decoration: BoxDecoration(
-              // color: Color.fromRGBO(207, 94, 65, 0.4),
-              ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                width: 62.w,
-                child: Stack(children: [
+    return Container(
+        padding: new EdgeInsets.only(top: 10.w),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          // mainAxisSize: MainAxisSize.min,
+          children: [
+            Expanded(
+              child: Stack(children: [
+                Positioned(
+                  top: 4.5.w,
+                  left: -40.w,
+                  child: Image.asset(
+                    'assets/images/button/bar-long.png',
+                    height: 12.w,
+                    fit: BoxFit.fill,
+                  ),
+                ),
+                Positioned(
+                    top: 1.w,
+                    left: 16.w,
+                    child: Row(
+                      children: [
+                        GestureDetector(
+                            child: Container(
+                                width: 20.w,
+                                height: 20.w,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      image: AssetImage(
+                                        'assets/images/button/logout.png',
+                                      ),
+                                      fit: BoxFit.contain),
+                                )),
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          LoginHomeScreen()));
+                            }),
+                        SizedBox(
+                          width: 8.w,
+                        ),
+                        GestureDetector(
+                            child: Container(
+                                width: 20.w,
+                                height: 20.w,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      image: AssetImage(
+                                        'assets/images/button/menu-button.png',
+                                      ),
+                                      fit: BoxFit.contain),
+                                )),
+                            onTap: () {}),
+                      ],
+                    )),
+              ]),
+            ),
+            // ),
+            Expanded(
+              child: Stack(
+                children: [
                   Positioned(
-                    // top: 4.w,
-                    right: 0,
+                    top: 3.5.w,
+                    right: 16.w,
                     child: Image.asset(
-                      'assets/images/button/bar-long.png',
-                      height: 17.w,
-                      width: 80.w,
-                      fit: BoxFit.fitWidth,
+                      'assets/images/button/add_short.png',
+                      height: 13.5.w,
+                      fit: BoxFit.fill,
                     ),
                   ),
                   Positioned(
-                    right: 6.w,
-                    // width: 30.w,
-                    // width: 75,
+                    right: 33.w,
                     child: GestureDetector(
                         child: Container(
-                            width: 16.w,
-                            height: 17.w,
+                            width: 20.w,
+                            height: 20.w,
                             decoration: BoxDecoration(
                               image: DecorationImage(
                                   image: AssetImage(
-                                    'assets/images/button/logout.png',
+                                    'assets/images/button/vietnames-flag.png',
                                   ),
-                                  fit: BoxFit.fitWidth),
-                            )),
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      LoginHomeScreen()));
-                        }),
-                  ),
-                  Positioned(
-                    left: 14.w,
-                    // width: 30.w,
-                    child: GestureDetector(
-                        child: Container(
-                            width: 16.w,
-                            height: 17.w,
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                  image: AssetImage(
-                                    'assets/images/button/menu-button.png',
-                                  ),
-                                  fit: BoxFit.fitWidth),
+                                  fit: BoxFit.contain),
                             )),
                         onTap: () {}),
                   ),
-                ]),
+                ],
               ),
-              Container(
-                width: 44.w,
-                child: Stack(
-                  children: [
-                    Positioned(
-                      top: 4.w,
-                      left: 4.w,
-                      child: Image.asset('assets/images/button/add_short.png',
-                          height: 30, fit: BoxFit.contain),
-                    ),
-                    Positioned(
-                        left: -4.w,
-                        width: 30.w,
-                        child: FlatButton(
-                            onPressed: () {},
-                            child: Image.asset(
-                                'assets/images/button/vietnames-flag.png',
-                                fit: BoxFit.contain))),
-                  ],
-                ),
-              )
-            ],
-          ),
+            )
+          ],
         ));
   }
 }

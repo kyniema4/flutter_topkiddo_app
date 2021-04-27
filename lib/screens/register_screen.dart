@@ -20,31 +20,29 @@ class RegisterScreen extends StatelessWidget {
               child: Stack(
                 children: [
                   Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
+                    width: width,
+                    height: height,
                     decoration: backgroundImage,
                     child: null,
                   ),
                   Container(
-                      // color: Color.fromRGBO(0, 0, 0, 0.49),
                       decoration: blackBackground,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
                           Expanded(
-                            flex: 2,
                             child: Back(),
                           ),
                           Expanded(
-                            flex: 3,
+                            flex: 2,
                             child: Container(
                                 child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
                                 Container(
-                                  height: 117.w,
-                                  width: 114.w,
+                                  height: 150.w,
+                                  width: 148.w,
                                   child: Stack(
                                     children: <Widget>[
                                       Positioned(
@@ -54,33 +52,46 @@ class RegisterScreen extends StatelessWidget {
                                           alignment: Alignment.center,
                                           child: Image.asset(
                                             'assets/images/login_page/registerboard.png',
-                                            fit: BoxFit.fitWidth,
+                                            fit: BoxFit.contain,
                                           ),
                                         ),
                                       ),
                                       Positioned(
-                                          top: 6,
-                                          left: 0,
-                                          right: 0,
-                                          child: Text('REGISTER',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  color: Theme.Colors.yellow200,
-                                                  fontSize: height > 600
-                                                      ? 15.sp
-                                                      : 25.sp,
-                                                  fontFamily:
-                                                      'UTMCooperBlack'))),
-                                      Positioned(
-                                        top: 20.w,
-                                        left: 18.w,
-                                        right: 18.w,
+                                        top: 2,
+                                        left: 0,
+                                        right: 0,
                                         child: Container(
-                                          height: 14.w,
+                                            alignment: Alignment.center,
+                                            height: 17.w,
+                                            child: Text('REGISTER',
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                    color:
+                                                        Theme.Colors.yellow200,
+                                                    fontSize: height > 600
+                                                        ? 25.sp
+                                                        : 30.sp,
+                                                    fontFamily:
+                                                        'UTMCooperBlack'))),
+                                      ),
+                                      Positioned(
+                                        top: 26.w,
+                                        left: 0,
+                                        right: 0,
+                                        child: Container(
+                                          alignment: Alignment.center,
+                                          margin: EdgeInsets.symmetric(
+                                              horizontal: 25.w),
+                                          height: 18.w,
                                           child: TextField(
                                             keyboardType: TextInputType.number,
                                             autofocus: false,
-                                            style: styleTextInput,
+                                            style: TextStyle(
+                                                fontSize: height > 600
+                                                    ? 18.sp
+                                                    : 28.sp,
+                                                color: Theme.Colors.orange500,
+                                                fontFamily: 'UTMCooperBlack'),
                                             decoration: InputDecoration(
                                                 isCollapsed: true,
                                                 contentPadding:
@@ -93,8 +104,8 @@ class RegisterScreen extends StatelessWidget {
                                                 hintText: 'Phone number',
                                                 hintStyle: TextStyle(
                                                     fontSize: height > 600
-                                                        ? 14.sp
-                                                        : 23.sp,
+                                                        ? 18.sp
+                                                        : 28.sp,
                                                     color:
                                                         Theme.Colors.orange500,
                                                     fontFamily:
@@ -103,15 +114,23 @@ class RegisterScreen extends StatelessWidget {
                                         ),
                                       ),
                                       Positioned(
-                                        top: 39.w,
-                                        left: 18.w,
-                                        right: 18.w,
+                                        top: 51.w,
+                                        left: 0,
+                                        right: 0,
                                         child: Container(
-                                          height: 14.w,
+                                          alignment: Alignment.center,
+                                          margin: EdgeInsets.symmetric(
+                                              horizontal: 25.w),
+                                          height: 18.w,
                                           child: TextField(
                                             obscureText: true,
                                             autofocus: false,
-                                            style: styleTextInput,
+                                            style: TextStyle(
+                                                fontSize: height > 600
+                                                    ? 18.sp
+                                                    : 28.sp,
+                                                color: Theme.Colors.orange500,
+                                                fontFamily: 'UTMCooperBlack'),
                                             decoration: InputDecoration(
                                                 isCollapsed: true,
                                                 contentPadding:
@@ -124,8 +143,8 @@ class RegisterScreen extends StatelessWidget {
                                                 hintText: 'Password',
                                                 hintStyle: TextStyle(
                                                     fontSize: height > 600
-                                                        ? 14.sp
-                                                        : 23.sp,
+                                                        ? 18.sp
+                                                        : 28.sp,
                                                     color:
                                                         Theme.Colors.orange500,
                                                     fontFamily:
@@ -134,18 +153,21 @@ class RegisterScreen extends StatelessWidget {
                                         ),
                                       ),
                                       Positioned(
-                                        top: 58.5.w,
-                                        left: 18.w,
-                                        right: 18.w,
+                                        bottom: 56.w,
+                                        left: 0,
+                                        right: 0,
                                         child: Container(
-                                          height: 14.w,
+                                          alignment: Alignment.center,
+                                          margin: EdgeInsets.symmetric(
+                                              horizontal: 25.w),
+                                          height: 18.w,
                                           child: TextField(
                                             obscureText: true,
                                             autofocus: false,
                                             style: TextStyle(
                                                 fontSize: height > 600
-                                                    ? 14.sp
-                                                    : 23.sp,
+                                                    ? 18.sp
+                                                    : 28.sp,
                                                 color: Theme.Colors.orange500,
                                                 fontFamily: 'UTMCooperBlack'),
                                             decoration: InputDecoration(
@@ -160,8 +182,8 @@ class RegisterScreen extends StatelessWidget {
                                                 hintText: 'Confirm Password',
                                                 hintStyle: TextStyle(
                                                     fontSize: height > 600
-                                                        ? 14.sp
-                                                        : 23.sp,
+                                                        ? 18.sp
+                                                        : 28.sp,
                                                     color:
                                                         Theme.Colors.orange500,
                                                     fontFamily:
@@ -171,22 +193,20 @@ class RegisterScreen extends StatelessWidget {
                                       ),
                                       Positioned(
                                         bottom: 0,
-                                        right: 0.0,
-                                        left: 0.0,
+                                        right: 0,
+                                        left: 0,
                                         child: Align(
                                           alignment: Alignment.bottomCenter,
                                           child: GestureDetector(
                                               child: Container(
-                                                  width: 62.w,
-                                                  height: 15.w,
+                                                  width: 75.w,
+                                                  height: 17.w,
                                                   decoration: BoxDecoration(
-                                                    // color: Colors.grey,
                                                     image: DecorationImage(
                                                         image: AssetImage(
                                                           'assets/images/login_page/register-button.png',
                                                         ),
-                                                        fit: BoxFit.fitWidth),
-                                                    // button text
+                                                        fit: BoxFit.contain),
                                                   )),
                                               onTap: () {
                                                 Navigator.push(
@@ -205,7 +225,6 @@ class RegisterScreen extends StatelessWidget {
                             )),
                           ),
                           Expanded(
-                            flex: 2,
                             child: Settings(),
                           )
                         ],

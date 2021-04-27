@@ -26,33 +26,29 @@ class _LoginScreen extends State<LoginScreen> {
             child: Stack(
               children: [
                 Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
+                  width: width,
+                  height: height,
                   decoration: backgroundImage,
                   child: null,
                 ),
                 Container(
-                    // color: Color.fromRGBO(0, 0, 0, 0.49),
                     decoration: blackBackground,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
                         Expanded(
-                          flex: 2,
                           child: Back(),
                         ),
                         Expanded(
-                          flex: 3,
+                          flex: 2,
                           child: Container(
                               child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
                               Container(
-                                // height: 292,
-                                // width: 285,
-                                height: 117.w,
-                                width: 114.w,
+                                height: 150.w,
+                                width: 148.w,
                                 child: Stack(
                                   children: <Widget>[
                                     Positioned(
@@ -62,35 +58,43 @@ class _LoginScreen extends State<LoginScreen> {
                                         alignment: Alignment.center,
                                         child: Image.asset(
                                           'assets/images/login_page/loginboard.png',
-                                          // height: 275,
-                                          fit: BoxFit.fitWidth,
+                                          fit: BoxFit.contain,
                                         ),
                                       ),
                                     ),
                                     Positioned(
-                                        top: 6,
-                                        left: 0,
-                                        right: 0,
-                                        child: Text('LOGIN',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                color: Theme.Colors.yellow200,
-                                                fontSize: height > 600
-                                                    ? 15.sp
-                                                    : 25.sp,
-                                                fontFamily: 'UTMCooperBlack'))),
-                                    Positioned(
-                                      top: 20.w,
-                                      left: 18.w,
-                                      right: 18.w,
+                                      top: 2,
+                                      left: 0,
+                                      right: 0,
                                       child: Container(
-                                        height: 14.w,
+                                          alignment: Alignment.center,
+                                          height: 17.w,
+                                          child: Text('LOGIN',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  color: Theme.Colors.yellow200,
+                                                  fontSize: height > 600
+                                                      ? 25.sp
+                                                      : 30.sp,
+                                                  fontFamily:
+                                                      'UTMCooperBlack'))),
+                                    ),
+                                    Positioned(
+                                      top: 26.w,
+                                      left: 0,
+                                      right: 0,
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: 25.w),
+                                        // color: Colors.red,
+                                        height: 18.w,
                                         child: TextField(
                                           keyboardType: TextInputType.number,
                                           autofocus: false,
                                           style: TextStyle(
                                               fontSize:
-                                                  height > 600 ? 14.sp : 23.sp,
+                                                  height > 600 ? 18.sp : 28.sp,
                                               color: Theme.Colors.orange500,
                                               fontFamily: 'UTMCooperBlack'),
                                           decoration: InputDecoration(
@@ -105,8 +109,8 @@ class _LoginScreen extends State<LoginScreen> {
                                               hintText: 'Phone number',
                                               hintStyle: TextStyle(
                                                   fontSize: height > 600
-                                                      ? 14.sp
-                                                      : 23.sp,
+                                                      ? 18.sp
+                                                      : 28.sp,
                                                   color: Theme.Colors.orange500,
                                                   fontFamily:
                                                       'UTMCooperBlack')),
@@ -114,17 +118,21 @@ class _LoginScreen extends State<LoginScreen> {
                                       ),
                                     ),
                                     Positioned(
-                                      top: 39.w,
-                                      left: 18.w,
-                                      right: 18.w,
+                                      top: 51.w,
+                                      left: 0,
+                                      right: 0,
                                       child: Container(
-                                        height: 14.w,
+                                        alignment: Alignment.center,
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: 25.w),
+                                        // color: Colors.red,
+                                        height: 18.w,
                                         child: TextField(
                                           obscureText: true,
                                           autofocus: false,
                                           style: TextStyle(
                                               fontSize:
-                                                  height > 600 ? 14.sp : 23.sp,
+                                                  height > 600 ? 18.sp : 28.sp,
                                               color: Theme.Colors.orange500,
                                               fontFamily: 'UTMCooperBlack'),
                                           decoration: InputDecoration(
@@ -139,8 +147,8 @@ class _LoginScreen extends State<LoginScreen> {
                                               hintText: 'Password',
                                               hintStyle: TextStyle(
                                                   fontSize: height > 600
-                                                      ? 14.sp
-                                                      : 23.sp,
+                                                      ? 18.sp
+                                                      : 28.sp,
                                                   color: Theme.Colors.orange500,
                                                   fontFamily:
                                                       'UTMCooperBlack')),
@@ -148,7 +156,7 @@ class _LoginScreen extends State<LoginScreen> {
                                       ),
                                     ),
                                     Positioned(
-                                      top: 69.w,
+                                      bottom: 33.w,
                                       left: 15.w,
                                       right: 15.w,
                                       child: Row(
@@ -159,8 +167,8 @@ class _LoginScreen extends State<LoginScreen> {
                                               child: Container(
                                                   // width: 50,
                                                   // height: 50,
-                                                  width: 20.w,
-                                                  height: 20.w,
+                                                  width: 28.w,
+                                                  height: 28.w,
                                                   decoration: BoxDecoration(
                                                     image: DecorationImage(
                                                         image: AssetImage(
@@ -173,12 +181,12 @@ class _LoginScreen extends State<LoginScreen> {
                                                 print("");
                                               }),
                                           SizedBox(
-                                            width: 8.w,
+                                            width: 10.w,
                                           ),
                                           GestureDetector(
                                               child: Container(
-                                                  width: 20.w,
-                                                  height: 20.w,
+                                                  width: 28.w,
+                                                  height: 28.w,
                                                   decoration: BoxDecoration(
                                                     image: DecorationImage(
                                                         image: AssetImage(
@@ -201,17 +209,14 @@ class _LoginScreen extends State<LoginScreen> {
                                         alignment: Alignment.bottomCenter,
                                         child: GestureDetector(
                                             child: Container(
-                                                // width: 160,
-                                                // height: 40,
-                                                width: 62.w,
-                                                height: 15.w,
+                                                width: 75.w,
+                                                height: 17.w,
                                                 decoration: BoxDecoration(
-                                                  // color: Colors.grey,
                                                   image: DecorationImage(
                                                       image: AssetImage(
                                                         'assets/images/login_page/loginbutton1.png',
                                                       ),
-                                                      fit: BoxFit.fitWidth),
+                                                      fit: BoxFit.contain),
                                                   // button text
                                                 )),
                                             onTap: () {
@@ -231,7 +236,6 @@ class _LoginScreen extends State<LoginScreen> {
                           )),
                         ),
                         Expanded(
-                          flex: 2,
                           child: Settings(),
                         )
                       ],

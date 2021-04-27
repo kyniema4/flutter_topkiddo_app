@@ -14,9 +14,9 @@ final blackBackground = BoxDecoration(
     gradient: RadialGradient(
   radius: 0.95,
   colors: [
-    Color.fromRGBO(0, 0, 0, 0.01),
+    Color.fromRGBO(0, 0, 0, 0),
     Color.fromRGBO(0, 0, 0, 0.4),
-    Color.fromRGBO(0, 0, 0, 0.6),
+    Color.fromRGBO(0, 0, 0, 0.65),
   ],
 ));
 final styleTitle = TextStyle(
