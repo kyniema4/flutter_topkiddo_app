@@ -31,7 +31,9 @@ class RegisterScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
                           Expanded(
-                            child: Back(),
+                            child: Back(
+                                buttonImage:
+                                    'assets/images/button/back-button.png'),
                           ),
                           Expanded(
                             flex: 2,

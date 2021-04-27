@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class Back extends StatelessWidget {
+class Back extends StatefulWidget {
+  final buttonImage;
+  Back({this.buttonImage});
+  @override
+  _BackState createState() => _BackState();
+}
+
+class _BackState extends State<Back> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -31,7 +38,8 @@ class Back extends StatelessWidget {
                     decoration: BoxDecoration(
                       image: DecorationImage(
                           image: AssetImage(
-                            'assets/images/button/back-button.png',
+                            // 'assets/images/button/back-button.png',
+                            widget.buttonImage,
                           ),
                           fit: BoxFit.contain),
                     )),

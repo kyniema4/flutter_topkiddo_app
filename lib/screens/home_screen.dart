@@ -3,6 +3,8 @@ import '../theme/style.dart';
 import '../theme/theme.dart' as Theme;
 
 import 'loginhome_screen.dart';
+import 'library_screen.dart';
+
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -76,6 +78,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       setState(() {
                         _pressId = !_pressId;
                       });
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  LibraryScreen()));
                     })))
       ]),
     );

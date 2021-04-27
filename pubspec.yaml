@@ -50,7 +50,50 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/images/
+    - assets/images/background/Bg_Ipad.jpg
+    - assets/images/background/bg_iphone.jpg
+    - assets/images/background/BG-ipad-full.jpg
+    - assets/images/background/BG-iphone-full.jpg
+    - assets/images/background/foriPadBG-compressed.jpg
+    - assets/images/background/foriPhoneBG-compressed.jpg
+    - assets/images/button/add_short.png
+    - assets/images/button/back-button.png
+    - assets/images/button/setting-button.png
+    - assets/images/button/musicon-button.png
+    - assets/images/button/bar-long.png
+    - assets/images/button/close-button.png
+    - assets/images/button/enlish-flag.png
+    - assets/images/button/menu-button.png
+    - assets/images/button/vietnames-flag.png
+    - assets/images/button/logout.png
+    - assets/images/lesson/6thang.png
+    - assets/images/lesson/12thang.png
+    - assets/images/lesson/trondoi.png
+    - assets/images/lesson/buynow-button.png
+    - assets/images/lesson/lesson-active.png
+    - assets/images/lesson/disable-board.png
+    - assets/images/lesson/ip-full-board-white.png
+    - assets/images/lesson/ipad-full-board-white.png
+    - assets/images/login_page/fb-button.png
+    - assets/images/login_page/g+button.png
+    - assets/images/login_page/loginboard.png
+    - assets/images/login_page/loginbutton1.png
+    - assets/images/login_page/main-loginbutton.png
+    - assets/images/login_page/main-newuserbutton.png
+    - assets/images/login_page/new-userbutton.png
+    - assets/images/login_page/register-button.png
+    - assets/images/login_page/registerboard.png
+    - assets/images/topic/choose-button.png
+    - assets/images/topic/designed-courses.png
+    - assets/images/topic/expressions.png
+    - assets/images/topic/flexible.png
+    - assets/images/namegame.png
+    - assets/images/button/library-button.png
+    - assets/images/unit/course-board.png
+    - assets/images/unit/course1.png
+    - assets/images/unit/course2.png
+    - assets/images/unit/coursetick.png
+    - assets/images/unit/language-flag.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
