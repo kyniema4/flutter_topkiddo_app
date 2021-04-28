@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../theme/theme.dart' as Theme;
-import '../theme/style.dart';
-import '../components/back.dart';
-import '../components/settings.dart';
-import 'home_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../theme/theme.dart' as Theme;
+import '../../theme/style.dart';
+import '../../components/back.dart';
+import '../../components/settings.dart';
+import './login_screen.dart';
 
 class RegisterScreen extends StatelessWidget {
   @override
@@ -216,7 +216,7 @@ class RegisterScreen extends StatelessWidget {
                                                     MaterialPageRoute(
                                                         builder: (BuildContext
                                                                 context) =>
-                                                            HomeScreen()));
+                                                            LoginScreen()));
                                               }),
                                         ),
                                       )

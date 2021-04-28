@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import '../theme/style.dart';
-import '../theme/theme.dart' as Theme;
-import '../components/back.dart';
+import '../../../theme/style.dart';
+import '../../../theme/theme.dart' as Theme;
+import '../../../components/back.dart';
 
-import 'loginhome_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class DesignCourseScreen extends StatefulWidget {

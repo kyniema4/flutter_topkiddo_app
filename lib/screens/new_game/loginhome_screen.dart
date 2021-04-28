@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import '../theme/style.dart';
-import '../theme/theme.dart' as Theme;
-import '../components/settings.dart';
+import '../../theme/style.dart';
+import '../../components/settings.dart';
 import 'login_screen.dart';
 import 'register_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,7 +8,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class LoginHomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
 
     return Scaffold(

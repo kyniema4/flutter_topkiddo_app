@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../theme/style.dart';
-import '../theme/theme.dart' as Theme;
+import '../../theme/style.dart';
+import '../../theme/theme.dart' as Theme;
 
-import 'loginhome_screen.dart';
-import 'library_screen.dart';
+import '../new_game/loginhome_screen.dart';
+import 'designed-courses/library_screen.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 

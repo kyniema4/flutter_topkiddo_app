@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'loginhome_screen.dart';
+import './new_game/loginhome_screen.dart';
 import '../theme/style.dart';
 
 class SplashScreen extends StatefulWidget {
+  static const route = '/';
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
