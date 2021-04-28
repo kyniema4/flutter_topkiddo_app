@@ -9,7 +9,12 @@ final backgroundImage = BoxDecoration(
     fit: BoxFit.cover,
   ),
 );
-
+final backgroundImageSecond = BoxDecoration(
+  image: DecorationImage(
+    image: AssetImage('assets/images/background/foriPhoneBG-compressed.jpg'),
+    fit: BoxFit.cover,
+  ),
+);
 final blackBackground = BoxDecoration(
     gradient: RadialGradient(
   radius: 0.95,

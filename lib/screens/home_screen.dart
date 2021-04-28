@@ -40,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Text(title,
                     style: TextStyle(
                         color: Theme.Colors.yellow200,
-                        fontSize: height > 600 ? 25.sp : 30.sp,
+                        fontSize: height > 600 ? 25.sp : 29.sp,
                         fontFamily: 'UTMCooperBlack'),
                     textAlign: TextAlign.center))),
         Positioned(
@@ -100,8 +100,6 @@ class _HomeScreenState extends State<HomeScreen> {
           alignment: Alignment.center,
           children: [
             Container(
-              width: width,
-              height: height,
               decoration: backgroundImage,
               child: null,
             ),
@@ -109,18 +107,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: height,
                 decoration: blackBackground,
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    Expanded(
-                      child: TopButton(),
-                    ),
-                    Expanded(
-                      flex: 5,
+                    TopButton(),
+                    Container(
+                      height: height - 37.w,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.max,
                         children: <Widget>[
                           _showHomeItem(
                               context,
@@ -156,6 +150,7 @@ class TopButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+        height: 32.w,
         padding: new EdgeInsets.only(top: 10.w),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
