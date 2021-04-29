@@ -2,6 +2,14 @@ import 'languages.dart';
 
 class LanguageEn extends Languages {
   @override
+
+  //login-screen
+  String get canNotPhoneNumber => "Can not Phone Number empty";
+  String get phoneNumber10 => "Phone Number must be of 10 digit";
+  String get canNotPassword => "Can not password empty";
+  //register-screen
+  String get canNotconfirmPassword => "Cannot confirm password empty";
+  String get passwordSameAbove => "Password must be same as above";
   //login-home
   String get login => "Login";
   String get register => 'Register';

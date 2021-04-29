@@ -2,6 +2,13 @@ import 'languages.dart';
 
 class LanguageVi extends Languages {
   @override
+  //login-screen
+  String get canNotPhoneNumber => "Không thể để trống số điện thoại";
+  String get phoneNumber10 => "Số điện thoại phải có 10 chữ số";
+  String get canNotPassword => "Không thể trống mật khẩu";
+  //register-screen
+  String get canNotconfirmPassword => "Không thể xác nhận mật khẩu trống";
+  String get passwordSameAbove => "Mật khẩu phải giống như trên";
   //login-home
   String get login => "Đăng nhập";
   String get register => 'Đăng ký';

@@ -14,6 +14,26 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreen extends State<LoginScreen> {
+  TextEditingController numberController = new TextEditingController();
+  TextEditingController passwordController = new TextEditingController();
+
+  _changeHomePage() {
+    // if (numberController.text.isEmpty) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(content: Text(Languages.of(context).canNotPhoneNumber)));
+    // } else if (numberController.text.length != 10 &&
+    //     numberController.text.isNotEmpty) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(content: Text(Languages.of(context).phoneNumber10)));
+    // } else if (passwordController.text.isEmpty) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(content: Text(Languages.of(context).canNotPassword)));
+    // } else {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (BuildContext context) => HomeScreen()));
+    // }
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -95,7 +115,8 @@ class _LoginScreen extends State<LoginScreen> {
                                             horizontal: 25.w),
                                         // color: Colors.red,
                                         height: 18.w,
-                                        child: TextField(
+                                        child: TextFormField(
+                                          controller: numberController,
                                           keyboardType: TextInputType.number,
                                           autofocus: false,
                                           style: TextStyle(
@@ -134,7 +155,8 @@ class _LoginScreen extends State<LoginScreen> {
                                             horizontal: 25.w),
                                         // color: Colors.red,
                                         height: 18.w,
-                                        child: TextField(
+                                        child: TextFormField(
+                                          controller: passwordController,
                                           obscureText: true,
                                           autofocus: false,
                                           style: TextStyle(
@@ -216,25 +238,19 @@ class _LoginScreen extends State<LoginScreen> {
                                       child: Align(
                                         alignment: Alignment.bottomCenter,
                                         child: GestureDetector(
-                                            child: Container(
-                                                width: 75.w,
-                                                height: 17.w,
-                                                decoration: BoxDecoration(
-                                                  image: DecorationImage(
-                                                      image: AssetImage(
-                                                        'assets/images/login_page/loginbutton1.png',
-                                                      ),
-                                                      fit: BoxFit.contain),
-                                                  // button text
-                                                )),
-                                            onTap: () {
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (BuildContext
-                                                              context) =>
-                                                          HomeScreen()));
-                                            }),
+                                          child: Container(
+                                              width: 75.w,
+                                              height: 17.w,
+                                              decoration: BoxDecoration(
+                                                image: DecorationImage(
+                                                    image: AssetImage(
+                                                      'assets/images/login_page/loginbutton1.png',
+                                                    ),
+                                                    fit: BoxFit.contain),
+                                                // button text
+                                              )),
+                                          onTap: _changeHomePage,
+                                        ),
                                       ),
                                     )
                                   ],

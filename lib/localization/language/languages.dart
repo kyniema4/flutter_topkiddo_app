@@ -5,6 +5,14 @@ abstract class Languages {
     return Localizations.of<Languages>(context, Languages);
   }
 
+  //login-screen
+  String get canNotPhoneNumber;
+  String get phoneNumber10;
+  String get canNotPassword;
+  //register-screen
+  String get canNotconfirmPassword;
+  String get passwordSameAbove;
+
   //login-home
   String get login;
   String get register;

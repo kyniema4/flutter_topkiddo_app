@@ -7,7 +7,39 @@ import '../../components/settings.dart';
 import './login_screen.dart';
 import '../../localization/language/languages.dart';
 
-class RegisterScreen extends StatelessWidget {
+class RegisterScreen extends StatefulWidget {
+  @override
+  _RegisterScreen createState() => _RegisterScreen();
+}
+
+class _RegisterScreen extends State<RegisterScreen> {
+  TextEditingController numberController = new TextEditingController();
+  TextEditingController passwordController = new TextEditingController();
+  TextEditingController comfirmPasswordController = new TextEditingController();
+
+  _changeLoginPage() {
+    if (numberController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(Languages.of(context).canNotPhoneNumber)));
+    } else if (numberController.text.length != 10 &&
+        numberController.text.isNotEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(Languages.of(context).phoneNumber10)));
+    } else if (passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(Languages.of(context).canNotPassword)));
+    } else if (comfirmPasswordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(Languages.of(context).canNotconfirmPassword)));
+    } else if (comfirmPasswordController.text != passwordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(Languages.of(context).passwordSameAbove)));
+    } else {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (BuildContext context) => LoginScreen()));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -88,6 +120,7 @@ class RegisterScreen extends StatelessWidget {
                                               horizontal: 25.w),
                                           height: 18.w,
                                           child: TextField(
+                                            controller: numberController,
                                             keyboardType: TextInputType.number,
                                             autofocus: false,
                                             style: TextStyle(
@@ -128,6 +161,7 @@ class RegisterScreen extends StatelessWidget {
                                               horizontal: 25.w),
                                           height: 18.w,
                                           child: TextField(
+                                            controller: passwordController,
                                             obscureText: true,
                                             autofocus: false,
                                             style: TextStyle(
@@ -168,6 +202,8 @@ class RegisterScreen extends StatelessWidget {
                                               horizontal: 25.w),
                                           height: 18.w,
                                           child: TextField(
+                                            controller:
+                                                comfirmPasswordController,
                                             obscureText: true,
                                             autofocus: false,
                                             style: TextStyle(
@@ -205,24 +241,18 @@ class RegisterScreen extends StatelessWidget {
                                         child: Align(
                                           alignment: Alignment.bottomCenter,
                                           child: GestureDetector(
-                                              child: Container(
-                                                  width: 75.w,
-                                                  height: 17.w,
-                                                  decoration: BoxDecoration(
-                                                    image: DecorationImage(
-                                                        image: AssetImage(
-                                                          'assets/images/login_page/register-button.png',
-                                                        ),
-                                                        fit: BoxFit.contain),
-                                                  )),
-                                              onTap: () {
-                                                Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (BuildContext
-                                                                context) =>
-                                                            LoginScreen()));
-                                              }),
+                                            child: Container(
+                                                width: 75.w,
+                                                height: 17.w,
+                                                decoration: BoxDecoration(
+                                                  image: DecorationImage(
+                                                      image: AssetImage(
+                                                        'assets/images/login_page/register-button.png',
+                                                      ),
+                                                      fit: BoxFit.contain),
+                                                )),
+                                            onTap: _changeLoginPage,
+                                          ),
                                         ),
                                       )
                                     ],
