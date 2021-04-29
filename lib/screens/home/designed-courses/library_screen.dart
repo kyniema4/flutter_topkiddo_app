@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../theme/style.dart';
 import '../../../theme/theme.dart' as Theme;
 import '../../../components/back.dart';
+import './../../../localization/language/languages.dart';
 
 import 'design_course_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -88,7 +89,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                                         width: 16.w,
                                       ),
                                 Text(
-                                  'Course 0$i',
+                                  'Unit 0$i',
                                   style: TextStyle(
                                       color: lessonDone
                                           ? Theme.Colors.yellow200
@@ -144,11 +145,13 @@ class _LibraryScreenState extends State<LibraryScreen> {
                         children: <Widget>[
                           _showLeveltem(
                             context,
-                            'EASY',
+                            Languages.of(context).easy,
                             true,
                           ),
-                          _showLeveltem(context, 'MEDIUM', false),
-                          _showLeveltem(context, 'ADVANCED', false),
+                          _showLeveltem(
+                              context, Languages.of(context).medium, false),
+                          _showLeveltem(
+                              context, Languages.of(context).advanced, false),
                         ],
                       ),
                     )
@@ -199,7 +202,7 @@ class TopButton extends StatelessWidget {
                         Container(
                           margin: EdgeInsets.only(right: 15.w),
                           child: Text(
-                            'Bạn đang học:',
+                            Languages.of(context).youLearning,
                             style: TextStyle(
                                 fontSize: height > 600 ? 22.sp : 33.sp,
                                 fontFamily: 'UTMCooperBlack',

@@ -4,7 +4,7 @@ import '../../theme/theme.dart' as Theme;
 
 import '../new_game/loginhome_screen.dart';
 import 'designed-courses/library_screen.dart';
-
+import '../../localization/language/languages.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -119,20 +119,20 @@ class _HomeScreenState extends State<HomeScreen> {
                           _showHomeItem(
                               context,
                               'assets/images/topic/designed-courses.png',
-                              'LESSON',
-                              'Designed Courses',
+                              Languages.of(context).lesson.toUpperCase(),
+                              Languages.of(context).designedCourses,
                               _pressed),
                           _showHomeItem(
                               context,
                               'assets/images/topic/flexible.png',
-                              'LESSON',
-                              'Flexible Learning',
+                              Languages.of(context).topic.toUpperCase(),
+                              Languages.of(context).flexibleLearning,
                               _pressed2),
                           _showHomeItem(
                               context,
                               'assets/images/topic/expressions.png',
-                              'TRANSLATE',
-                              'Expressions and Phrases',
+                              Languages.of(context).translate.toUpperCase(),
+                              Languages.of(context).expressionsPhrases,
                               _pressed3),
                         ],
                       ),

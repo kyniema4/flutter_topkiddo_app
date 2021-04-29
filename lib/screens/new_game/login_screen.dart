@@ -6,6 +6,7 @@ import '../../components/settings.dart';
 import '../home/home_screen.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../localization/language/languages.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -71,7 +72,10 @@ class _LoginScreen extends State<LoginScreen> {
                                       child: Container(
                                           alignment: Alignment.center,
                                           height: 17.w,
-                                          child: Text('LOGIN',
+                                          child: Text(
+                                              Languages.of(context)
+                                                  .login
+                                                  .toUpperCase(),
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   color: Theme.Colors.yellow200,
@@ -108,7 +112,8 @@ class _LoginScreen extends State<LoginScreen> {
                                               focusedBorder: styleOutline,
                                               enabledBorder: styleUnderline,
                                               border: InputBorder.none,
-                                              hintText: 'Phone number',
+                                              hintText: Languages.of(context)
+                                                  .phoneNumber,
                                               hintStyle: TextStyle(
                                                   fontSize: height > 600
                                                       ? 18.sp
@@ -146,7 +151,8 @@ class _LoginScreen extends State<LoginScreen> {
                                               focusedBorder: styleOutline,
                                               enabledBorder: styleUnderline,
                                               border: InputBorder.none,
-                                              hintText: 'Password',
+                                              hintText: Languages.of(context)
+                                                  .password,
                                               hintStyle: TextStyle(
                                                   fontSize: height > 600
                                                       ? 18.sp

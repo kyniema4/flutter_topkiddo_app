@@ -5,6 +5,7 @@ import '../../theme/style.dart';
 import '../../components/back.dart';
 import '../../components/settings.dart';
 import './login_screen.dart';
+import '../../localization/language/languages.dart';
 
 class RegisterScreen extends StatelessWidget {
   @override
@@ -65,7 +66,8 @@ class RegisterScreen extends StatelessWidget {
                                         child: Container(
                                             alignment: Alignment.center,
                                             height: 17.w,
-                                            child: Text('REGISTER',
+                                            child: Text(
+                                                Languages.of(context).register,
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
                                                     color:
@@ -103,7 +105,8 @@ class RegisterScreen extends StatelessWidget {
                                                 focusedBorder: styleOutline,
                                                 enabledBorder: styleUnderline,
                                                 border: InputBorder.none,
-                                                hintText: 'Phone number',
+                                                hintText: Languages.of(context)
+                                                    .phoneNumber,
                                                 hintStyle: TextStyle(
                                                     fontSize: height > 600
                                                         ? 18.sp
@@ -142,7 +145,8 @@ class RegisterScreen extends StatelessWidget {
                                                 focusedBorder: styleOutline,
                                                 enabledBorder: styleUnderline,
                                                 border: InputBorder.none,
-                                                hintText: 'Password',
+                                                hintText: Languages.of(context)
+                                                    .password,
                                                 hintStyle: TextStyle(
                                                     fontSize: height > 600
                                                         ? 18.sp
@@ -181,7 +185,8 @@ class RegisterScreen extends StatelessWidget {
                                                 focusedBorder: styleOutline,
                                                 enabledBorder: styleUnderline,
                                                 border: InputBorder.none,
-                                                hintText: 'Confirm Password',
+                                                hintText: Languages.of(context)
+                                                    .confirmPassword,
                                                 hintStyle: TextStyle(
                                                     fontSize: height > 600
                                                         ? 18.sp
