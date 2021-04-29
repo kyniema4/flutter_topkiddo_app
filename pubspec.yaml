@@ -61,6 +61,7 @@ flutter:
     - assets/images/background/foriPhoneBG-compressed.jpg
     - assets/images/button/add_short.png
     - assets/images/button/back-button.png
+    - assets/images/button/home-button.png
     - assets/images/button/setting-button.png
     - assets/images/button/musicon-button.png
     - assets/images/button/bar-long.png
@@ -75,6 +76,8 @@ flutter:
     - assets/images/lesson/buynow-button.png
     - assets/images/lesson/lesson-active.png
     - assets/images/lesson/disable-board.png
+    - assets/images/lesson/text-completed.png
+    - assets/images/lesson/text-hoanthanh.png
     - assets/images/lesson/ip-full-board-white.png
     - assets/images/lesson/ipad-full-board-white.png
     - assets/images/login_page/fb-button.png
@@ -98,7 +101,12 @@ flutter:
     - assets/images/unit/coursetick.png
     - assets/images/unit/language-flag.png
     - assets/images/unit/bar-plus.png
-
+    - assets/images/languages/2-em-be.png
+    - assets/images/languages/babe1.png
+    - assets/images/languages/babe2.png
+    - assets/images/languages/line-chine.png
+    - assets/images/languages/line1.png
+    - assets/images/languages/line2.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
