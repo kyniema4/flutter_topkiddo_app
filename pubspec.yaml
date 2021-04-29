@@ -106,7 +106,21 @@ flutter:
     - assets/images/languages/babe2.png
     - assets/images/languages/line-chine.png
     - assets/images/languages/line1.png
-    - assets/images/languages/line2.png
+    - assets/images/flashcard/image1.jpg
+    - assets/images/flashcard/image2.jpg
+    - assets/images/flashcard/image3.jpg
+    - assets/images/flashcard/image4.jpg
+    - assets/images/flashcard/image5.jpg
+    - assets/images/flashcard/image6.jpg
+    - assets/images/flashcard/image7.jpg
+    - assets/images/flashcard/image8.jpg
+    - assets/images/firework/firework1.png
+    - assets/images/firework/firework2.png
+    - assets/images/firework/firework3.png
+    - assets/images/firework/firework4.png
+    - assets/images/firework/firework5.png
+    - assets/images/firework/firework6.png
+    - assets/images/firework/firework7.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
