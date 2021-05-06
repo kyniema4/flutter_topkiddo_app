@@ -6,7 +6,8 @@ import './localization/localizations_delegate.dart';
 import 'screens/splash_screen.dart';
 
 void main() {
-  runApp(MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(new MyApp());
 }
 
 class MyApp extends StatefulWidget {

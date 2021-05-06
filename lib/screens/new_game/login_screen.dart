@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:topkiddo/socialconnect/phone_connector.dart';
+import '../../socialconnect/google_connector.dart';
 import '../../theme/style.dart';
 import '../../theme/theme.dart' as Theme;
 import '../../components/back.dart';
@@ -32,6 +34,20 @@ class _LoginScreen extends State<LoginScreen> {
     Navigator.push(context,
         MaterialPageRoute(builder: (BuildContext context) => HomeScreen()));
     // }
+  }
+
+  loginSocialNetwork({type = 5}) async {
+    var loginSuccess = 0;
+    switch (type) {
+      case 0: // facebook
+        loginSuccess = await loginPhone();
+        break;
+      case 1: // google
+        loginSuccess = await loginGoogle();
+        break;
+      default:
+        return false;
+    }
   }
 
   @override
@@ -208,7 +224,7 @@ class _LoginScreen extends State<LoginScreen> {
                                                     // button text
                                                   )),
                                               onTap: () {
-                                                print("");
+                                                loginSocialNetwork(type: 0);
                                               }),
                                           SizedBox(
                                             width: 10.w,
@@ -226,7 +242,7 @@ class _LoginScreen extends State<LoginScreen> {
                                                     // button text
                                                   )),
                                               onTap: () {
-                                                print("");
+                                                loginSocialNetwork(type: 1);
                                               }),
                                         ],
                                       ),

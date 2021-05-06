@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "521815265480",
+    "project_id": "topkiddo",
+    "storage_bucket": "topkiddo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:521815265480:android:02f5280e9796c9bc8695fd",
+        "android_client_info": {
+          "package_name": "com.example.topkiddo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "521815265480-6mfl79bccai4i36960he40f1qk9cubdf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.topkiddo",
+            "certificate_hash": "6a7a41eec0ebc9ab4940cc1047523bb1fd7092b3"
+          }
+        },
+        {
+          "client_id": "521815265480-g76g2b305rtssm7a0kt355uq05vlf5a4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCzNdP3Im2EoiAV-rUb6UN_3htPGvUwrFU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "521815265480-g76g2b305rtssm7a0kt355uq05vlf5a4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
