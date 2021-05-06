@@ -3,6 +3,7 @@ import '../../theme/style.dart';
 import '../../theme/theme.dart' as Theme;
 
 import '../new_game/loginhome_screen.dart';
+import './modal_translate.dart';
 import 'designed-courses/library_screen.dart';
 import '../../localization/language/languages.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -147,6 +148,14 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class TopButton extends StatelessWidget {
+  _showModalTranslate(context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return ModalTranslate();
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -236,7 +245,9 @@ class TopButton extends StatelessWidget {
                                   ),
                                   fit: BoxFit.contain),
                             )),
-                        onTap: () {}),
+                        onTap: () {
+                          _showModalTranslate(context);
+                        }),
                   ),
                 ],
               ),
