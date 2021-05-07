@@ -1,11 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../../Utils/http_service.dart';
+import '../../../components/back.dart';
 import '../../../theme/style.dart';
 import '../../../theme/theme.dart' as Theme;
-import '../../../components/back.dart';
 import './../../../localization/language/languages.dart';
-
 import 'design_course_screen.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class LibraryScreen extends StatefulWidget {
   @override
@@ -13,9 +16,12 @@ class LibraryScreen extends StatefulWidget {
 }
 
 class _LibraryScreenState extends State<LibraryScreen> {
-  _showLeveltem(BuildContext context, String title, lessonDone) {
-    double height = MediaQuery.of(context).size.height;
+  var listUnitEasy = [];
+  var listUnitMedium = [];
+  var listUnitAdvanced = [];
 
+  _showLeveltem(BuildContext context, String title, List data, lessonDone) {
+    double height = MediaQuery.of(context).size.height;
     return Container(
       width: 89.w,
       height: 129.w,
@@ -52,71 +58,124 @@ class _LibraryScreenState extends State<LibraryScreen> {
               ),
               child: SingleChildScrollView(
                 padding: EdgeInsets.symmetric(vertical: 4.w),
-                child: Column(
-                  children: [
-                    for (var i = 1; i < 7; i++)
-                      GestureDetector(
-                          child: Container(
-                            alignment: Alignment.center,
-                            margin: EdgeInsets.symmetric(vertical: 2.w),
-                            padding: EdgeInsets.only(
-                              left: 6.w,
-                              right: 6.w,
-                              bottom: 1.5.w,
-                            ),
-                            height: 16.w,
-                            decoration: BoxDecoration(
-                                image: DecorationImage(
-                              image: AssetImage(
-                                lessonDone
-                                    ? 'assets/images/unit/course1.png'
-                                    : 'assets/images/unit/course2.png',
-                              ),
-                              fit: BoxFit.contain,
-                            )),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                lessonDone
-                                    ? Container(
-                                        width: 7.w,
-                                        height: 7.w,
-                                        margin: EdgeInsets.only(right: 9.w),
-                                        child: Image.asset(
-                                            'assets/images/unit/coursetick.png',
-                                            fit: BoxFit.contain))
-                                    : Container(
-                                        width: 16.w,
-                                      ),
-                                Text(
-                                  'Unit 0$i',
-                                  style: TextStyle(
-                                      color: lessonDone
-                                          ? Theme.Colors.yellow200
-                                          : Theme.Colors.green700,
-                                      fontSize: height > 600 ? 20.sp : 30.sp,
-                                      fontFamily: 'UTMCooperBlack'),
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    physics: BouncingScrollPhysics(),
+                    scrollDirection: Axis.vertical,
+                    itemCount: data.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        child: Column(children: [
+                          GestureDetector(
+                              child: Container(
+                                alignment: Alignment.center,
+                                margin: EdgeInsets.symmetric(vertical: 2.w),
+                                padding: EdgeInsets.only(
+                                  left: 6.w,
+                                  right: 6.w,
+                                  bottom: 1.5.w,
                                 ),
-                              ],
-                            ),
-                          ),
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (BuildContext context) =>
-                                        DesignCourseScreen()));
-                          })
-                  ],
-                ),
+                                height: 16.w,
+                                decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                  image: AssetImage(
+                                    lessonDone
+                                        ? 'assets/images/unit/course1.png'
+                                        : 'assets/images/unit/course2.png',
+                                  ),
+                                  fit: BoxFit.contain,
+                                )),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    lessonDone
+                                        ? Container(
+                                            width: 7.w,
+                                            height: 7.w,
+                                            margin: EdgeInsets.only(right: 9.w),
+                                            child: Image.asset(
+                                                'assets/images/unit/coursetick.png',
+                                                fit: BoxFit.contain))
+                                        : Container(
+                                            width: 16.w,
+                                          ),
+                                    Text(
+                                      data[index].name,
+                                      style: TextStyle(
+                                          color: lessonDone
+                                              ? Theme.Colors.yellow200
+                                              : Theme.Colors.green700,
+                                          fontSize:
+                                              height > 600 ? 20.sp : 30.sp,
+                                          fontFamily: 'UTMCooperBlack'),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              onTap: () {
+                                print(data[index].id);
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            DesignCourseScreen()));
+                              })
+                        ]),
+                      );
+                    }),
               )),
         ),
       ]),
     );
   }
 
+  getListUnit() async {
+    print('debugging');
+    var token = (await getToken()).toString();
+    if (token.length > 0) {
+      try {
+        var resultGetList = await fetch(
+          url: ApiList.getListUnit,
+          // body: {
+          //   "filter": {"language": "en"}
+          // },
+        );
+        if (resultGetList['success'] &&
+            resultGetList['data']['docs'].length > 0) {
+          var data = resultGetList['data']['docs'];
+          List listDataEasy = [];
+          List listDataMedium = [];
+          List listDataAdvanced = [];
+          for (var i = 0; i < data.length; i++) {
+            var unit = Unit.fromJson(data[i]);
+            if (unit.level == 1) {
+              listDataEasy.add(unit);
+            } else if (unit.level == 2) {
+              listDataMedium.add(unit);
+            } else {
+              listDataAdvanced.add(unit);
+            }
+          }
+          setState(() {
+            listUnitEasy = listDataEasy;
+            listUnitMedium = listDataMedium;
+            listDataAdvanced = listDataAdvanced;
+          });
+        }
+      } catch (e) {}
+    }
+    ;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getListUnit();
+  }
+
   @override
   Widget build(BuildContext context) {
+    print('run here');
     double height = MediaQuery.of(context).size.height;
 
     return Container(
@@ -146,12 +205,13 @@ class _LibraryScreenState extends State<LibraryScreen> {
                           _showLeveltem(
                             context,
                             Languages.of(context).easy,
-                            true,
+                            listUnitEasy,
+                            false,
                           ),
-                          _showLeveltem(
-                              context, Languages.of(context).medium, false),
-                          _showLeveltem(
-                              context, Languages.of(context).advanced, false),
+                          _showLeveltem(context, Languages.of(context).medium,
+                              listUnitMedium, false),
+                          _showLeveltem(context, Languages.of(context).advanced,
+                              listUnitAdvanced, false),
                         ],
                       ),
                     )
@@ -288,5 +348,44 @@ class TopButton extends StatelessWidget {
             ),
           ],
         ));
+  }
+}
+
+class Unit {
+  String id;
+  String name;
+  int level;
+  int language;
+  String description;
+  String image;
+  Unit({
+    this.id,
+    this.name,
+    this.level,
+    this.language,
+    this.description,
+    this.image,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'level': level,
+      'language': language,
+      'description': description,
+      'image': image,
+    };
+  }
+
+  factory Unit.fromJson(Map<String, dynamic> parsedJson) {
+    return Unit(
+      id: parsedJson['_id'] ?? "",
+      name: parsedJson['name'] ?? "",
+      level: parsedJson['level'] ?? 1,
+      language: parsedJson['language'] ?? 2,
+      description: parsedJson['description'] ?? "",
+      image: parsedJson['image'] ?? null,
+    );
   }
 }

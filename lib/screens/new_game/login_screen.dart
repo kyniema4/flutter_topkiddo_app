@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:topkiddo/components/Loading_dialog.dart';
+import 'package:topkiddo/components/Show_alert.dart';
 import 'package:topkiddo/socialconnect/phone_connector.dart';
+import '../../Utils/http_service.dart';
 import '../../socialconnect/google_connector.dart';
 import '../../theme/style.dart';
 import '../../theme/theme.dart' as Theme;
@@ -9,6 +14,7 @@ import '../home/home_screen.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../localization/language/languages.dart';
+import '../home/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -16,24 +22,25 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreen extends State<LoginScreen> {
-  TextEditingController numberController = new TextEditingController();
-  TextEditingController passwordController = new TextEditingController();
+  TextEditingController numberController =
+      new TextEditingController(text: "0961865858");
+  TextEditingController passwordController =
+      new TextEditingController(text: "123123");
 
   _changeHomePage() {
-    // if (numberController.text.isEmpty) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //       SnackBar(content: Text(Languages.of(context).canNotPhoneNumber)));
-    // } else if (numberController.text.length != 10 &&
-    //     numberController.text.isNotEmpty) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //       SnackBar(content: Text(Languages.of(context).phoneNumber10)));
-    // } else if (passwordController.text.isEmpty) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //       SnackBar(content: Text(Languages.of(context).canNotPassword)));
-    // } else {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (BuildContext context) => HomeScreen()));
-    // }
+    if (numberController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(Languages.of(context).canNotPhoneNumber)));
+    } else if (numberController.text.length != 10 &&
+        numberController.text.isNotEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(Languages.of(context).phoneNumber10)));
+    } else if (passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(Languages.of(context).canNotPassword)));
+    } else {
+      submitLogin();
+    }
   }
 
   loginSocialNetwork({type = 5}) async {
@@ -48,6 +55,43 @@ class _LoginScreen extends State<LoginScreen> {
       default:
         return false;
     }
+  }
+
+  void submitLogin() async {
+    if (numberController.text.indexOf('0') == 0) {
+      numberController.text = '+84' + numberController.text.substring(1);
+    }
+    try {
+      await fetch(
+              url: 'users/login',
+              body: {
+                "username": numberController.text,
+                "password": passwordController.text,
+              },
+              needReturnErrorCode: true)
+          .then((val) async {
+        if (val['success']) {
+          print(val['data']);
+          String token = val['data']['token'];
+          setToken(token);
+          //Navigator.of(context, rootNavigator: true).pop();
+
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => HomeScreen()),
+              (Route<dynamic> route) => false);
+        } else {
+          Fluttertoast.showToast(
+              msg: 'An error occurred',
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.BOTTOM,
+              backgroundColor: Colors.grey[400],
+              textColor: Colors.white,
+              fontSize: 16.0);
+
+          // Navigator.of(context, rootNavigator: true).pop();
+        }
+      });
+    } catch (e) {}
   }
 
   @override
@@ -265,7 +309,10 @@ class _LoginScreen extends State<LoginScreen> {
                                                     fit: BoxFit.contain),
                                                 // button text
                                               )),
-                                          onTap: _changeHomePage,
+                                          onTap: () {
+                                            _changeHomePage();
+                                            //submitLogin();
+                                          },
                                         ),
                                       ),
                                     )

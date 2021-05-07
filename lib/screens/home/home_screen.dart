@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import '../../Utils/http_service.dart';
 import '../../theme/style.dart';
 import '../../theme/theme.dart' as Theme;
 
@@ -87,6 +90,22 @@ class _HomeScreenState extends State<HomeScreen> {
       ]),
     );
   }
+
+  // checkLogin() async {
+  //   var token = (await getToken()).toString();
+  //   print('token ' + token);
+  //   if (token.length > 0) {
+  //     try {
+  //       var resultProfile = await fetch(url: ApiList.getProfile);
+  //       print('result get profile ' + jsonEncode(resultProfile));
+  //       return resultProfile;
+  //     } catch (err) {
+  //       return;
+  //     }
+  //   } else {
+  //     return;
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {

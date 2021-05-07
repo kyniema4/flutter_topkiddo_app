@@ -7,13 +7,15 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// final BaseUrl = "http://192.168.1.99:3010/";
-final BaseUrl = "http://api.plotagonist.com/";
+final BaseUrl = "http://backend.topkiddovn.com/";
 String token = '';
 
 class ApiList {
   static const signinFacebook = 'users/signin_with_facebook';
   static const signinGoogle = 'users/login_with_google';
+  static const signWithPhone = 'users/login';
+  static const getProfile = 'users/get_my_profile';
+  static const getListUnit = 'lessions/get_list_units';
 }
 
 void setToken(_token) async {
