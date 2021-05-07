@@ -4,6 +4,7 @@ import '../../components/settings.dart';
 import 'login_screen.dart';
 import 'register_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../localization/language/languages.dart';
 
 class LoginHomeScreen extends StatelessWidget {
   @override
@@ -50,7 +51,7 @@ class LoginHomeScreen extends StatelessWidget {
                               decoration: BoxDecoration(
                                 image: DecorationImage(
                                     image: AssetImage(
-                                        "assets/images/login_page/main-loginbutton.png"),
+                                        Languages.of(context).imgLoginMain),
                                     fit: BoxFit.fitWidth),
                                 // button text
                               )),
@@ -72,7 +73,7 @@ class LoginHomeScreen extends StatelessWidget {
                                 decoration: BoxDecoration(
                                   image: DecorationImage(
                                       image: AssetImage(
-                                          "assets/images/login_page/main-newuserbutton.png"),
+                                          Languages.of(context).imgNewUser),
                                       fit: BoxFit.fitWidth),
                                   // button text
                                 )),

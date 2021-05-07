@@ -2,6 +2,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../main.dart';
+import 'language/language_en.dart';
+import 'language/language_vi.dart';
+import 'language/languages.dart';
 
 const String prefSelectedLanguageCode = "SelectedLanguageCode";
 
@@ -25,5 +28,6 @@ Locale _locale(String languageCode) {
 
 void changeLanguage(BuildContext context, String selectedLanguageCode) async {
   var _locale = await setLocale(selectedLanguageCode);
+
   MyApp.setLocale(context, _locale);
 }

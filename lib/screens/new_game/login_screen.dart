@@ -244,7 +244,8 @@ class _LoginScreen extends State<LoginScreen> {
                                               decoration: BoxDecoration(
                                                 image: DecorationImage(
                                                     image: AssetImage(
-                                                      'assets/images/login_page/loginbutton1.png',
+                                                      Languages.of(context)
+                                                          .imgLogin,
                                                     ),
                                                     fit: BoxFit.contain),
                                                 // button text
