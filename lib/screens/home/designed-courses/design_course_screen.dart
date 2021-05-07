@@ -156,7 +156,8 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
                                                     // color: Colors.blue,
                                                     height: 8.5.w,
                                                     child: Image.asset(
-                                                        'assets/images/topic/choose-button.png',
+                                                        Languages.of(context)
+                                                            .imgChoose,
                                                         fit: BoxFit.contain),
                                                   ),
                                                   onTap: () {

@@ -26,4 +26,9 @@ class LanguageEn extends Languages {
   String get phoneNumber => 'Phone number';
   String get password => 'Password';
   String get confirmPassword => 'Confirm password';
+  String get imgChoose => 'assets/images/topic/choose-button.png';
+  String get imgLogin => 'assets/images/login_page/loginbutton1.png';
+  String get imgLoginMain => 'assets/images/login_page/main-loginbutton.png';
+  String get imgNewUser => 'assets/images/login_page/main-newuserbutton.png';
+  String get imgRegister => 'assets/images/login_page/register-button.png';
 }
