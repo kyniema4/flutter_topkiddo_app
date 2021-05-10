@@ -3,8 +3,34 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../localization/locale_constant.dart';
 import '../../localization/language/languages.dart';
 
-class ModalTranslate extends StatelessWidget {
+class ModalTranslate extends StatefulWidget {
+  @override
+  _ModalTranslateState createState() => _ModalTranslateState();
+}
+
+class _ModalTranslateState extends State<ModalTranslate> {
   bool _local = true;
+  List imgs = [
+    'assets/images/languages/babe2.png',
+    'assets/images/languages/babe1.png',
+  ];
+
+  double opacity = 1.0;
+
+  void initState() {
+    super.initState();
+    changeOpacity();
+  }
+
+  changeOpacity() {
+    Future.delayed(Duration(seconds: 1), () {
+      setState(() {
+        opacity = opacity == 0.0 ? 1.0 : 0.0;
+        changeOpacity();
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,10 +48,24 @@ class ModalTranslate extends StatelessWidget {
                     child: Container(
                         width: 90.w,
                         child: Center(
-                          child: Image.asset(
-                            'assets/images/languages/babe1.png',
-                            width: 90.w,
-                          ),
+                          child: Stack(children: [
+                            AnimatedOpacity(
+                              opacity: opacity,
+                              duration: Duration(milliseconds: 10),
+                              child: Image.asset(
+                                'assets/images/languages/babe1.png',
+                                width: 90.w,
+                              ),
+                            ),
+                            AnimatedOpacity(
+                              opacity: opacity == 1 ? 0 : 1,
+                              duration: Duration(milliseconds: 10),
+                              child: Image.asset(
+                                'assets/images/languages/babe2.png',
+                                width: 90.w,
+                              ),
+                            ),
+                          ]),
                         )),
                   ),
                   Container(
