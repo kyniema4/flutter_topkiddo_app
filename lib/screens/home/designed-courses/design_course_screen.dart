@@ -1,12 +1,18 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import '../../../theme/style.dart';
-import '../../../theme/theme.dart' as Theme;
-import '../../../components/back.dart';
-import './../../../localization/language/languages.dart';
-import '../../new_game/loginhome_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../components/back.dart';
+import '../../../theme/style.dart';
+import '../../../theme/theme.dart' as Theme;
+import '../../new_game/loginhome_screen.dart';
+import './../../../localization/language/languages.dart';
+
 class DesignCourseScreen extends StatefulWidget {
+  final lesson;
+
+  const DesignCourseScreen({this.lesson});
   @override
   _DesignCourseScreen createState() => _DesignCourseScreen();
 }
@@ -16,6 +22,7 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
   bool _pressId = true;
   AnimationController _controller;
   Animation<Offset> _offsetAnimation;
+  List listLesson = [];
   @override
   void initState() {
     super.initState();
@@ -30,6 +37,22 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
       parent: _controller,
       curve: Curves.fastOutSlowIn,
     ));
+    initData();
+  }
+
+  initData() async {
+    var lessonData = widget.lesson['docs'];
+    print('debugging');
+    if (lessonData != null) {
+      var newList = [];
+      for (var item in lessonData) {
+        newList.add(LessonModel.fromJson(item));
+      }
+      setState(() {
+        listLesson = newList;
+      });
+    } else
+      return;
   }
 
   @override
@@ -68,7 +91,7 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
                             child: Wrap(
                               alignment: WrapAlignment.start,
                               children: <Widget>[
-                                for (var i = 1; i < 10; i++)
+                                for (var i = 0; i < listLesson.length; i++)
                                   Container(
                                     width: 47.w,
                                     height: 64.5.w,
@@ -109,8 +132,7 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
                                                   horizontal: 6.5.w),
                                               alignment: Alignment.center,
                                               child: Text(
-                                                Languages.of(context).lesson +
-                                                    '$i',
+                                                listLesson[i].name,
                                                 style: TextStyle(
                                                     color:
                                                         Theme.Colors.orange500,
@@ -213,5 +235,56 @@ class TopButton extends StatelessWidget {
             ),
           ],
         ));
+  }
+}
+
+class LessonModel {
+  String id;
+  String name;
+  String description;
+  String unitId;
+  int type;
+  int isLimit;
+  int language;
+  List tags;
+  List part;
+  LessonModel({
+    this.id,
+    this.name,
+    this.description,
+    this.unitId,
+    this.type,
+    this.isLimit,
+    this.language,
+    this.tags,
+    this.part,
+  });
+
+  factory LessonModel.fromJson(Map<String, dynamic> parsedJson) {
+    return LessonModel(
+      id: parsedJson['_id'] ?? "",
+      name: parsedJson['name'] ?? "",
+      description: parsedJson['description'] ?? "",
+      unitId: parsedJson['unitId'] ?? "",
+      type: parsedJson['type'] ?? 1,
+      isLimit: parsedJson['isLimit'] ?? 0,
+      language: parsedJson['language'] ?? 2,
+      tags: parsedJson['tags'] ?? [],
+      part: parsedJson['part'] ?? [],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+      'unitId': unitId,
+      'type': type,
+      'isLimit': isLimit,
+      'languages': language,
+      'tags': tags,
+      'part': part,
+    };
   }
 }

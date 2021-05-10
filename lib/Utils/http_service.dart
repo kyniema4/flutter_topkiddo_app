@@ -16,6 +16,7 @@ class ApiList {
   static const signWithPhone = 'users/login';
   static const getProfile = 'users/get_my_profile';
   static const getListUnit = 'lessions/get_list_units';
+  static const getListLesson = 'lessions/get_list_lession';
 }
 
 void setToken(_token) async {

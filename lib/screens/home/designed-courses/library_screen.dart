@@ -2,7 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:topkiddo/Utils/styling.dart';
+import 'package:topkiddo/components/Loading_dialog.dart';
 
+import '../../../Utils/http_service.dart';
+import '../../../Utils/http_service.dart';
 import '../../../Utils/http_service.dart';
 import '../../../components/back.dart';
 import '../../../theme/style.dart';
@@ -19,7 +23,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
   var listUnitEasy = [];
   var listUnitMedium = [];
   var listUnitAdvanced = [];
-
+  final GlobalKey<State> _keyLoader = new GlobalKey<State>();
   _showLeveltem(BuildContext context, String title, List data, lessonDone) {
     double height = MediaQuery.of(context).size.height;
     return Container(
@@ -65,7 +69,8 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     itemCount: data.length,
                     itemBuilder: (context, index) {
                       return Container(
-                        child: Column(children: [
+                        child: Column(
+                          children: [
                           GestureDetector(
                               child: Container(
                                 alignment: Alignment.center,
@@ -113,12 +118,12 @@ class _LibraryScreenState extends State<LibraryScreen> {
                                 ),
                               ),
                               onTap: () {
-                                print(data[index].id);
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (BuildContext context) =>
-                                            DesignCourseScreen()));
+                                getListLesson(data[index].id);
+                                // Navigator.push(
+                                //     context,
+                                //     MaterialPageRoute(
+                                //         builder: (BuildContext context) =>
+                                //             DesignCourseScreen()));
                               })
                         ]),
                       );
@@ -147,7 +152,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
           List listDataMedium = [];
           List listDataAdvanced = [];
           for (var i = 0; i < data.length; i++) {
-            var unit = Unit.fromJson(data[i]);
+            var unit = UnitModel.fromJson(data[i]);
             if (unit.level == 1) {
               listDataEasy.add(unit);
             } else if (unit.level == 2) {
@@ -165,6 +170,37 @@ class _LibraryScreenState extends State<LibraryScreen> {
       } catch (e) {}
     }
     ;
+  }
+
+  getListLesson(String id) async {
+    try {
+      Dialogs.showLoadingDialog(context);
+      var resultListLesson = await fetch(
+        url: ApiList.getListLesson,
+        body: {
+          "filter": {"unit": id}
+        },
+      );
+      if (resultListLesson['success']) {
+        Navigator.of(context, rootNavigator: true).pop();
+        print(resultListLesson['data']['docs']);
+
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (BuildContext context) => DesignCourseScreen(
+                      lesson: resultListLesson['data'],
+                    )));
+      } else {
+        Navigator.of(context, rootNavigator: true).pop();
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("Please try again")));
+      }
+    } catch (e) {
+      Navigator.of(context, rootNavigator: true).pop();
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Please try again")));
+    }
   }
 
   @override
@@ -351,14 +387,14 @@ class TopButton extends StatelessWidget {
   }
 }
 
-class Unit {
+class UnitModel {
   String id;
   String name;
   int level;
   int language;
   String description;
   String image;
-  Unit({
+  UnitModel({
     this.id,
     this.name,
     this.level,
@@ -378,8 +414,8 @@ class Unit {
     };
   }
 
-  factory Unit.fromJson(Map<String, dynamic> parsedJson) {
-    return Unit(
+  factory UnitModel.fromJson(Map<String, dynamic> parsedJson) {
+    return UnitModel(
       id: parsedJson['_id'] ?? "",
       name: parsedJson['name'] ?? "",
       level: parsedJson['level'] ?? 1,

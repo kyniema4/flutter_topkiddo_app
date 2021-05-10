@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../Utils/http_service.dart';
 import '../../theme/style.dart';
 import '../../theme/theme.dart' as Theme;
@@ -106,6 +107,45 @@ class _HomeScreenState extends State<HomeScreen> {
   //     return;
   //   }
   // }
+
+  initFunction() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+
+    var getLanguage = await pref.getString('lng_key');
+    if (getLanguage == null) {
+      pref.setString('lng_key', 'en');
+      // this.languageService.setLanguage('en')
+      // this.languageKey = 'en'
+      // this.imageLanguage = 1
+    }
+
+    if (getLanguage == 'vi') {
+      // this.languageKey = val
+      // this.imageLanguage = 1
+      // this.languageService.setLanguage('vi')
+    }
+
+    if (getLanguage == 'en') {
+      // this.languageKey = val
+      // this.imageLanguage = 2
+      // this.languageService.setLanguage('en')
+    }
+    var  getUnitLanguage = await pref.getString('unitLanguage');
+      // 1 english - english
+      // 2 english  - american
+        if (getUnitLanguage == null) {
+            pref.setInt('unitLanguage', 2);
+        }
+
+        if (!pref.getBool('isCheck')) {
+            pref.setBool('isCheck', false);
+        }
+       
+        // this.downloadLanguageLocal()
+        // this.checkLogin();
+        // this.updateLoginFcmToken();
+        // this.downloadLesson()
+  }
 
   @override
   Widget build(BuildContext context) {
