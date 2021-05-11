@@ -92,7 +92,10 @@ class _LoginScreen extends State<LoginScreen> {
         }
       });
     } catch (e) {}
-  }
+      Navigator.push(context,
+          MaterialPageRoute(builder: (BuildContext context) => HomeScreen()));
+    }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -304,7 +307,8 @@ class _LoginScreen extends State<LoginScreen> {
                                               decoration: BoxDecoration(
                                                 image: DecorationImage(
                                                     image: AssetImage(
-                                                      'assets/images/login_page/loginbutton1.png',
+                                                      Languages.of(context)
+                                                          .imgLogin,
                                                     ),
                                                     fit: BoxFit.contain),
                                                 // button text

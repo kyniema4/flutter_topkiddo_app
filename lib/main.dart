@@ -2,7 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import './localization/localizations_delegate.dart';
+import 'localization/localizations_delegate.dart';
 import 'screens/splash_screen.dart';
 
 void main() {

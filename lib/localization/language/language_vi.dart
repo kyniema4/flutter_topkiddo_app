@@ -25,4 +25,9 @@ class LanguageVi extends Languages {
   String get phoneNumber => 'Số điện thoại';
   String get password => 'Mật khẩu';
   String get confirmPassword => 'Nhập lại mật khẩu';
+  String get imgChoose => 'assets/images/button/chinhsua-button.png';
+  String get imgLogin => 'assets/images/login_page/dangnhap-button.png';
+  String get imgLoginMain => 'assets/images/login_page/main-dangnhapbutton.png';
+  String get imgNewUser => 'assets/images/login_page/main-nguoimoibutton.png';
+  String get imgRegister => 'assets/images/login_page/dangky-button.png';
 }
