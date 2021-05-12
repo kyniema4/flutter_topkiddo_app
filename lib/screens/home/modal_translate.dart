@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../localization/locale_constant.dart';
-import '../../localization/language/languages.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ModalTranslate extends StatefulWidget {
   @override
@@ -75,8 +74,9 @@ class _ModalTranslateState extends State<ModalTranslate> {
                         children: [
                           TextButton(
                             onPressed: () => {
-                              changeLanguage(context, 'vi'),
-                              _local = false,
+                              //changeLanguage(context, 'vi'),
+                              context.locale = Locale('vi', 'VN'),
+                              //_local = false,
                               Navigator.pop(context, false) //translate
                             },
                             child: Image.asset(
@@ -85,7 +85,7 @@ class _ModalTranslateState extends State<ModalTranslate> {
                             ),
                           ),
                           Text(
-                            Languages.of(context).lesson.toUpperCase(),
+                            'lesson'.tr().toUpperCase(),
                           ),
                           Positioned(
                             right: 0,
@@ -113,8 +113,9 @@ class _ModalTranslateState extends State<ModalTranslate> {
                               top: 9.w,
                               child: TextButton(
                                 onPressed: () => {
-                                  changeLanguage(context, 'en'),
-                                  _local = true,
+                                  //changeLanguage(context, 'en'),
+                                  //_local = true,
+                                   context.locale = Locale('en', 'US'),
                                   Navigator.pop(context, false)
                                 },
                                 child: Image.asset(

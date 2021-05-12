@@ -9,8 +9,9 @@ import '../../theme/theme.dart' as Theme;
 import '../new_game/loginhome_screen.dart';
 import './modal_translate.dart';
 import 'designed-courses/library_screen.dart';
-import '../../localization/language/languages.dart';
+//import '../../localization/language/languages.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -28,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _showHomeItem(BuildContext context, imageBg, String title, String content,
-      bool _pressId) {
+      int pressId, bool isPress) {
     double height = MediaQuery.of(context).size.height;
 
     return Container(
@@ -74,23 +75,25 @@ class _HomeScreenState extends State<HomeScreen> {
             left: 0,
             right: 0,
             child: AnimatedOpacity(
-                opacity: _pressId ? 1.0 : 0.85,
+                opacity: true ? 1.0 : 0.85,
                 duration: Duration(milliseconds: 200),
                 child: GestureDetector(
                     child: Container(
                         // color: Colors.blue,
                         height: 16.w,
-                        child: Image.asset(Languages.of(context).imgChoose,
-                            fit: BoxFit.contain)),
+                        child:
+                            Image.asset('imgChoose'.tr(), fit: BoxFit.contain)),
                     onTap: () {
-                      setState(() {
-                        _pressId = !_pressId;
-                      });
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  LibraryScreen()));
+                      if (pressId == 1) {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    LibraryScreen()));
+                      } else if (pressId == 2) {
+                        print('topic');
+                      } else
+                        print('translate');
                     })))
       ]),
     );
@@ -134,21 +137,21 @@ class _HomeScreenState extends State<HomeScreen> {
       // this.imageLanguage = 2
       // this.languageService.setLanguage('en')
     }
-    var  getUnitLanguage = await pref.getString('unitLanguage');
-      // 1 english - english
-      // 2 english  - american
-        if (getUnitLanguage == null) {
-            pref.setInt('unitLanguage', 2);
-        }
+    var getUnitLanguage = await pref.getString('unitLanguage');
+    // 1 english - english
+    // 2 english  - american
+    if (getUnitLanguage == null) {
+      pref.setInt('unitLanguage', 2);
+    }
 
-        if (!pref.getBool('isCheck')) {
-            pref.setBool('isCheck', false);
-        }
-       
-        // this.downloadLanguageLocal()
-        // this.checkLogin();
-        // this.updateLoginFcmToken();
-        // this.downloadLesson()
+    if (!pref.getBool('isCheck')) {
+      pref.setBool('isCheck', false);
+    }
+
+    // this.downloadLanguageLocal()
+    // this.checkLogin();
+    // this.updateLoginFcmToken();
+    // this.downloadLesson()
   }
 
   @override
@@ -182,20 +185,23 @@ class _HomeScreenState extends State<HomeScreen> {
                           _showHomeItem(
                               context,
                               'assets/images/topic/designed-courses.png',
-                              Languages.of(context).lesson.toUpperCase(),
-                              Languages.of(context).designedCourses,
+                              'lesson'.tr().toUpperCase(),
+                              'designedCourses'.tr(),
+                              1,
                               _pressed),
                           _showHomeItem(
                               context,
                               'assets/images/topic/flexible.png',
-                              Languages.of(context).topic.toUpperCase(),
-                              Languages.of(context).flexibleLearning,
+                              'topic'.tr().toUpperCase(),
+                              'flexibleLearning'.tr(),
+                              2,
                               _pressed2),
                           _showHomeItem(
                               context,
                               'assets/images/topic/expressions.png',
-                              Languages.of(context).translate.toUpperCase(),
-                              Languages.of(context).expressionsPhrases,
+                              'translate'.tr().toUpperCase(),
+                              'expressionsPhrases'.tr(),
+                              3,
                               _pressed3),
                         ],
                       ),
@@ -305,7 +311,7 @@ class TopButton extends StatelessWidget {
                             decoration: BoxDecoration(
                               image: DecorationImage(
                                   image: AssetImage(
-                                    'assets/images/button/vietnames-flag.png',
+                                    "imgFlag".tr(),
                                   ),
                                   fit: BoxFit.contain),
                             )),

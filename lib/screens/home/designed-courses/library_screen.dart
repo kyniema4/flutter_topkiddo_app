@@ -11,8 +11,8 @@ import '../../../Utils/http_service.dart';
 import '../../../components/back.dart';
 import '../../../theme/style.dart';
 import '../../../theme/theme.dart' as Theme;
-import './../../../localization/language/languages.dart';
 import 'design_course_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class LibraryScreen extends StatefulWidget {
   @override
@@ -69,8 +69,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     itemCount: data.length,
                     itemBuilder: (context, index) {
                       return Container(
-                        child: Column(
-                          children: [
+                        child: Column(children: [
                           GestureDetector(
                               child: Container(
                                 alignment: Alignment.center,
@@ -240,13 +239,13 @@ class _LibraryScreenState extends State<LibraryScreen> {
                         children: <Widget>[
                           _showLeveltem(
                             context,
-                            Languages.of(context).easy,
+                            'easy'.tr(),
                             listUnitEasy,
                             false,
                           ),
-                          _showLeveltem(context, Languages.of(context).medium,
-                              listUnitMedium, false),
-                          _showLeveltem(context, Languages.of(context).advanced,
+                          _showLeveltem(
+                              context, "medium".tr(), listUnitMedium, false),
+                          _showLeveltem(context, "advanced".tr(),
                               listUnitAdvanced, false),
                         ],
                       ),
@@ -298,7 +297,7 @@ class TopButton extends StatelessWidget {
                         Container(
                           margin: EdgeInsets.only(right: 15.w),
                           child: Text(
-                            Languages.of(context).youLearning,
+                            'youLearning'.tr(),
                             style: TextStyle(
                                 fontSize: height > 600 ? 22.sp : 33.sp,
                                 fontFamily: 'UTMCooperBlack',

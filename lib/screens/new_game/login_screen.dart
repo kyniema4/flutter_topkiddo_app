@@ -13,8 +13,10 @@ import '../../components/settings.dart';
 import '../home/home_screen.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../localization/language/languages.dart';
 import '../home/home_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -30,14 +32,15 @@ class _LoginScreen extends State<LoginScreen> {
   _changeHomePage() {
     if (numberController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(Languages.of(context).canNotPhoneNumber)));
+          // SnackBar(content: Text(Languages.of(context).canNotPhoneNumber)));
+          SnackBar(content: Text('canNotPhoneNumber'.tr())));
     } else if (numberController.text.length != 10 &&
         numberController.text.isNotEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(Languages.of(context).phoneNumber10)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('phoneNumber10'.tr())));
     } else if (passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(Languages.of(context).canNotPassword)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('canNotPassword'.tr())));
     } else {
       submitLogin();
     }
@@ -47,7 +50,8 @@ class _LoginScreen extends State<LoginScreen> {
     var loginSuccess = 0;
     switch (type) {
       case 0: // facebook
-        loginSuccess = await loginPhone();
+        // loginSuccess = await loginPhone();
+        print('login phone');
         break;
       case 1: // google
         loginSuccess = await loginGoogle();
@@ -63,7 +67,7 @@ class _LoginScreen extends State<LoginScreen> {
     }
     try {
       await fetch(
-              url: 'users/login',
+              url: ApiList.signWithPhone,
               body: {
                 "username": numberController.text,
                 "password": passwordController.text,
@@ -92,13 +96,15 @@ class _LoginScreen extends State<LoginScreen> {
         }
       });
     } catch (e) {}
-      Navigator.push(context,
-          MaterialPageRoute(builder: (BuildContext context) => HomeScreen()));
-    }
-  
+    Navigator.push(context,
+        MaterialPageRoute(builder: (BuildContext context) => HomeScreen()));
+  }
 
   @override
   Widget build(BuildContext context) {
+    //
+
+    print('easy'.tr());
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Container(
@@ -156,9 +162,7 @@ class _LoginScreen extends State<LoginScreen> {
                                           alignment: Alignment.center,
                                           height: 17.w,
                                           child: Text(
-                                              Languages.of(context)
-                                                  .login
-                                                  .toUpperCase(),
+                                              'login'.tr().toUpperCase(),
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   color: Theme.Colors.yellow200,
@@ -196,8 +200,9 @@ class _LoginScreen extends State<LoginScreen> {
                                               focusedBorder: styleOutline,
                                               enabledBorder: styleUnderline,
                                               border: InputBorder.none,
-                                              hintText: Languages.of(context)
-                                                  .phoneNumber,
+                                              hintText: 'phoneNumber'
+                                                  .tr()
+                                                  .toUpperCase(),
                                               hintStyle: TextStyle(
                                                   fontSize: height > 600
                                                       ? 18.sp
@@ -236,8 +241,7 @@ class _LoginScreen extends State<LoginScreen> {
                                               focusedBorder: styleOutline,
                                               enabledBorder: styleUnderline,
                                               border: InputBorder.none,
-                                              hintText: Languages.of(context)
-                                                  .password,
+                                              hintText: 'password'.tr(),
                                               hintStyle: TextStyle(
                                                   fontSize: height > 600
                                                       ? 18.sp
@@ -307,9 +311,7 @@ class _LoginScreen extends State<LoginScreen> {
                                               decoration: BoxDecoration(
                                                 image: DecorationImage(
                                                     image: AssetImage(
-                                                      Languages.of(context)
-                                                          .imgLogin,
-                                                    ),
+                                                        'imgLogin'.tr()),
                                                     fit: BoxFit.contain),
                                                 // button text
                                               )),

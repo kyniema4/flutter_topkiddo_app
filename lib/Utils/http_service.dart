@@ -14,6 +14,7 @@ class ApiList {
   static const signinFacebook = 'users/signin_with_facebook';
   static const signinGoogle = 'users/login_with_google';
   static const signWithPhone = 'users/login';
+  static const signupWithPhone = 'users/signup_with_phone';
   static const getProfile = 'users/get_my_profile';
   static const getListUnit = 'lessions/get_list_units';
   static const getListLesson = 'lessions/get_list_lession';
@@ -72,7 +73,7 @@ Future fetch(
   try {
     if (method == 1) {
       // post
-      http.Response response = await http.post(baseUrl + url,
+      http.Response response = await http.post(Uri.parse(baseUrl + url),
           headers: headers, body: body != null ? jsonEncode(body) : '');
       if (response.statusCode == 200) {
         // print('body 200 ' + response.body + ' from url ' + url);
@@ -89,8 +90,8 @@ Future fetch(
       }
     } else if (method == 3) {
       // path
-      http.Response response =
-          await http.patch(baseUrl + url, headers: headers, body: body);
+      http.Response response = await http.patch(Uri.parse(baseUrl + url),
+          headers: headers, body: body);
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else {
@@ -111,7 +112,7 @@ Future fetch(
       // get
 
       http.Response response = await http.get(
-        baseUrl + url,
+        Uri.parse(baseUrl + url),
         headers: headers,
       );
       if (response.statusCode == 200) {
