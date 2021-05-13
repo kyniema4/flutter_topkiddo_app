@@ -33,7 +33,7 @@ dependencies:
   flutter_screenutil: ^4.0.3+1
   # flutter_svg: ^0.17.4
   fluttertoast: ^8.0.2
-  http: ^0.13.0 
+  http: ^0.13.0
   easy_localization: ^3.0.0
   # flutter_facebook_auth: ^2.0.2
   firebase_core: ^1.1.1
@@ -75,6 +75,8 @@ flutter:
     - assets/images/button/vietnames-flag.png
     - assets/images/button/logout.png
     - assets/images/button/chinhsua-button.png
+    - assets/images/button/favorite-button.png
+    - assets/images/button/communication-with-babe.png
     - assets/images/lesson/6thang.png
     - assets/images/lesson/12thang.png
     - assets/images/lesson/trondoi.png
@@ -99,6 +101,7 @@ flutter:
     - assets/images/login_page/main-nguoimoibutton.png
     - assets/images/login_page/main-dangnhapbutton.png
     - assets/images/topic/choose-button.png
+    - assets/images/topic/chon-button.png
     - assets/images/topic/designed-courses.png
     - assets/images/topic/expressions.png
     - assets/images/topic/flexible.png
@@ -131,6 +134,9 @@ flutter:
     - assets/images/firework/firework5.png
     - assets/images/firework/firework6.png
     - assets/images/firework/firework7.png
+    - assets/images/directory/board-notitle.png
+    - assets/images/directory/search-bar.png
+    - assets/images/directory/search.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

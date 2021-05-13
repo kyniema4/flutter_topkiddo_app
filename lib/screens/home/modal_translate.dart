@@ -23,10 +23,10 @@ class _ModalTranslateState extends State<ModalTranslate> {
 
   changeOpacity() {
     Future.delayed(Duration(seconds: 1), () {
-      setState(() {
-        opacity = opacity == 0.0 ? 1.0 : 0.0;
-        changeOpacity();
-      });
+      // setState(() {
+      //   opacity = opacity == 0.0 ? 1.0 : 0.0;
+      //   changeOpacity();
+      // });
     });
   }
 
@@ -115,7 +115,7 @@ class _ModalTranslateState extends State<ModalTranslate> {
                                 onPressed: () => {
                                   //changeLanguage(context, 'en'),
                                   //_local = true,
-                                   context.locale = Locale('en', 'US'),
+                                  context.locale = Locale('en', 'US'),
                                   Navigator.pop(context, false)
                                 },
                                 child: Image.asset(

@@ -6,8 +6,7 @@ import 'package:topkiddo/Utils/styling.dart';
 import 'package:topkiddo/components/Loading_dialog.dart';
 
 import '../../../Utils/http_service.dart';
-import '../../../Utils/http_service.dart';
-import '../../../Utils/http_service.dart';
+
 import '../../../components/back.dart';
 import '../../../theme/style.dart';
 import '../../../theme/theme.dart' as Theme;
@@ -26,6 +25,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
   _showLeveltem(BuildContext context, String title, List data, lessonDone) {
     double height = MediaQuery.of(context).size.height;
+
     return Container(
       width: 89.w,
       height: 129.w,
@@ -131,6 +131,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
         ),
       ]),
     );
+  
   }
 
   getListUnit() async {

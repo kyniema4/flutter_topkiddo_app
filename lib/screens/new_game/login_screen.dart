@@ -3,7 +3,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:topkiddo/components/Loading_dialog.dart';
 import 'package:topkiddo/components/Show_alert.dart';
-import 'package:topkiddo/socialconnect/phone_connector.dart';
 import '../../Utils/http_service.dart';
 import '../../socialconnect/google_connector.dart';
 import '../../theme/style.dart';
@@ -65,6 +64,7 @@ class _LoginScreen extends State<LoginScreen> {
     if (numberController.text.indexOf('0') == 0) {
       numberController.text = '+84' + numberController.text.substring(1);
     }
+    Dialogs.showLoadingDialog(context);
     try {
       await fetch(
               url: ApiList.signWithPhone,
@@ -79,32 +79,22 @@ class _LoginScreen extends State<LoginScreen> {
           String token = val['data']['token'];
           setToken(token);
           //Navigator.of(context, rootNavigator: true).pop();
-
+          Navigator.of(context, rootNavigator: true).pop();
           Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(builder: (context) => HomeScreen()),
               (Route<dynamic> route) => false);
-        } else {
-          Fluttertoast.showToast(
-              msg: 'An error occurred',
-              toastLength: Toast.LENGTH_LONG,
-              gravity: ToastGravity.BOTTOM,
-              backgroundColor: Colors.grey[400],
-              textColor: Colors.white,
-              fontSize: 16.0);
-
-          // Navigator.of(context, rootNavigator: true).pop();
         }
       });
-    } catch (e) {}
-    Navigator.push(context,
-        MaterialPageRoute(builder: (BuildContext context) => HomeScreen()));
+    } catch (e) {
+      Navigator.of(context, rootNavigator: true).pop();
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.message)));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    //
-
-    print('easy'.tr());
+    
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Container(

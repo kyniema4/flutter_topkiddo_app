@@ -9,6 +9,7 @@ import '../../theme/theme.dart' as Theme;
 import '../new_game/loginhome_screen.dart';
 import './modal_translate.dart';
 import 'designed-courses/library_screen.dart';
+import 'directory-page/directory_screen.dart';
 //import '../../localization/language/languages.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -93,7 +94,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       } else if (pressId == 2) {
                         print('topic');
                       } else
-                        print('translate');
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    DirectoryScreen()));
                     })))
       ]),
     );

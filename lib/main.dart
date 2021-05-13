@@ -13,7 +13,6 @@ void main() async {
   runApp(EasyLocalization(
       supportedLocales: [Locale('vi', 'VN'), Locale('en', 'US')],
       path: 'assets/translations',
-      // fallbackLocale: Locale('en', 'US'),
       saveLocale: true,
       //startLocale: Locale('en', 'US'),
       child: MyApp()));
