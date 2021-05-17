@@ -9,6 +9,12 @@ final backgroundImage = BoxDecoration(
     fit: BoxFit.cover,
   ),
 );
+final backgroundImage2 = BoxDecoration(
+  image: DecorationImage(
+    image: AssetImage('assets/images/background/bg_iphone.jpg'),
+    fit: BoxFit.cover,
+  ),
+);
 final backgroundImageSecond = BoxDecoration(
   image: DecorationImage(
     image: AssetImage('assets/images/background/foriPhoneBG-compressed.jpg'),

@@ -1,10 +1,15 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:topkiddo/theme/style.dart';
-import 'package:topkiddo/theme/theme.dart' as Theme;
-import '../../../components/back.dart';
+import 'dart:async';
+import 'dart:convert';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import 'package:topkiddo/Utils/http_service.dart';
+import 'package:topkiddo/theme/style.dart';
+import 'package:topkiddo/theme/theme.dart' as Theme;
+
+import '../../../components/back.dart';
 
 class DirectoryScreen extends StatefulWidget {
   DirectoryScreen({Key key}) : super(key: key);
@@ -15,7 +20,61 @@ class DirectoryScreen extends StatefulWidget {
 
 class _DirectoryScreenState extends State<DirectoryScreen> {
   TextEditingController searchController = TextEditingController();
+  List listSentence = [];
+  String keyFrom = 'vi';
+  String keyTo = 'en';
+  String query = "";
+  Timer debouncer = null;
+
+  void debounce(
+    VoidCallback callback, {
+    Duration duration = const Duration(milliseconds: 1000),
+  }) {
+    if (debouncer != null) {
+      debouncer.cancel();
+    }
+    debouncer = Timer(duration, callback);
+  }
+
+  Future searchSentence(String query) async => debounce(() async {
+        try {
+          var resultSearch = await fetch(
+              url: ApiList.searchDirectory,
+              body: {'text': query, 'from': keyFrom, 'to': keyTo});
+          List tempList = [];
+          if (resultSearch['success']) {
+            for (int i = 0; i < resultSearch['data'].length; i++) {
+              var item = resultSearch['data'][i]['doc'];
+              if (item["translatedContent"].length > 0) {
+                item['textTrans'] = item["translatedContent"][0];
+              } else {
+                item['textTrans'] = jsonDecode(resultSearch['data'][i]['doc']
+                    ['resultFromServer'][0])[0][0][0];
+              }
+
+              var val = TranslateModel.fromJson(item);
+              tempList.add(val);
+            }
+            if (!mounted) return;
+            setState(() {
+              this.query = query;
+              this.listSentence = tempList;
+            });
+            print(listSentence);
+            print('debugging');
+          }
+        } catch (e) {
+          print(e);
+        }
+      });
+
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // fetchDiretory();
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -60,204 +119,93 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                         fit: BoxFit.contain,
                                       ),
                                       Positioned(
-                                          top: 26.w,
+                                          top: 20.w,
                                           left: 0,
                                           right: 0,
-                                          child: GestureDetector(
-                                              child: Container(
+                                          child: Stack(
+                                            alignment: Alignment.center,
+                                            children: [
+                                              Container(
                                                   // color: Colors.blue,
-                                                  height: 30.w,
+                                                  height: 28.w,
                                                   child: Image.asset(
                                                       'assets/images/directory/search-bar.png',
                                                       fit: BoxFit.contain)),
-                                              onTap: () {})),
-                                      Positioned(
-                                        top: 32.w,
-                                        left: 30.w,
-                                        right: 0,
-                                        child: Container(
-
-                                            // alignment: Alignment.center,
-                                            // margin: EdgeInsets.symmetric(
-                                            //     horizontal: 25.w),
-                                            // // color: Colors.red,
-                                            // height: 18.w,
-                                            // child: TextFormField(
-                                            //   controller: searchController,
-                                            //   autofocus: false,
-                                            //   style: TextStyle(
-                                            //       fontSize: height > 600
-                                            //           ? 18.sp
-                                            //           : 28.sp,
-                                            //       color: Theme.Colors.orange500,
-                                            //       fontFamily: 'UTMCooperBlack'),
-                                            //   decoration: InputDecoration(
-                                            //       isCollapsed: true,
-                                            //       contentPadding:
-                                            //           EdgeInsets.symmetric(
-                                            //               vertical: 2.w,
-                                            //               horizontal: 6.w),
-                                            //       focusedBorder: styleOutline,
-                                            //       enabledBorder: styleUnderline,
-                                            //       border: InputBorder.none,
-                                            //       hintText: 'searchFor'.tr(),
-                                            //       hintStyle: TextStyle(
-                                            //           fontSize: height > 600
-                                            //               ? 18.sp
-                                            //               : 28.sp,
-                                            //           color:
-                                            //               Theme.Colors.orange500,
-                                            //           fontFamily:
-                                            //               'UTMCooperBlack')),
-                                            // ),
-                                            child: Row(
-                                                mainAxisSize: MainAxisSize.max,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: <Widget>[
-                                              Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(0.0),
-                                                  child: Image.asset(
-                                                    'assets/images/directory/search.png',
-                                                    fit: BoxFit.contain,
-                                                    width: 30,
-                                                  )),
-                                              Flexible(
-                                                child: TextFormField(
-                                                  controller: searchController,
-                                                  autofocus: false,
-                                                  style: TextStyle(
-                                                      fontSize: height > 600
-                                                          ? 18.sp
-                                                          : 28.sp,
-                                                      color: Theme
-                                                          .Colors.orange500,
-                                                      fontFamily:
-                                                          'UTMCooperBlack'),
-                                                  decoration: InputDecoration(
-                                                      isCollapsed: true,
-                                                      contentPadding:
-                                                          EdgeInsets.symmetric(
-                                                              vertical: 2.w,
-                                                              horizontal: 6.w),
-                                                      focusedBorder:
-                                                          styleOutline,
-                                                      enabledBorder:
-                                                          styleUnderline,
-                                                      border: InputBorder.none,
-                                                      hintText:
-                                                          'searchFor'.tr(),
-                                                      hintStyle: TextStyle(
-                                                          fontSize: height > 600
-                                                              ? 18.sp
-                                                              : 28.sp,
-                                                          color: Theme
-                                                              .Colors.orange500,
-                                                          fontFamily:
-                                                              'UTMCooperBlack')),
-                                                ),
-                                              )
-                                            ])),
-                                      ),
-                                      // Positioned(
-                                      //   top: 16.w,
-                                      //   left: 8.w,
-                                      //   right: 8.w,
-                                      //   bottom: 6.w,
-                                      //   child: Container(
-                                      //       clipBehavior: Clip.hardEdge,
-                                      //       decoration: BoxDecoration(
-                                      //         borderRadius: BorderRadius.vertical(
-                                      //             bottom: Radius.circular(8.w)),
-                                      //       ),
-                                      //       child: SingleChildScrollView(
-                                      //         padding:
-                                      //             EdgeInsets.symmetric(vertical: 4.w),
-                                      //         child: ListView.builder(
-                                      //             shrinkWrap: true,
-                                      //             physics: BouncingScrollPhysics(),
-                                      //             scrollDirection: Axis.vertical,
-                                      //             itemCount: 6,
-                                      //             itemBuilder: (context, index) {
-                                      //               return Container(
-                                      //                 child: Column(children: [
-                                      //                   GestureDetector(
-                                      //                       child: Container(
-                                      //                         alignment:
-                                      //                             Alignment.center,
-                                      //                         margin:
-                                      //                             EdgeInsets.symmetric(
-                                      //                                 vertical: 2.w),
-                                      //                         padding: EdgeInsets.only(
-                                      //                           left: 6.w,
-                                      //                           right: 6.w,
-                                      //                           bottom: 1.5.w,
-                                      //                         ),
-                                      //                         height: 16.w,
-                                      //                         decoration: BoxDecoration(
-                                      //                             image:
-                                      //                                 DecorationImage(
-                                      //                           image: AssetImage(
-                                      //                             true
-                                      //                                 ? 'assets/images/unit/course1.png'
-                                      //                                 : 'assets/images/unit/course2.png',
-                                      //                           ),
-                                      //                           fit: BoxFit.contain,
-                                      //                         )),
-                                      //                         child: Row(
-                                      //                           mainAxisSize:
-                                      //                               MainAxisSize.min,
-                                      //                           children: [
-                                      //                             true
-                                      //                                 ? Container(
-                                      //                                     width: 7.w,
-                                      //                                     height: 7.w,
-                                      //                                     margin: EdgeInsets
-                                      //                                         .only(
-                                      //                                             right: 9
-                                      //                                                 .w),
-                                      //                                     child: Image.asset(
-                                      //                                         'assets/images/unit/coursetick.png',
-                                      //                                         fit: BoxFit
-                                      //                                             .contain))
-                                      //                                 : Container(
-                                      //                                     width: 16.w,
-                                      //                                   ),
-                                      //                             Text(
-                                      //                               '',
-                                      //                               style: TextStyle(
-                                      //                                   color: true
-                                      //                                       ? Theme
-                                      //                                           .Colors
-                                      //                                           .yellow200
-                                      //                                       : Theme
-                                      //                                           .Colors
-                                      //                                           .green700,
-                                      //                                   fontSize:
-                                      //                                       height > 600
-                                      //                                           ? 20.sp
-                                      //                                           : 30.sp,
-                                      //                                   fontFamily:
-                                      //                                       'UTMCooperBlack'),
-                                      //                             ),
-                                      //                           ],
-                                      //                         ),
-                                      //                       ),
-                                      //                       onTap: () {
-                                      //                         // Navigator.push(
-                                      //                         //     context,
-                                      //                         //     MaterialPageRoute(
-                                      //                         //         builder: (BuildContext context) =>
-                                      //                         //             DesignCourseScreen()));
-                                      //                       })
-                                      //                 ]),
-                                      //               );
-                                      //             }),
-                                      //       )),
-                                      // ),
+                                              Positioned(
+                                                // top: 100.w,
+                                                // left: 100.w,
+                                                //right: 500,
+                                                child: Container(
+                                                    child: Row(
+                                                        mainAxisSize:
+                                                            MainAxisSize.max,
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .center,
+                                                        children: <Widget>[
+                                                      Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(0.0),
+                                                          child: Image.asset(
+                                                            'assets/images/directory/search.png',
+                                                            fit: BoxFit.contain,
+                                                            width: 25,
+                                                          )),
+                                                      Flexible(
+                                                        child: TextFormField(
+                                                          controller:
+                                                              searchController,
+                                                          onChanged:
+                                                              searchSentence,
+                                                          autofocus: false,
+                                                          style: TextStyle(
+                                                              fontSize:
+                                                                  height > 600
+                                                                      ? 18.sp
+                                                                      : 28.sp,
+                                                              color: Theme
+                                                                  .Colors
+                                                                  .orange500,
+                                                              fontFamily:
+                                                                  'UTMCooperBlack'),
+                                                          decoration: InputDecoration(
+                                                              isCollapsed: true,
+                                                              contentPadding:
+                                                                  EdgeInsets.symmetric(
+                                                                      vertical: 2
+                                                                          .w,
+                                                                      horizontal:
+                                                                          6.w),
+                                                              focusedBorder:
+                                                                  styleOutline,
+                                                              enabledBorder:
+                                                                  styleUnderline,
+                                                              border:
+                                                                  InputBorder
+                                                                      .none,
+                                                              hintText:
+                                                                  'searchFor'
+                                                                      .tr(),
+                                                              hintStyle: TextStyle(
+                                                                  fontSize: height >
+                                                                          600
+                                                                      ? 18.sp
+                                                                      : 28.sp,
+                                                                  color: Theme
+                                                                      .Colors
+                                                                      .orange500,
+                                                                  fontFamily:
+                                                                      'UTMCooperBlack')),
+                                                        ),
+                                                      )
+                                                    ])),
+                                              ),
+                                            ],
+                                          ))
                                     ]),
                                   )
                                 ],
@@ -365,5 +313,64 @@ class TopButton extends StatelessWidget {
             ),
           ],
         ));
+  }
+}
+
+class TranslateModel {
+  String id;
+  String language;
+  String toLang;
+  String vietnameseNorth;
+  String vietnameseSouth;
+  String spanish;
+  String japanese;
+  String chinese;
+  String french;
+  String englist;
+  String american;
+  TranslateModel({
+    this.id,
+    this.language,
+    this.toLang,
+    this.vietnameseNorth,
+    this.vietnameseSouth,
+    this.spanish,
+    this.japanese,
+    this.chinese,
+    this.french,
+    this.englist,
+    this.american,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'language': language,
+      'toLang': toLang,
+      'vietnameseNorth': vietnameseNorth,
+      'vietnameseSouth': vietnameseSouth,
+      'spanish': spanish,
+      'japanese': japanese,
+      'chinese': chinese,
+      'french': french,
+      'englist': englist,
+      'american': american,
+    };
+  }
+
+  factory TranslateModel.fromJson(Map<String, dynamic> parsedJson) {
+    return TranslateModel(
+      id: parsedJson['_id'],
+      language: parsedJson['language'] ?? "",
+      toLang: parsedJson['toLang'] ?? "",
+      vietnameseNorth: parsedJson['text'] ?? "",
+      vietnameseSouth: parsedJson['text'] ?? "",
+      spanish: parsedJson['spanish'] ?? "",
+      japanese: parsedJson['japanese'] ?? "",
+      chinese: parsedJson['chinese'] ?? "",
+      french: parsedJson['french'] ?? "",
+      englist: parsedJson['textTrans'] ?? "",
+      american: parsedJson['textTrans'] ?? "",
+    );
   }
 }
