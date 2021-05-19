@@ -10,7 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 final BaseUrl = "http://backend.topkiddovn.com/";
 String token = '';
 
-class ApiList {  
+class ApiList {
   static const signinFacebook = 'users/signin_with_facebook';
   static const signinGoogle = 'users/login_with_google';
   static const signWithPhone = 'users/login';
@@ -18,6 +18,7 @@ class ApiList {
   static const getProfile = 'users/get_my_profile';
   static const getListUnit = 'lessions/get_list_units';
   static const getListLesson = 'lessions/get_list_lession';
+  static const getListTopTrans = 'translate/get_top_request_translated';
   static const searchDirectory = 'translate/translate_elac';
 }
 

@@ -68,7 +68,8 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     scrollDirection: Axis.vertical,
                     itemCount: data.length,
                     itemBuilder: (context, index) {
-                      return Container(
+                      return 
+                      Container(
                         child: Column(children: [
                           GestureDetector(
                               child: Container(

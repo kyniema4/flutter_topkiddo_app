@@ -39,7 +39,8 @@ dependencies:
   firebase_core: ^1.1.1
   firebase_auth: ^1.1.3
   google_sign_in: ^4.4.4+1
-
+  sqflite: ^2.0.0+3
+  path_provider: ^2.0.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -151,6 +152,11 @@ flutter:
     - assets/images/directory/board-notitle.png
     - assets/images/directory/search-bar.png
     - assets/images/directory/search.png
+    - assets/images/directory/del.png
+    - assets/images/directory/add.png
+    - assets/images/directory/volume.png
+    - assets/images/directory/trans.png
+    - assets/images/directory/board.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
