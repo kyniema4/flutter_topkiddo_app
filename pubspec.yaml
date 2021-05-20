@@ -154,6 +154,7 @@ flutter:
     - assets/images/directory/search.png
     - assets/images/directory/del.png
     - assets/images/directory/add.png
+    - assets/images/directory/minus.png
     - assets/images/directory/volume.png
     - assets/images/directory/trans.png
     - assets/images/directory/board.png

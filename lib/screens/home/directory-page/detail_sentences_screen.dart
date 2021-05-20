@@ -4,9 +4,23 @@ import 'package:topkiddo/theme/style.dart';
 import 'package:topkiddo/theme/theme.dart' as Theme;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../Utils/database_helpers.dart';
+
 class ShowDetailSentence extends StatelessWidget {
   final TranslateModel sentences;
+
   const ShowDetailSentence({Key key, this.sentences}) : super(key: key);
+
+  insertSetenceToFavorite() async {
+    final dbHelper = DatabaseHelper.instance;
+    Map row = sentences.toJson();
+    bool check = await dbHelper.checkIdExists(sentences.id);
+
+    if (!check) {
+      await dbHelper.insert(row);
+    }
+    return;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -134,7 +148,9 @@ class ShowDetailSentence extends StatelessWidget {
                                                       fit: BoxFit.contain,
                                                       width: 15,
                                                     ),
-                                                    onTap: () {},
+                                                    onTap: () async {
+                                                      await insertSetenceToFavorite();
+                                                    },
                                                   ),
                                                 ),
                                                 Padding(

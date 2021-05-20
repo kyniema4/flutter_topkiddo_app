@@ -49,11 +49,16 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
             for (int i = 0; i < resultSearch['data'].length; i++) {
               var item = resultSearch['data'][i]['doc'];
               if (item["translatedContent"].length > 0) {
-                item['textTrans'] = item["translatedContent"][0];
+                item['english'] = item["translatedContent"][0];
+                item['american'] = item["translatedContent"][0];
               } else {
-                item['textTrans'] = jsonDecode(resultSearch['data'][i]['doc']
+                item['english'] = jsonDecode(resultSearch['data'][i]['doc']
+                    ['resultFromServer'][0])[0][0][0];
+                item['american'] = jsonDecode(resultSearch['data'][i]['doc']
                     ['resultFromServer'][0])[0][0][0];
               }
+              item['vietnameseN'] = item['text'];
+              item['vietnameseS'] = item['text'];
 
               var val = TranslateModel.fromJson(item);
               tempList.add(val);
@@ -82,11 +87,16 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
           var item = resultGet['data'][i];
           print('debugging');
           if (item["translatedContent"].length > 0) {
-            item['textTrans'] = item["translatedContent"][0];
+            item['english'] = item["translatedContent"][0];
+            item['american'] = item["translatedContent"][0];
           } else {
-            item['textTrans'] = jsonDecode(
+            item['english'] = jsonDecode(
+                resultGet['data'][i]['doc']['resultFromServer'][0])[0][0][0];
+            item['american'] = jsonDecode(
                 resultGet['data'][i]['doc']['resultFromServer'][0])[0][0][0];
           }
+          item['vietnameseN'] = item['text'];
+          item['vietnameseS'] = item['text'];
 
           var val = TranslateModel.fromJson(item);
           tempList.add(val);
@@ -97,7 +107,19 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
           this.listSentences = tempList;
         });
       }
-    } catch (e) {}
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  insertSetenceToFavorite(data) async {
+    Map row = data.toJson();
+    bool check = await dbHelper.checkIdExists(row['id']);
+
+    if (!check) {
+      await dbHelper.insert(row);
+    }
+    return;
   }
 
   @override
@@ -320,20 +342,14 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                                             Padding(
                                                                               padding: const EdgeInsets.only(right: 10),
                                                                               child: GestureDetector(
-                                                                                child: Image.asset(
-                                                                                  'assets/images/directory/add.png',
-                                                                                  fit: BoxFit.contain,
-                                                                                  width: 15,
-                                                                                ),
-                                                                                onTap: () async {
-                                                                                  Map<String, dynamic> row = {
-                                                                                    DatabaseHelper.columnName: 'Bob',
-                                                                                    DatabaseHelper.columnAge: 23
-                                                                                  };
-                                                                                  final id = await dbHelper.insert(row);
-                                                                                  print('inserted row id: $id');
-                                                                                },
-                                                                              ),
+                                                                                  child: Image.asset(
+                                                                                    'assets/images/directory/add.png',
+                                                                                    fit: BoxFit.contain,
+                                                                                    width: 15,
+                                                                                  ),
+                                                                                  onTap: () async {
+                                                                                    await insertSetenceToFavorite(listSentences[index]);
+                                                                                  }),
                                                                             ),
                                                                             Padding(
                                                                               padding: const EdgeInsets.only(right: 0),
@@ -347,9 +363,8 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                                                   final allRows = await dbHelper.queryAllRows();
                                                                                   print('query all rows:');
                                                                                   allRows.forEach(print);
-                                                                                  // final id = await dbHelper.queryRowCount();
-                                                                                  // final rowsDeleted = await dbHelper.delete(id);
-                                                                                  // print('deleted $rowsDeleted row(s): row $id');
+                                                                                  // await dbHelper.deleteAll();
+                                                                                  // print('success');
                                                                                 },
                                                                               ),
                                                                             )
@@ -476,7 +491,7 @@ class TopButton extends StatelessWidget {
                                       ),
                                       fit: BoxFit.contain),
                                 )),
-                            onTap: () {
+                            onTap: () async {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -553,15 +568,15 @@ class TranslateModel {
     this.american,
   });
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'idAudioResource': idAudioResource,
-      'idTranslatedAudioResource': idTranslatedAudioResource,
-      'keyFrom': keyFrom,
-      'keyTo': keyTo,
-      'vietnameseNorth': vietnameseNorth,
-      'vietnameseSouth': vietnameseSouth,
+      'audioResource': idAudioResource,
+      'translatedAudioResource': idTranslatedAudioResource,
+      'language': keyFrom,
+      'toLang': keyTo,
+      'vietnameseN': vietnameseNorth,
+      'vietnameseS': vietnameseSouth,
       'spanish': spanish,
       'japanese': japanese,
       'chinese': chinese,
@@ -573,19 +588,19 @@ class TranslateModel {
 
   factory TranslateModel.fromJson(Map<String, dynamic> parsedJson) {
     return TranslateModel(
-      id: parsedJson['_id'],
-      idAudioResource: parsedJson['audioResource'],
-      idTranslatedAudioResource: parsedJson['translatedAudioResource'],
+      id: parsedJson['_id'] ?? parsedJson['id'],
+      idAudioResource: parsedJson['audioResource'] ?? "",
+      idTranslatedAudioResource: parsedJson['translatedAudioResource'] ?? "",
       keyFrom: parsedJson['language'] ?? "",
       keyTo: parsedJson['toLang'] ?? "",
-      vietnameseNorth: parsedJson['text'] ?? "",
-      vietnameseSouth: parsedJson['text'] ?? "",
+      vietnameseNorth: parsedJson['vietnameseN'] ?? "",
+      vietnameseSouth: parsedJson['vietnameseS'] ?? "",
       spanish: parsedJson['spanish'] ?? "",
       japanese: parsedJson['japanese'] ?? "",
       chinese: parsedJson['chinese'] ?? "",
       french: parsedJson['french'] ?? "",
-      english: parsedJson['textTrans'] ?? "",
-      american: parsedJson['textTrans'] ?? "",
+      english: parsedJson['english'] ?? "",
+      american: parsedJson['american'] ?? "",
     );
   }
 }
