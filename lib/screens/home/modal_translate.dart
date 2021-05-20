@@ -84,9 +84,9 @@ class _ModalTranslateState extends State<ModalTranslate> {
                               width: 40.w,
                             ),
                           ),
-                          Text(
-                            'lesson'.tr().toUpperCase(),
-                          ),
+                          // Text(
+                          //   'lesson'.tr().toUpperCase(),
+                          // ),
                           Positioned(
                             right: 0,
                             bottom: 0,
@@ -115,7 +115,7 @@ class _ModalTranslateState extends State<ModalTranslate> {
                                 onPressed: () => {
                                   //changeLanguage(context, 'en'),
                                   //_local = true,
-                                   context.locale = Locale('en', 'US'),
+                                  context.locale = Locale('en', 'US'),
                                   Navigator.pop(context, false)
                                 },
                                 child: Image.asset(
