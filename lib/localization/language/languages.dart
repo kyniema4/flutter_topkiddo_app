@@ -29,4 +29,10 @@ abstract class Languages {
   String get phoneNumber;
   String get password;
   String get confirmPassword;
+
+  String get imgChoose;
+  String get imgLogin;
+  String get imgLoginMain;
+  String get imgNewUser;
+  String get imgRegister;
 }

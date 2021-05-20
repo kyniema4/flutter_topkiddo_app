@@ -70,6 +70,7 @@ flutter:
     - assets/images/button/menu-button.png
     - assets/images/button/vietnames-flag.png
     - assets/images/button/logout.png
+    - assets/images/button/chinhsua-button.png
     - assets/images/lesson/6thang.png
     - assets/images/lesson/12thang.png
     - assets/images/lesson/trondoi.png
@@ -89,6 +90,10 @@ flutter:
     - assets/images/login_page/new-userbutton.png
     - assets/images/login_page/register-button.png
     - assets/images/login_page/registerboard.png
+    - assets/images/login_page/dangnhap-button.png
+    - assets/images/login_page/dangky-button.png
+    - assets/images/login_page/main-nguoimoibutton.png
+    - assets/images/login_page/main-dangnhapbutton.png
     - assets/images/topic/choose-button.png
     - assets/images/topic/designed-courses.png
     - assets/images/topic/expressions.png
@@ -106,6 +111,7 @@ flutter:
     - assets/images/languages/babe2.png
     - assets/images/languages/line-chine.png
     - assets/images/languages/line1.png
+    - assets/images/languages/line2.png
     - assets/images/flashcard/image1.jpg
     - assets/images/flashcard/image2.jpg
     - assets/images/flashcard/image3.jpg

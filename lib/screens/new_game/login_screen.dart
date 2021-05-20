@@ -18,20 +18,20 @@ class _LoginScreen extends State<LoginScreen> {
   TextEditingController passwordController = new TextEditingController();
 
   _changeHomePage() {
-    // if (numberController.text.isEmpty) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //       SnackBar(content: Text(Languages.of(context).canNotPhoneNumber)));
-    // } else if (numberController.text.length != 10 &&
-    //     numberController.text.isNotEmpty) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //       SnackBar(content: Text(Languages.of(context).phoneNumber10)));
-    // } else if (passwordController.text.isEmpty) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //       SnackBar(content: Text(Languages.of(context).canNotPassword)));
-    // } else {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (BuildContext context) => HomeScreen()));
-    // }
+    if (numberController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(Languages.of(context).canNotPhoneNumber)));
+    } else if (numberController.text.length != 10 &&
+        numberController.text.isNotEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(Languages.of(context).phoneNumber10)));
+    } else if (passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(Languages.of(context).canNotPassword)));
+    } else {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (BuildContext context) => HomeScreen()));
+    }
   }
 
   @override
@@ -244,7 +244,8 @@ class _LoginScreen extends State<LoginScreen> {
                                               decoration: BoxDecoration(
                                                 image: DecorationImage(
                                                     image: AssetImage(
-                                                      'assets/images/login_page/loginbutton1.png',
+                                                      Languages.of(context)
+                                                          .imgLogin,
                                                     ),
                                                     fit: BoxFit.contain),
                                                 // button text

@@ -247,8 +247,8 @@ class _RegisterScreen extends State<RegisterScreen> {
                                                 decoration: BoxDecoration(
                                                   image: DecorationImage(
                                                       image: AssetImage(
-                                                        'assets/images/login_page/register-button.png',
-                                                      ),
+                                                          Languages.of(context)
+                                                              .imgRegister),
                                                       fit: BoxFit.contain),
                                                 )),
                                             onTap: _changeLoginPage,

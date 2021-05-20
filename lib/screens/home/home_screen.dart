@@ -3,6 +3,7 @@ import '../../theme/style.dart';
 import '../../theme/theme.dart' as Theme;
 
 import '../new_game/loginhome_screen.dart';
+import './modal_translate.dart';
 import 'designed-courses/library_screen.dart';
 import '../../localization/language/languages.dart';
 import '../../components/languages_app.dart';
@@ -18,6 +19,11 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _pressed = true;
   bool _pressed2 = true;
   bool _pressed3 = true;
+  bool _local = true;
+  @override
+  void initState() {
+    super.initState();
+  }
 
   _showHomeItem(BuildContext context, imageBg, String title, String content,
       bool _pressId) {
@@ -70,12 +76,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 duration: Duration(milliseconds: 200),
                 child: GestureDetector(
                     child: Container(
-                      // color: Colors.blue,
-                      height: 16.w,
-                      child: Image.asset(
-                          'assets/images/topic/choose-button.png',
-                          fit: BoxFit.contain),
-                    ),
+                        // color: Colors.blue,
+                        height: 16.w,
+                        child: Image.asset(Languages.of(context).imgChoose,
+                            fit: BoxFit.contain)),
                     onTap: () {
                       setState(() {
                         _pressId = !_pressId;
@@ -149,6 +153,16 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class TopButton extends StatelessWidget {
+  _showModalTranslate(context) {
+    showDialog(
+        context: context,
+        useSafeArea: false,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return ModalTranslate();
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -212,8 +226,37 @@ class TopButton extends StatelessWidget {
               ]),
             ),
             Expanded(
-              child: LanguagesApp(),
-            ),
+              child: Stack(
+                children: [
+                  Positioned(
+                    top: 3.5.w,
+                    right: 16.w,
+                    child: Image.asset(
+                      'assets/images/button/add_short.png',
+                      height: 13.5.w,
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                  Positioned(
+                    right: 33.w,
+                    child: GestureDetector(
+                        child: Container(
+                            width: 20.w,
+                            height: 20.w,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  image: AssetImage(
+                                    'assets/images/button/vietnames-flag.png',
+                                  ),
+                                  fit: BoxFit.contain),
+                            )),
+                        onTap: () {
+                          _showModalTranslate(context);
+                        }),
+                  ),
+                ],
+              ),
+            )
           ],
         ));
   }
