@@ -8,6 +8,11 @@ import '../../../theme/style.dart';
 import '../../../theme/theme.dart' as Theme;
 import '../../new_game/loginhome_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
+import '../../../components/back.dart';
+import './flash_card_screen.dart';
+import './animation_screen.dart';
+
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class DesignCourseScreen extends StatefulWidget {
   final lesson;
@@ -184,12 +189,13 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
                                                     setState(() {
                                                       _pressId = !_pressId;
                                                     });
-                                                    // Navigator.push(
-                                                    //     context,
-                                                    //     MaterialPageRoute(
-                                                    //         builder: (BuildContext
-                                                    //                 context) =>
-                                                    //             LibraryScreen()));
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (BuildContext
+                                                                    context) =>
+                                                                FlashCardScreen()));
+                                                    // AnimationScreen()));
                                                   })))
                                     ]),
                                   )
@@ -209,19 +215,20 @@ class TopButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         height: 32.w,
+        // padding: new EdgeInsets.only(top: 10.w),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.max,
           children: [
             Expanded(
-              child: Back(buttonImage: 'assets/images/button/close-button.png'),
+              child: Back(buttonImage: 'assets/images/button/back-button.png'),
             ),
             Expanded(
               child: Stack(
                 children: [
                   Positioned(
-                    top: 11.w,
+                    top: 10.w,
                     right: 16.w,
                     child: Image.asset(
                       'assets/images/button/library-button.png',

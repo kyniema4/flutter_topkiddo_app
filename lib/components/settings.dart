@@ -8,7 +8,7 @@ class Settings extends StatelessWidget {
     return Column(
       children: [
         Container(
-          padding: new EdgeInsets.only(top: 10.w),
+          padding: new EdgeInsets.only(top: 9.w),
           height: MediaQuery.of(context).size.height,
           child: Stack(
             children: <Widget>[

@@ -10,6 +10,8 @@ import '../../../Utils/http_service.dart';
 import '../../../components/back.dart';
 import '../../../theme/style.dart';
 import '../../../theme/theme.dart' as Theme;
+import 'package:topkiddo/components/languages_app.dart';
+import '../../../components/languages_app.dart';
 import 'design_course_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -34,6 +36,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
       child: Stack(children: [
         Image.asset(
           'assets/images/unit/course-board.png',
+          height: 129.w,
           fit: BoxFit.contain,
         ),
         Positioned(
@@ -352,37 +355,7 @@ class TopButton extends StatelessWidget {
                         ),
                       ],
                     ))),
-            Expanded(
-              child: Stack(
-                children: [
-                  Positioned(
-                    top: 13.5.w,
-                    right: 16.w,
-                    child: Image.asset(
-                      'assets/images/button/add_short.png',
-                      height: 13.5.w,
-                      fit: BoxFit.fill,
-                    ),
-                  ),
-                  Positioned(
-                    top: 10.w,
-                    right: 33.w,
-                    child: GestureDetector(
-                        child: Container(
-                            width: 20.w,
-                            height: 20.w,
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                  image: AssetImage(
-                                    'assets/images/button/vietnames-flag.png',
-                                  ),
-                                  fit: BoxFit.contain),
-                            )),
-                        onTap: () {}),
-                  ),
-                ],
-              ),
-            ),
+            Expanded(child: LanguagesApp()),
           ],
         ));
   }
