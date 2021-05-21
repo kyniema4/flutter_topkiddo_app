@@ -4,13 +4,14 @@ import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hive/hive.dart';
 
 import 'package:topkiddo/Utils/http_service.dart';
 import 'package:topkiddo/screens/home/directory-page/detail_sentences_screen.dart';
 import 'package:topkiddo/screens/home/directory-page/directory_favorite.dart';
 import 'package:topkiddo/theme/style.dart';
 import 'package:topkiddo/theme/theme.dart' as Theme;
-
+import 'package:topkiddo/data_local/favorite_sentence_model.dart';
 import '../../../Utils/database_helpers.dart';
 import '../../../components/back.dart';
 
@@ -27,8 +28,12 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
   String keyFrom = 'vi';
   String keyTo = 'en';
   String query = "";
+  String dataBoxName = "sentence";
+
   Timer debouncer = null;
   final dbHelper = DatabaseHelper.instance;
+  Box box;
+
   void debounce(
     VoidCallback callback, {
     Duration duration = const Duration(milliseconds: 1000),
@@ -37,6 +42,18 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
       debouncer.cancel();
     }
     debouncer = Timer(duration, callback);
+  }
+
+  checkKeyLanguage(String key) {
+    Map mapLanguage = {
+      'vi': ["vietnameseN", "vietnameseS"],
+      'es': ["spanish"],
+      'ja': ["spanish"],
+      'zh-CN': ["chinese"],
+      'fr': ["french"],
+      'en': ["english", "american"],
+    };
+    return (mapLanguage['$key']);
   }
 
   Future searchSentence(String query) async => debounce(() async {
@@ -49,17 +66,18 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
             for (int i = 0; i < resultSearch['data'].length; i++) {
               var item = resultSearch['data'][i]['doc'];
               if (item["translatedContent"].length > 0) {
-                item['english'] = item["translatedContent"][0];
-                item['american'] = item["translatedContent"][0];
+                checkKeyLanguage(keyTo).forEach((e) {
+                  item['$e'] = item["translatedContent"][0];
+                });
               } else {
-                item['english'] = jsonDecode(resultSearch['data'][i]['doc']
-                    ['resultFromServer'][0])[0][0][0];
-                item['american'] = jsonDecode(resultSearch['data'][i]['doc']
-                    ['resultFromServer'][0])[0][0][0];
+                checkKeyLanguage(keyTo).forEach((e) {
+                  item['$e'] = jsonDecode(resultSearch['data'][i]['doc']
+                      ['resultFromServer'][0])[0][0][0];
+                });
               }
-              item['vietnameseN'] = item['text'];
-              item['vietnameseS'] = item['text'];
-
+              checkKeyLanguage(keyFrom).forEach((e) {
+                item['$e'] = item['text'];
+              });
               var val = TranslateModel.fromJson(item);
               tempList.add(val);
             }
@@ -87,17 +105,18 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
           var item = resultGet['data'][i];
           print('debugging');
           if (item["translatedContent"].length > 0) {
-            item['english'] = item["translatedContent"][0];
-            item['american'] = item["translatedContent"][0];
+            checkKeyLanguage(keyTo).forEach((e) {
+              item['$e'] = item["translatedContent"][0];
+            });
           } else {
-            item['english'] = jsonDecode(
-                resultGet['data'][i]['doc']['resultFromServer'][0])[0][0][0];
-            item['american'] = jsonDecode(
-                resultGet['data'][i]['doc']['resultFromServer'][0])[0][0][0];
+            checkKeyLanguage(keyTo).forEach((e) {
+              item['$e'] = jsonDecode(
+                  resultGet['data'][i]['doc']['resultFromServer'][0])[0][0][0];
+            });
           }
-          item['vietnameseN'] = item['text'];
-          item['vietnameseS'] = item['text'];
-
+          checkKeyLanguage(keyFrom).forEach((e) {
+            item['$e'] = item['text'];
+          });
           var val = TranslateModel.fromJson(item);
           tempList.add(val);
         }
@@ -122,11 +141,43 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
     return;
   }
 
+  // insertSetenceToFavorite(data) async {
+  //   final value = FavoriteSentenceModel(
+  //       data.id,
+  //       data.idAudioResource,
+  //       data.idTranslatedAudioResource,
+  //       data.keyFrom,
+  //       data.keyTo,
+  //       data.vietnameseNorth,
+  //       data.vietnameseSouth,
+  //       data.spanish,
+  //       data.japanese,
+  //       data.chinese,
+  //       data.french,
+  //       data.english,
+  //       data.american);
+  //   box.add(value);
+  //   print('add data success');
+  // }
+
+  // initBox() async {
+  //   await Hive.openBox(dataBoxName);
+  //   box = Hive.box(dataBoxName);
+  // }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    //initBox();
     getListTopTrans();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    Hive.close();
   }
 
   @override
@@ -360,9 +411,12 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                                                   width: 20,
                                                                                 ),
                                                                                 onTap: () async {
-                                                                                  final allRows = await dbHelper.queryAllRows();
-                                                                                  print('query all rows:');
-                                                                                  allRows.forEach(print);
+                                                                                  await box.clear();
+                                                                                  print('success');
+                                                                                  // final allRows = await dbHelper.queryAllRows();
+                                                                                  // print('query all rows:');
+                                                                                  // allRows.forEach(print);
+
                                                                                   // await dbHelper.deleteAll();
                                                                                   // print('success');
                                                                                 },

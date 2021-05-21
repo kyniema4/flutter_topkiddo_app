@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:topkiddo/data_local/favorite_sentence_model.dart';
 import 'package:topkiddo/screens/home/designed-courses/design_course_screen.dart';
 import 'package:topkiddo/theme/style.dart';
 import 'package:topkiddo/theme/theme.dart' as Theme;
@@ -21,6 +23,14 @@ class DirectoryFavorite extends StatefulWidget {
 class _DirectoryFavoriteState extends State<DirectoryFavorite> {
   final dbHelper = DatabaseHelper.instance;
   List listFavoriteSentences = [];
+  String dataBoxName = "sentence";
+
+  show() async {
+    print('run show');
+    var box = Hive.box(dataBoxName);
+    
+    print('debugging');
+  }
 
   getListSentenceFavoriteFromLocal() async {
     var result = await dbHelper.queryAllRows();
@@ -50,6 +60,7 @@ class _DirectoryFavoriteState extends State<DirectoryFavorite> {
     // TODO: implement initState
     super.initState();
     getListSentenceFavoriteFromLocal();
+    show();
   }
 
   @override
