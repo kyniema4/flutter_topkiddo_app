@@ -84,9 +84,9 @@ class _ModalTranslateState extends State<ModalTranslate> {
                               width: 40.w,
                             ),
                           ),
-                          Text(
-                            'lesson'.tr().toUpperCase(),
-                          ),
+                          // Text(
+                          //   'lesson'.tr().toUpperCase(),
+                          // ),
                           Positioned(
                             right: 0,
                             bottom: 0,
