@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../Utils/http_service.dart';
 import '../../theme/style.dart';
 import '../../theme/theme.dart' as Theme;
 
@@ -10,6 +9,7 @@ import '../new_game/loginhome_screen.dart';
 import './modal_translate.dart';
 import 'designed-courses/library_screen.dart';
 //import '../../localization/language/languages.dart';
+
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -60,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
             right: 0,
             child: Container(
                 height: 30.w,
-                margin: EdgeInsets.symmetric(horizontal: 15.w),
+                margin: EdgeInsets.symmetric(horizontal: 16.w),
                 alignment: Alignment.center,
                 child: Text(
                   content,
@@ -230,16 +230,15 @@ class TopButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         height: 32.w,
-        padding: new EdgeInsets.only(top: 10.w),
+        // padding: new EdgeInsets.only(top: 10.w),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
-          // mainAxisSize: MainAxisSize.min,
           children: [
             Expanded(
               child: Stack(children: [
                 Positioned(
-                  top: 4.5.w,
+                  top: 13.5.w,
                   left: -40.w,
                   child: Image.asset(
                     'assets/images/button/bar-long.png',
@@ -248,7 +247,7 @@ class TopButton extends StatelessWidget {
                   ),
                 ),
                 Positioned(
-                    top: 1.w,
+                    top: 10.w,
                     left: 16.w,
                     child: Row(
                       children: [
@@ -289,7 +288,6 @@ class TopButton extends StatelessWidget {
                     )),
               ]),
             ),
-            // ),
             Expanded(
               child: Stack(
                 children: [
