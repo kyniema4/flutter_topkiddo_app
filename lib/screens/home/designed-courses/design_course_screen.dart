@@ -1,18 +1,12 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../components/back.dart';
 import '../../../theme/style.dart';
 import '../../../theme/theme.dart' as Theme;
-import '../../new_game/loginhome_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
-import '../../../components/back.dart';
+// import './../../../localization/language/languages.dart';
 import './flash_card_screen.dart';
-import './animation_screen.dart';
-
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class DesignCourseScreen extends StatefulWidget {
   final lesson;
@@ -115,8 +109,7 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
                                           child: Container(
                                               height: 8.w,
                                               alignment: Alignment.center,
-                                              child: Text(
-                                                  'easy'.tr(),
+                                              child: Text('easy'.tr(),
                                                   style: TextStyle(
                                                       color: Theme
                                                           .Colors.yellow200,
@@ -182,7 +175,8 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
                                                   child: Container(
                                                     // color: Colors.blue,
                                                     height: 8.5.w,
-                                                    child: Image.asset('imgChoose'.tr(),
+                                                    child: Image.asset(
+                                                        'imgChoose'.tr(),
                                                         fit: BoxFit.contain),
                                                   ),
                                                   onTap: () {
