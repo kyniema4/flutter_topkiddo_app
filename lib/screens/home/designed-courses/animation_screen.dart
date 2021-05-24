@@ -3,7 +3,6 @@ import 'package:topkiddo/components/languages_app.dart';
 import '../../../theme/style.dart';
 import '../../../theme/theme.dart' as Theme;
 import '../../../components/back.dart';
-import './../../../localization/language/languages.dart';
 import '../../../components/languages_app.dart';
 import 'design_course_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

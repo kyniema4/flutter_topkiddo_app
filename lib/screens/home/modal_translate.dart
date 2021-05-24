@@ -23,10 +23,10 @@ class _ModalTranslateState extends State<ModalTranslate> {
 
   changeOpacity() {
     Future.delayed(Duration(seconds: 1), () {
-      setState(() {
-        opacity = opacity == 0.0 ? 1.0 : 0.0;
-        changeOpacity();
-      });
+      // setState(() {
+      //   opacity = opacity == 0.0 ? 1.0 : 0.0;
+      //   changeOpacity();
+      // });
     });
   }
 

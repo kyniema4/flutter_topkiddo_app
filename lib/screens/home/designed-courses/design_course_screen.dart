@@ -7,6 +7,13 @@ import '../../../theme/theme.dart' as Theme;
 import 'package:easy_localization/easy_localization.dart';
 // import './../../../localization/language/languages.dart';
 import './flash_card_screen.dart';
+import '../../new_game/loginhome_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
+import '../../../components/back.dart';
+import './flash_card_screen.dart';
+import './animation_screen.dart';
+
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class DesignCourseScreen extends StatefulWidget {
   final lesson;

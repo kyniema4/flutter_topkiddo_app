@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../screens/animation_screen.dart';
 
 class Settings extends StatelessWidget {
   @override
@@ -40,7 +41,11 @@ class Settings extends StatelessWidget {
                                   fit: BoxFit.contain),
                             )),
                         onTap: () {
-                          print("");
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      AnimationScreen()));
                         }),
                     SizedBox(
                       width: 8.w,

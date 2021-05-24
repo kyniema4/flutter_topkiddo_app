@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../theme/style.dart';
 import '../../../theme/theme.dart' as Theme;
 import '../../../components/languages_app.dart';
-import './../../../localization/language/languages.dart';
 import '../../home/home_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 // import 'package:swipedetector/swipedetector.dart';

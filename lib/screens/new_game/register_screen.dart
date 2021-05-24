@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:topkiddo/Utils/http_service.dart';
 import 'package:topkiddo/components/Loading_dialog.dart';
 import 'package:topkiddo/screens/home/home_screen.dart';
 import '../../theme/theme.dart' as Theme;
@@ -10,30 +11,20 @@ import '../../components/settings.dart';
 import './login_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 
-enum MobileVerificationState {
-  SHOW_MOBILE_FORM_STATE,
-  SHOW_OTP_FORM_STATE,
-}
-
 class RegisterScreen extends StatefulWidget {
   @override
   _RegisterScreen createState() => _RegisterScreen();
 }
 
 class _RegisterScreen extends State<RegisterScreen> {
-  MobileVerificationState currentState =
-      MobileVerificationState.SHOW_MOBILE_FORM_STATE;
   TextEditingController numberController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController comfirmPasswordController = TextEditingController();
   TextEditingController otpController = TextEditingController();
 
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   FirebaseAuth _auth = FirebaseAuth.instance;
   String verificationId;
-  bool showLoading = false;
-
-  
+  bool showOTP = false;
 
   _changeWidgetOTP() async {
     if (numberController.text.isEmpty) {
@@ -67,7 +58,7 @@ class _RegisterScreen extends State<RegisterScreen> {
         codeSent: (verificationId, resendingToken) async {
           Navigator.of(context, rootNavigator: true).pop();
           setState(() {
-            currentState = MobileVerificationState.SHOW_OTP_FORM_STATE;
+            showOTP = true;
             this.verificationId = verificationId;
           });
         },
@@ -75,6 +66,7 @@ class _RegisterScreen extends State<RegisterScreen> {
       );
     }
   }
+
   void signInWithPhoneAuthCredential(
       PhoneAuthCredential phoneAuthCredential) async {
     Dialogs.showLoadingDialog(context);
@@ -83,47 +75,69 @@ class _RegisterScreen extends State<RegisterScreen> {
           await _auth.signInWithCredential(phoneAuthCredential);
 
       Navigator.of(context, rootNavigator: true).pop();
-
       if (authCredential?.user != null) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => HomeScreen()));
+        await registerAccount();
+        // Navigator.push(
+        //     context, MaterialPageRoute(builder: (context) => HomeScreen()));
+      } else {
+        numberController.text = '0' + numberController.text.substring(3);
+        setState(() {
+          showOTP = false;
+        });
       }
     } on FirebaseAuthException catch (e) {
+      numberController.text = '0' + numberController.text.substring(3);
+      otpController.text = "";
       Navigator.of(context, rootNavigator: true).pop();
-
+      setState(() {
+        showOTP = false;
+      });
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.message)));
     }
   }
-  //registerAccount() async {
-  //   try {
-  //     await fetch(
-  //             url: ApiList.signupWithPhone,
-  //             body: {
-  //               "phoneNumber": numberController.text,
-  //               "password": passwordController.text,
-  //             },
-  //             needReturnErrorCode: true)
-  //         .then((val) async {
-  //       if (val['success']) {
-  //         print(val['data']);
-  //         String token = val['data']['token'];
-  //         setToken(token);
-  //         //Navigator.of(context, rootNavigator: true).pop();
 
-  //         Navigator.of(context).pushAndRemoveUntil(
-  //             MaterialPageRoute(builder: (context) => HomeScreen()),
-  //             (Route<dynamic> route) => false);
-  //       } else {
+  registerAccount() async {
+    try {
+      await fetch(
+              url: ApiList.signupWithPhone,
+              body: {
+                "phoneNumber": numberController.text,
+                "password": passwordController.text,
+              },
+              needReturnErrorCode: true)
+          .then((val) async {
+        if (val['success']) {
+          print(val['data']);
+          String token = val['data']['token'];
+          setToken(token);
+          //Navigator.of(context, rootNavigator: true).pop();
 
-  //         ScaffoldMessenger.of(context)
-  //         .showSnackBar(SnackBar(content: Text("")));
-  //         // Navigator.of(context, rootNavigator: true).pop();
-  //       }
-  //     });
-  //   } catch (e) {}
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => HomeScreen()),
+              (Route<dynamic> route) => false);
+        } else {
+          numberController.text = '0' + numberController.text.substring(3);
+          otpController.text = "";
+          setState(() {
+            showOTP = false;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("This phonenumber is exist")));
+        }
+      });
+    } catch (e) {
+      otpController.text = "";
+      numberController.text = '0' + numberController.text.substring(3);
+      setState(() {
+        showOTP:
+        false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("An error occured, please try again")));
+    }
+  }
 
-  // }
   getMobileFormWidget(context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
@@ -294,7 +308,7 @@ class _RegisterScreen extends State<RegisterScreen> {
           child: Container(
               alignment: Alignment.center,
               height: 17.w,
-              child: Text('register'.tr(),
+              child: Text("OTP",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       color: Theme.Colors.yellow200,
@@ -433,11 +447,9 @@ class _RegisterScreen extends State<RegisterScreen> {
                                 Container(
                                     height: 150.w,
                                     width: 148.w,
-                                    child: currentState ==
-                                            MobileVerificationState
-                                                .SHOW_MOBILE_FORM_STATE
-                                        ? getMobileFormWidget(context)
-                                        : getOtpFormWidget(context))
+                                    child: showOTP
+                                        ? getOtpFormWidget(context)
+                                        : getMobileFormWidget(context))
                               ],
                             )),
                           ),

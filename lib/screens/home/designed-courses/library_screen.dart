@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:topkiddo/Utils/styling.dart';
 import 'package:topkiddo/components/Loading_dialog.dart';
 
 import '../../../Utils/http_service.dart';
@@ -10,6 +9,8 @@ import '../../../components/back.dart';
 import '../../../theme/style.dart';
 import '../../../theme/theme.dart' as Theme;
 // import './../../../localization/language/languages.dart';
+
+import 'package:topkiddo/components/languages_app.dart';
 import '../../../components/languages_app.dart';
 import 'design_course_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -26,6 +27,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
   _showLeveltem(BuildContext context, String title, List data, lessonDone) {
     double height = MediaQuery.of(context).size.height;
+
     return Container(
       width: 89.w,
       height: 129.w,
