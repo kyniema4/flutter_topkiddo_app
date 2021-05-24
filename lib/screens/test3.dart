@@ -7,34 +7,52 @@ class Test3Screen extends StatefulWidget {
   // final Function() onSwipeUp;
 }
 
-class _Test3PageState extends State<Test3Screen> {
+class _Test3PageState extends State<Test3Screen> with TickerProviderStateMixin {
   String _swipeDirection = "";
   int number = 0;
-  int _lastReportedPage = 0;
+  int previousPage = 0;
+  ScrollController s;
+  AnimationController _controller;
+  Tween<double> _tween = Tween(begin: 1.5, end: 2);
 
   void initState() {
     super.initState();
+    s = PageController();
+    _controller = AnimationController(
+        duration: const Duration(milliseconds: 700), vsync: this);
   }
 
-  final _pageController = PageController(initialPage: 0);
+  // final _pageController = PageController(initialPage: 0);
 
   _onPageViewChange(int page) {
     print("Current Page: " + page.toString());
-    _lastReportedPage == page.toString();
+    previousPage = page;
+    setState(() {
+      number = page;
+    });
   }
 
   _reset() {
-    print("lastReportedPage");
-    print(_lastReportedPage);
-    if (_lastReportedPage == 1) {
-      Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (BuildContext context) => super.widget));
-    }
+    print("Previous page: $number");
+    _controller.repeat();
+    _controller.forward();
+    // setState(() {
+    //   _controller.repeat(reverse: false);
+    // });
+    // avatarController.repeate();
+    // Navigator.pushReplacement(context,
+    //     MaterialPageRoute(builder: (BuildContext context) => super.widget));
+  }
+
+  @override
+  void dispose() {
+    _controller.repeat(reverse: false);
+
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final PageController controller = PageController(initialPage: 0);
     return SafeArea(
         child: Scaffold(
             body: Center(
@@ -44,9 +62,24 @@ class _Test3PageState extends State<Test3Screen> {
             Expanded(
               child: SwipeDetector(
                 child: PageView(
+                  physics: BouncingScrollPhysics(),
+                  // pageSnapping: false,
+                  // scrollDirection: Axis.vertical,
                   onPageChanged: _onPageViewChange,
-                  controller: _pageController,
+
+                  // controller: _pageController,
                   children: [
+                    Center(
+                      child: ScaleTransition(
+                        scale: _tween.animate(CurvedAnimation(
+                            parent: _controller, curve: Curves.elasticOut)),
+                        child: SizedBox(
+                          height: 100,
+                          width: 100,
+                          child: Text('dgegfd'),
+                        ),
+                      ),
+                    ),
                     Card(
                       child: Container(
                         padding: EdgeInsets.only(
