@@ -18,6 +18,7 @@ class ApiList {
   static const getProfile = 'users/get_my_profile';
   static const getListUnit = 'lessions/get_list_units';
   static const getListLesson = 'lessions/get_list_lession';
+  static const getLessonDetail = 'lessions/get_lession_detail';
   static const getListTopTrans = 'translate/get_top_request_translated';
   static const searchDirectory = 'translate/translate_elac';
 }

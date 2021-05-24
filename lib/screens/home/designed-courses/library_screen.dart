@@ -69,8 +69,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     scrollDirection: Axis.vertical,
                     itemCount: data.length,
                     itemBuilder: (context, index) {
-                      return 
-                      Container(
+                      return Container(
                         child: Column(children: [
                           GestureDetector(
                               child: Container(
@@ -133,7 +132,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
         ),
       ]),
     );
-  
   }
 
   getListUnit() async {
@@ -143,10 +141,11 @@ class _LibraryScreenState extends State<LibraryScreen> {
       try {
         var resultGetList = await fetch(
           url: ApiList.getListUnit,
-          // body: {
-          //   "filter": {"language": "en"}
-          // },
+          body: {
+            "filter": {"language": 2}
+          },
         );
+        print('debugging');
         if (resultGetList['success'] &&
             resultGetList['data']['docs'].length > 0) {
           var data = resultGetList['data']['docs'];
