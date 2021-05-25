@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../screens/animation_screen.dart';
+import '../screens/animation_auto_screen.dart';
 
 class Settings extends StatelessWidget {
   @override
@@ -45,7 +45,7 @@ class Settings extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                   builder: (BuildContext context) =>
-                                      AnimationScreen()));
+                                      AnimationAutoScreen()));
                         }),
                     SizedBox(
                       width: 8.w,
