@@ -164,7 +164,7 @@ class _ModalLanguageState extends State<ModalLanguage> {
                                 Navigator.pop(context, false) //translate
                               },
                               child: Image.asset(
-                                'assets/images/button/vietnames-flag.png',
+                                'assets/images/button/flagArtboard-spain.png',
                                 width: 23.w,
                               ),
                             ),
@@ -232,24 +232,32 @@ class _ModalLanguageState extends State<ModalLanguage> {
                     left: 140.w,
                     top: 0,
                     child: Container(
-                        color: Colors.blue[300],
-                        height: 50.w,
-                        width: 65.w,
+                        // color: Colors.blue[300],
+                        height: 60.w,
+                        width: 70.w,
                         child: Stack(
                           children: [
                             Positioned(
-                              right: 0,
-                              top: 9.w,
+                              right: 10.w,
+                              top: 2.w,
+                              child: Text(
+                                'Viet-North',
+                                style: TextStyle(
+                                    fontSize: height > 600 ? 17.sp : 24.sp,
+                                    fontFamily: 'UTMCooperBlack',
+                                    fontWeight: FontWeight.w900,
+                                    color: Theme.Colors.orange100),
+                              ),
+                            ),
+                            Positioned(
+                              right: 10.w,
+                              top: 10.w,
                               child: TextButton(
-                                onPressed: () => {
-                                  //changeLanguage(context, 'en'),
-                                  //_local = true,
-                                  context.locale = Locale('en', 'US'),
-                                  Navigator.pop(context, false)
-                                },
+                                onPressed: () =>
+                                    {Navigator.pop(context, false)},
                                 child: Image.asset(
                                   'assets/images/button/enlish-flag.png',
-                                  width: 40.w,
+                                  width: 23.w,
                                 ),
                               ),
                             ),
@@ -257,10 +265,163 @@ class _ModalLanguageState extends State<ModalLanguage> {
                               left: 0,
                               bottom: 0,
                               child: Container(
+                                child: RotationTransition(
+                                  turns: new AlwaysStoppedAnimation(1030 / 360),
+                                  child: Image.asset(
+                                    'assets/images/languages/line-chine.png',
+                                    width: 40.w,
+                                    fit: BoxFit.fill,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        )),
+                  ),
+                  Positioned(
+                    left: 145.w,
+                    top: 40.w,
+                    child: Container(
+                        // color: Colors.blue[300],
+                        height: 60.w,
+                        width: 70.w,
+                        child: Stack(
+                          children: [
+                            Positioned(
+                              right: 10.w,
+                              top: 2.w,
+                              child: Text(
+                                'Viet-North',
+                                style: TextStyle(
+                                    fontSize: height > 600 ? 17.sp : 24.sp,
+                                    fontFamily: 'UTMCooperBlack',
+                                    fontWeight: FontWeight.w900,
+                                    color: Theme.Colors.orange100),
+                              ),
+                            ),
+                            Positioned(
+                              right: 10.w,
+                              top: 10.w,
+                              child: TextButton(
+                                onPressed: () =>
+                                    {Navigator.pop(context, false)},
                                 child: Image.asset(
-                                  'assets/images/languages/line2.png',
-                                  width: 50.w,
-                                  fit: BoxFit.fill,
+                                  'assets/images/button/enlish-flag.png',
+                                  width: 23.w,
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              left: 0,
+                              bottom: 15.w,
+                              child: Container(
+                                child: RotationTransition(
+                                  turns: new AlwaysStoppedAnimation(170 / 360),
+                                  child: Image.asset(
+                                    'assets/images/languages/line-chine.png',
+                                    width: 40.w,
+                                    fit: BoxFit.fill,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        )),
+                  ),
+                  Positioned(
+                    left: 145.w,
+                    top: 80.w,
+                    child: Container(
+                        // color: Colors.blue[300],
+                        height: 60.w,
+                        width: 70.w,
+                        child: Stack(
+                          children: [
+                            Positioned(
+                              right: 10.w,
+                              top: 2.w,
+                              child: Text(
+                                'Viet-North',
+                                style: TextStyle(
+                                    fontSize: height > 600 ? 17.sp : 24.sp,
+                                    fontFamily: 'UTMCooperBlack',
+                                    fontWeight: FontWeight.w900,
+                                    color: Theme.Colors.orange100),
+                              ),
+                            ),
+                            Positioned(
+                              right: 10.w,
+                              top: 10.w,
+                              child: TextButton(
+                                onPressed: () =>
+                                    {Navigator.pop(context, false)},
+                                child: Image.asset(
+                                  'assets/images/button/enlish-flag.png',
+                                  width: 23.w,
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              left: -5.w,
+                              bottom: 30.w,
+                              child: Container(
+                                child: RotationTransition(
+                                  turns: new AlwaysStoppedAnimation(200 / 360),
+                                  child: Image.asset(
+                                    'assets/images/languages/line-chine.png',
+                                    width: 40.w,
+                                    fit: BoxFit.fill,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        )),
+                  ),
+                  Positioned(
+                    left: 120.w,
+                    top: 110.w,
+                    child: Container(
+                        // color: Colors.blue[300],
+                        height: 60.w,
+                        width: 70.w,
+                        child: Stack(
+                          children: [
+                            Positioned(
+                              right: 10.w,
+                              top: 2.w,
+                              child: Text(
+                                'Viet-North',
+                                style: TextStyle(
+                                    fontSize: height > 600 ? 17.sp : 24.sp,
+                                    fontFamily: 'UTMCooperBlack',
+                                    fontWeight: FontWeight.w900,
+                                    color: Theme.Colors.orange100),
+                              ),
+                            ),
+                            Positioned(
+                              right: 10.w,
+                              top: 10.w,
+                              child: TextButton(
+                                onPressed: () =>
+                                    {Navigator.pop(context, false)},
+                                child: Image.asset(
+                                  'assets/images/button/enlish-flag.png',
+                                  width: 23.w,
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              left: -5.w,
+                              bottom: 30.w,
+                              child: Container(
+                                child: RotationTransition(
+                                  turns: new AlwaysStoppedAnimation(200 / 360),
+                                  child: Image.asset(
+                                    'assets/images/languages/line-chine.png',
+                                    width: 40.w,
+                                    fit: BoxFit.fill,
+                                  ),
                                 ),
                               ),
                             ),
