@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../theme/style.dart';
-import '../../../theme/theme.dart' as Theme;
 import '../../../components/languages_app.dart';
 import '../../../components/swipe-configuration.dart';
 import '../../home/home_screen.dart';
@@ -12,30 +11,43 @@ class FlashCardScreen extends StatefulWidget {
   _FlashCardScreen createState() => _FlashCardScreen();
 }
 
-class _FlashCardScreen extends State<FlashCardScreen> {
+class _FlashCardScreen extends State<FlashCardScreen>
+    with TickerProviderStateMixin {
   String _swipeDirection = "";
   bool isShowTopButton = true;
   int number = 0;
   int _lastReportedPage = 0;
+  int previousPage = 0;
+  ScrollController s;
+  AnimationController _controller;
+  Tween<double> _tween = Tween(begin: 1.5, end: 2);
 
   void initState() {
     super.initState();
+    s = PageController();
+    _controller = AnimationController(
+        duration: const Duration(milliseconds: 700), vsync: this);
   }
-
-  final _pageController = PageController(initialPage: 0);
 
   _onPageViewChange(int page) {
     print("Current Page: " + page.toString());
-    _lastReportedPage == page.toString();
+    previousPage = page;
+    setState(() {
+      number = page;
+    });
   }
 
   _reset() {
-    print("lastReportedPage");
-    print(_lastReportedPage);
-    if (_lastReportedPage == 1) {
-      Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (BuildContext context) => super.widget));
-    }
+    print("Previous page: $number");
+    _controller.repeat();
+    // _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.repeat(reverse: false);
+
+    super.dispose();
   }
 
   @override
@@ -72,165 +84,101 @@ class _FlashCardScreen extends State<FlashCardScreen> {
                           ),
                         ),
                         child: Container(
-                            alignment: Alignment.center,
-                            // color: Colors.red,
-                            margin: EdgeInsets.all(13.w),
-                            // child: Text('Common Animals',
-                            //     textAlign: TextAlign.center,
-                            //     style: TextStyle(
-                            //         fontSize: height > 600 ? 80.sp : 140.sp,
-                            //         // fontWeight: FontWeight.w900,
-                            //         color: Colors.red,
-                            //         fontFamily: 'UTMCooperBlack')),
-                            // child: Text('Cat And Dog',
-                            //     textAlign: TextAlign.center,
-                            //     style: TextStyle(
-                            //         fontSize: height > 600 ? 70.sp : 100.sp,
-                            //         // fontWeight: FontWeight.w900,
-                            //         color: Colors.red,
-                            //         fontFamily: 'UTMCooperBlack')),
-                            child:
-                                // Column(
-                                //   children: [
-                                //     Text('Click Vào Từng Hình Để Nghe Cách Đọc',
-                                //         textAlign: TextAlign.center,
-                                //         style: TextStyle(
-                                //             fontSize: height > 600 ? 30.sp : 45.sp,
-                                //             // fontWeight: FontWeight.w900,
-                                //             color: Colors.red,
-                                //             fontFamily: 'UTMCooperBlack')),
-                                //     SizedBox(
-                                //       height: 20.w,
-                                //     ),
-                                //     Row(
-                                //       mainAxisAlignment:
-                                //           MainAxisAlignment.spaceAround,
-                                //       crossAxisAlignment: CrossAxisAlignment.center,
-                                //       children: [
-                                //         Image.asset(
-                                //           'assets/images/flashcard/image4.jpg',
-                                //           fit: BoxFit.contain,
-                                //           height: 70.w,
-                                //         ),
-                                //         Image.asset(
-                                //           'assets/images/flashcard/image6.jpg',
-                                //           fit: BoxFit.contain,
-                                //           height: 70.w,
-                                //         ),
-                                //       ],
-                                //     )
-                                //   ],
-                                // )
-                                SwipeDetector(
-                              child: PageView(
-                                  onPageChanged: _onPageViewChange,
-                                  controller: _pageController,
+                          alignment: Alignment.center,
+                          // color: Colors.red,
+                          margin: EdgeInsets.all(13.w),
+                          // child: Text('Common Animals',
+                          //     textAlign: TextAlign.center,
+                          //     style: TextStyle(
+                          //         fontSize: height > 600 ? 80.sp : 140.sp,
+                          //         // fontWeight: FontWeight.w900,
+                          //         color: Colors.red,
+                          //         fontFamily: 'UTMCooperBlack')),
+                          // child: Text('Cat And Dog',
+                          //     textAlign: TextAlign.center,
+                          //     style: TextStyle(
+                          //         fontSize: height > 600 ? 70.sp : 100.sp,
+                          //         // fontWeight: FontWeight.w900,
+                          //         color: Colors.red,
+                          //         fontFamily: 'UTMCooperBlack')),
+                          child: SwipeDetector(
+                            child: PageView(
+                              physics: BouncingScrollPhysics(),
+                              onPageChanged: _onPageViewChange,
+                              children: [
+                                Container(
+                                    child: Column(
                                   children: [
-                                    Card(
-                                      child: Container(
-                                        padding: EdgeInsets.only(
-                                          top: 80.0,
-                                          bottom: 80.0,
-                                          left: 16.0,
-                                          right: 16.0,
-                                        ),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: <Widget>[
-                                            Text(
-                                              'Swipe Me!',
-                                              style: TextStyle(
-                                                fontSize: 40.0,
-                                              ),
-                                            ),
-                                            Text(
-                                              '$_swipeDirection',
-                                              style: TextStyle(),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
+                                    Text('Click Vào Từng Hình Để Nghe Cách Đọc',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            fontSize:
+                                                height > 600 ? 30.sp : 45.sp,
+                                            // fontWeight: FontWeight.w900,
+                                            color: Colors.red,
+                                            fontFamily: 'UTMCooperBlack')),
+                                    SizedBox(
+                                      height: 20.w,
                                     ),
-                                    Card(
-                                      child: Container(
-                                        padding: EdgeInsets.only(
-                                          top: 80.0,
-                                          bottom: 80.0,
-                                          left: 16.0,
-                                          right: 16.0,
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Image.asset(
+                                          'assets/images/flashcard/image4.jpg',
+                                          fit: BoxFit.contain,
+                                          height: 70.w,
                                         ),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: <Widget>[
-                                            Text(
-                                              'Second page',
-                                              style: TextStyle(
-                                                fontSize: 40.0,
-                                              ),
-                                            ),
-                                            Text(
-                                              '$_swipeDirection',
-                                              style: TextStyle(),
-                                            ),
-                                          ],
+                                        Image.asset(
+                                          'assets/images/flashcard/image6.jpg',
+                                          fit: BoxFit.contain,
+                                          height: 70.w,
                                         ),
-                                      ),
+                                      ],
+                                    )
+                                  ],
+                                )),
+                                Center(
+                                  child: ScaleTransition(
+                                    scale: _tween.animate(CurvedAnimation(
+                                        parent: _controller,
+                                        curve: Curves.elasticOut)),
+                                    child: SizedBox(
+                                      child: Text('Rose',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              fontSize:
+                                                  height > 600 ? 30.sp : 70.sp,
+                                              // fontWeight: FontWeight.w900,
+                                              color: Colors.red,
+                                              fontFamily: 'UTMCooperBlack')),
                                     ),
-                                    Card(
-                                      child: Container(
-                                        padding: EdgeInsets.only(
-                                          top: 80.0,
-                                          bottom: 80.0,
-                                          left: 16.0,
-                                          right: 16.0,
-                                        ),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: <Widget>[
-                                            Text(
-                                              'Third page',
-                                              style: TextStyle(
-                                                fontSize: 40.0,
-                                              ),
-                                            ),
-                                            Text(
-                                              '$_swipeDirection',
-                                              style: TextStyle(),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ]),
-                              onSwipeUp: () {
-                                setState(() {
-                                  _swipeDirection = "Swipe Up";
-                                  _reset();
-                                });
-                              },
-                              onSwipeDown: () {
-                                setState(() {
-                                  _swipeDirection = "Swipe Down";
-                                });
-                              },
-                              onSwipeLeft: () {
-                                setState(() {
-                                  _swipeDirection = "Swipe Left";
-                                });
-                              },
-                              onSwipeRight: () {
-                                setState(() {
-                                  _swipeDirection = "Swipe Right";
-                                });
-                              },
-                              swipeConfiguration: SwipeConfiguration(
-                                  verticalSwipeMinVelocity: 100.0,
-                                  verticalSwipeMinDisplacement: 50.0,
-                                  verticalSwipeMaxWidthThreshold: 100.0,
-                                  horizontalSwipeMaxHeightThreshold: 50.0,
-                                  horizontalSwipeMinDisplacement: 50.0,
-                                  horizontalSwipeMinVelocity: 200.0),
-                            )),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            onSwipeUp: () {
+                              setState(() {
+                                _swipeDirection = "Swipe Up";
+                                _reset();
+                              });
+                            },
+                            onSwipeDown: () {
+                              setState(() {
+                                _swipeDirection = "Swipe Down";
+                              });
+                            },
+                            swipeConfiguration: SwipeConfiguration(
+                                verticalSwipeMinVelocity: 100.0,
+                                verticalSwipeMinDisplacement: 50.0,
+                                verticalSwipeMaxWidthThreshold: 100.0,
+                                horizontalSwipeMaxHeightThreshold: 50.0,
+                                horizontalSwipeMinDisplacement: 50.0,
+                                horizontalSwipeMinVelocity: 200.0),
+                          ),
+                        ),
                       ),
                     ),
                     isShowTopButton ? TopButton() : Container(),

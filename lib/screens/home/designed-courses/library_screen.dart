@@ -14,6 +14,7 @@ import 'package:topkiddo/components/languages_app.dart';
 import '../../../components/languages_app.dart';
 import 'design_course_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
+import '../modal_language.dart';
 
 class LibraryScreen extends StatefulWidget {
   @override
@@ -263,6 +264,16 @@ class _LibraryScreenState extends State<LibraryScreen> {
 }
 
 class TopButton extends StatelessWidget {
+  _showModalLanguage(context) {
+    showDialog(
+        context: context,
+        useSafeArea: false,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return ModalLanguage();
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -335,17 +346,22 @@ class TopButton extends StatelessWidget {
                                       // color: Colors.red,
                                       padding:
                                           EdgeInsets.symmetric(horizontal: 4.w),
-                                      child: Text(
-                                        'Việt - miền Nam',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            // fontSize: 14,
-                                            fontSize:
-                                                height > 600 ? 17.sp : 24.sp,
-                                            fontFamily: 'UTMCooperBlack',
-                                            fontWeight: FontWeight.w900,
-                                            color: Theme.Colors.orange100),
-                                      ),
+                                      child: GestureDetector(
+                                          child: Text(
+                                            'Việt - miền Nam',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                // fontSize: 14,
+                                                fontSize: height > 600
+                                                    ? 17.sp
+                                                    : 24.sp,
+                                                fontFamily: 'UTMCooperBlack',
+                                                fontWeight: FontWeight.w900,
+                                                color: Theme.Colors.orange100),
+                                          ),
+                                          onTap: () {
+                                            _showModalLanguage(context);
+                                          }),
                                     )
                                   ],
                                 ))
