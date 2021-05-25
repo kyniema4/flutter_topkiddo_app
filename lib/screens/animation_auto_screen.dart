@@ -3,13 +3,13 @@ import 'package:topkiddo/theme/style.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:easy_localization/easy_localization.dart';
 
-class AnimationScreen extends StatefulWidget {
-  AnimationScreen({Key key}) : super(key: key);
+class AnimationAutoScreen extends StatefulWidget {
+  AnimationAutoScreen({Key key}) : super(key: key);
 
-  _AnimationScreenState createState() => _AnimationScreenState();
+  _AnimationAutoScreen createState() => _AnimationAutoScreen();
 }
 
-class _AnimationScreenState extends State<AnimationScreen> {
+class _AnimationAutoScreen extends State<AnimationAutoScreen> {
   bool move = false;
   bool showKid1 = true;
   bool showKid2 = false;
@@ -20,12 +20,14 @@ class _AnimationScreenState extends State<AnimationScreen> {
   // int durationKid = 0;
   movingAnimation() async {
     await Future.delayed(Duration(seconds: 1), () {
+      if (!mounted) return;
       setState(() {
         move = true;
       });
     });
     //3
     await Future.delayed(Duration(seconds: 3), () {
+      if (!mounted) return;
       setState(() {
         showKid1 = false;
         showKid2 = true;
@@ -34,11 +36,13 @@ class _AnimationScreenState extends State<AnimationScreen> {
       });
     });
     await Future.delayed(Duration(seconds: 1), () {
+      if (!mounted) return;
       setState(() {
         move = true;
       });
     });
     await Future.delayed(Duration(seconds: 7), () {
+      if (!mounted) return;
       setState(() {
         showKid2 = false;
         move = false;
@@ -47,6 +51,7 @@ class _AnimationScreenState extends State<AnimationScreen> {
       });
     });
     await Future.delayed(Duration(seconds: 1), () {
+      if (!mounted) return;
       setState(() {
         move = true;
       });

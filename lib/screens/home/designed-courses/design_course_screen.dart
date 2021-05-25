@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:topkiddo/Utils/http_service.dart';
+import 'package:topkiddo/components/Loading_dialog.dart';
 
 import '../../../components/back.dart';
 import '../../../theme/style.dart';
@@ -7,12 +9,6 @@ import '../../../theme/theme.dart' as Theme;
 import 'package:easy_localization/easy_localization.dart';
 // import './../../../localization/language/languages.dart';
 import './flash_card_screen.dart';
-import '../../new_game/loginhome_screen.dart';
-import 'package:easy_localization/easy_localization.dart';
-import '../../../components/back.dart';
-import './flash_card_screen.dart';
-import './animation_screen.dart';
-
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class DesignCourseScreen extends StatefulWidget {
@@ -59,6 +55,34 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
       });
     } else
       return;
+  }
+
+  getDataFlashCard(String lessonId) async {
+    setState(() {
+      _pressId = !_pressId;
+    });
+    try {
+      Dialogs.showLoadingDialog(context);
+      var resultLessonDetail = await fetch(
+          url: ApiList.getLessonDetail, body: {"lessionId": lessonId});
+      if (resultLessonDetail['success']) {
+        Navigator.of(context, rootNavigator: true).pop();
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (BuildContext context) => FlashCardScreen(
+                      lessonDetail: resultLessonDetail['data'],
+                    )));
+      } else {
+        Navigator.of(context, rootNavigator: true).pop();
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("Please try again")));
+      }
+    } catch (e) {
+      Navigator.of(context, rootNavigator: true).pop();
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Please try again")));
+    }
   }
 
   @override
@@ -186,16 +210,10 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
                                                         'imgChoose'.tr(),
                                                         fit: BoxFit.contain),
                                                   ),
-                                                  onTap: () {
-                                                    setState(() {
-                                                      _pressId = !_pressId;
-                                                    });
-                                                    Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (BuildContext
-                                                                    context) =>
-                                                                FlashCardScreen()));
+                                                  onTap: () async {
+                                                    await getDataFlashCard(
+                                                        widget.lesson['docs'][i]
+                                                            ['_id']);
                                                     // AnimationScreen()));
                                                   })))
                                     ]),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:topkiddo/Utils/http_service.dart';
 import '../../../theme/style.dart';
 import '../../../components/languages_app.dart';
 import '../../../components/swipe-configuration.dart';
@@ -7,6 +8,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 // import 'package:swipedetector/swipedetector.dart';
 
 class FlashCardScreen extends StatefulWidget {
+  final lessonDetail;
+
+  const FlashCardScreen({this.lessonDetail});
   @override
   _FlashCardScreen createState() => _FlashCardScreen();
 }
@@ -52,6 +56,8 @@ class _FlashCardScreen extends State<FlashCardScreen>
 
   @override
   Widget build(BuildContext context) {
+    print(widget.lessonDetail);
+    print('debugging');
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
 
