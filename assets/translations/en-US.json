@@ -26,5 +26,16 @@
     "imgLoginMain":"assets/images/login_page/main-loginbutton.png",
     "imgNewUser":"assets/images/login_page/main-newuserbutton.png",
     "imgRegister":"assets/images/login_page/register-button.png",
-    "imgFlag":"assets/images/button/enlish-flag.png"
+    "imgFlag":"assets/images/button/enlish-flag.png",
+    "textUsUk":"American",
+    "textVietnameseBac":"Viet - North",
+    "textVietnameseNam":"Viet - South",
+    "textEnglish":"English",
+    "textChinese":"Chinese",
+    "textFrance":"French",
+    "textJapanese":"Japanese",
+    "textSpanish":"Spanish"
+
+
+
   }

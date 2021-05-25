@@ -9,6 +9,7 @@ import '../../theme/theme.dart' as Theme;
 
 import '../new_game/loginhome_screen.dart';
 import './modal_translate.dart';
+import './modal_menu.dart';
 import 'designed-courses/library_screen.dart';
 //import '../../localization/language/languages.dart';
 
@@ -235,6 +236,16 @@ class TopButton extends StatelessWidget {
         });
   }
 
+  _showModalMenu(context) {
+    showDialog(
+        context: context,
+        useSafeArea: false,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return ModalMenu();
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -292,7 +303,9 @@ class TopButton extends StatelessWidget {
                                       ),
                                       fit: BoxFit.contain),
                                 )),
-                            onTap: () {}),
+                            onTap: () {
+                              _showModalMenu(context);
+                            }),
                       ],
                     )),
               ]),

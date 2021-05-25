@@ -9,28 +9,6 @@ class ModalLanguage extends StatefulWidget {
 }
 
 class _ModalLanguageState extends State<ModalLanguage> {
-  bool _local = true;
-  List imgs = [
-    'assets/images/languages/babe2.png',
-    'assets/images/languages/babe1.png',
-  ];
-
-  double opacity = 1.0;
-
-  void initState() {
-    super.initState();
-    // changeOpacity();
-  }
-
-  // changeOpacity() {
-  //   Future.delayed(Duration(seconds: 1), () {
-  //     setState(() {
-  //       opacity = opacity == 0.0 ? 1.0 : 0.0;
-  //       changeOpacity();
-  //     });
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -38,21 +16,18 @@ class _ModalLanguageState extends State<ModalLanguage> {
         backgroundColor: Colors.black.withOpacity(0.7),
         body: Center(
           child: Container(
-              margin: new EdgeInsets.only(top: 10.w),
+              // margin: new EdgeInsets.only(top: 10.w),
               height: 160.w,
               width: 220.w,
               child: Stack(
                 children: [
-                  Container(
-                    color: Colors.pink[100],
-                    child: Positioned(
-                      top: 10.w,
-                      left: 65.w,
-                      child: Center(
-                        child: Image.asset(
-                          'assets/images/languages/2-em-be.png',
-                          width: 90.w,
-                        ),
+                  Positioned(
+                    top: 40.w,
+                    left: 65.w,
+                    child: Center(
+                      child: Image.asset(
+                        'assets/images/languages/2-em-be.png',
+                        width: 90.w,
                       ),
                     ),
                   ),
@@ -64,7 +39,7 @@ class _ModalLanguageState extends State<ModalLanguage> {
                       child: Stack(
                         children: [
                           Text(
-                            'Viet-North',
+                            'textVietnameseBac'.tr(),
                             style: TextStyle(
                                 fontSize: height > 600 ? 17.sp : 24.sp,
                                 fontFamily: 'UTMCooperBlack',
@@ -100,14 +75,14 @@ class _ModalLanguageState extends State<ModalLanguage> {
                         ],
                       )),
                   Container(
-                      margin: new EdgeInsets.only(top: 45.w, left: 10.w),
+                      margin: new EdgeInsets.only(top: 45.w, left: 0.w),
                       // color: Colors.cyanAccent,
                       height: 50.w,
                       width: 70.w,
                       child: Stack(
                         children: [
                           Text(
-                            'Viet-North',
+                            'textVietnameseNam'.tr(),
                             style: TextStyle(
                                 fontSize: height > 600 ? 17.sp : 24.sp,
                                 fontFamily: 'UTMCooperBlack',
@@ -131,7 +106,7 @@ class _ModalLanguageState extends State<ModalLanguage> {
                             top: 15.w,
                             child: Container(
                               child: RotationTransition(
-                                turns: new AlwaysStoppedAnimation(1250 / 360),
+                                turns: new AlwaysStoppedAnimation(1260 / 360),
                                 child: Image.asset(
                                   'assets/images/languages/line-chine.png',
                                   width: 40.w,
@@ -150,7 +125,7 @@ class _ModalLanguageState extends State<ModalLanguage> {
                       child: Stack(
                         children: [
                           Text(
-                            'Viet-North',
+                            'textSpanish'.tr(),
                             style: TextStyle(
                                 fontSize: height > 600 ? 17.sp : 24.sp,
                                 fontFamily: 'UTMCooperBlack',
@@ -164,7 +139,7 @@ class _ModalLanguageState extends State<ModalLanguage> {
                                 Navigator.pop(context, false) //translate
                               },
                               child: Image.asset(
-                                'assets/images/button/flagArtboard-spain.png',
+                                'assets/images/languages/flagArtboard-spain.png',
                                 width: 23.w,
                               ),
                             ),
@@ -193,7 +168,7 @@ class _ModalLanguageState extends State<ModalLanguage> {
                       child: Stack(
                         children: [
                           Text(
-                            'Viet-North',
+                            'textJapanese'.tr(),
                             style: TextStyle(
                                 fontSize: height > 600 ? 17.sp : 24.sp,
                                 fontFamily: 'UTMCooperBlack',
@@ -207,7 +182,7 @@ class _ModalLanguageState extends State<ModalLanguage> {
                                 Navigator.pop(context, false) //translate
                               },
                               child: Image.asset(
-                                'assets/images/button/vietnames-flag.png',
+                                'assets/images/languages/flagArtboard-japan.png',
                                 width: 23.w,
                               ),
                             ),
@@ -241,7 +216,7 @@ class _ModalLanguageState extends State<ModalLanguage> {
                               right: 10.w,
                               top: 2.w,
                               child: Text(
-                                'Viet-North',
+                                'textChinese'.tr(),
                                 style: TextStyle(
                                     fontSize: height > 600 ? 17.sp : 24.sp,
                                     fontFamily: 'UTMCooperBlack',
@@ -256,7 +231,7 @@ class _ModalLanguageState extends State<ModalLanguage> {
                                 onPressed: () =>
                                     {Navigator.pop(context, false)},
                                 child: Image.asset(
-                                  'assets/images/button/enlish-flag.png',
+                                  'assets/images/languages/flagArtboard-china.png',
                                   width: 23.w,
                                 ),
                               ),
@@ -291,7 +266,7 @@ class _ModalLanguageState extends State<ModalLanguage> {
                               right: 10.w,
                               top: 2.w,
                               child: Text(
-                                'Viet-North',
+                                'textFrance'.tr(),
                                 style: TextStyle(
                                     fontSize: height > 600 ? 17.sp : 24.sp,
                                     fontFamily: 'UTMCooperBlack',
@@ -306,7 +281,7 @@ class _ModalLanguageState extends State<ModalLanguage> {
                                 onPressed: () =>
                                     {Navigator.pop(context, false)},
                                 child: Image.asset(
-                                  'assets/images/button/enlish-flag.png',
+                                  'assets/images/languages/flagArtboard-france.png',
                                   width: 23.w,
                                 ),
                               ),
@@ -341,7 +316,7 @@ class _ModalLanguageState extends State<ModalLanguage> {
                               right: 10.w,
                               top: 2.w,
                               child: Text(
-                                'Viet-North',
+                                'textEnglish'.tr(),
                                 style: TextStyle(
                                     fontSize: height > 600 ? 17.sp : 24.sp,
                                     fontFamily: 'UTMCooperBlack',
@@ -391,7 +366,7 @@ class _ModalLanguageState extends State<ModalLanguage> {
                               right: 10.w,
                               top: 2.w,
                               child: Text(
-                                'Viet-North',
+                                'textUsUk'.tr(),
                                 style: TextStyle(
                                     fontSize: height > 600 ? 17.sp : 24.sp,
                                     fontFamily: 'UTMCooperBlack',
@@ -406,7 +381,7 @@ class _ModalLanguageState extends State<ModalLanguage> {
                                 onPressed: () =>
                                     {Navigator.pop(context, false)},
                                 child: Image.asset(
-                                  'assets/images/button/enlish-flag.png',
+                                  'assets/images/languages/flagArtboard-usa.png',
                                   width: 23.w,
                                 ),
                               ),
