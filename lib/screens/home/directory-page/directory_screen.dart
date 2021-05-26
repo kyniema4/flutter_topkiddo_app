@@ -28,8 +28,8 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
   String keyFrom = 'vi';
   String keyTo = 'en';
   String query = "";
-  String dataBoxName = "sentence";
-
+  String dataBoxName = "lesson";
+  
   Timer debouncer = null;
   final dbHelper = DatabaseHelper.instance;
   Box box;

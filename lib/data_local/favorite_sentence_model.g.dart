@@ -8,7 +8,7 @@ part of 'favorite_sentence_model.dart';
 
 class FavoriteSentenceModelAdapter extends TypeAdapter<FavoriteSentenceModel> {
   @override
-  final int typeId = 0;
+  final int typeId = 1;
 
   @override
   FavoriteSentenceModel read(BinaryReader reader) {

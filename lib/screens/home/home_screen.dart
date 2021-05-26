@@ -1,7 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:topkiddo/Utils/hive_service.dart';
+import 'package:topkiddo/data_local/lesson/lesson_data_model.dart';
 import 'package:topkiddo/screens/home/directory-page/directory_screen.dart';
 import '../../Utils/http_service.dart';
 import '../../theme/style.dart';
@@ -10,11 +13,8 @@ import '../../theme/theme.dart' as Theme;
 import '../new_game/loginhome_screen.dart';
 import './modal_translate.dart';
 import 'designed-courses/library_screen.dart';
-//import '../../localization/language/languages.dart';
-
-//import '../../localization/language/languages.dart';
 import '../../components/languages_app.dart';
-
+import 'package:topkiddo/data_local/lesson/unit_data_model.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -28,9 +28,15 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _pressed2 = true;
   bool _pressed3 = true;
   bool _local = true;
+  String boxUnit = "unit";
+  String boxLesson = "lesson";
+  String boxTopic = "topic";
+  final HiveService hiveService = HiveService();
+
   @override
   void initState() {
     super.initState();
+    getDataLesson();
   }
 
   _showHomeItem(BuildContext context, imageBg, String title, String content,
@@ -163,6 +169,68 @@ class _HomeScreenState extends State<HomeScreen> {
     // this.downloadLesson()
   }
 
+  getDataLesson() async {
+    bool exists = await hiveService.isExists(boxName: boxUnit);
+    if (exists) {
+      print('data already');
+      //var listUnit = await hiveService.getBoxes(boxName);
+    } else {
+      var data = await fetchListUnit();
+      List listUnit = [];
+      data.forEach((e) {
+        UnitDataModel unit = UnitDataModel.fromJson(e);
+        fetListLesson(unit.id);
+        listUnit.add(unit);
+      });
+
+      await hiveService.addBoxes(listUnit, boxUnit);
+      print('save data unit success');
+    }
+  }
+
+  fetchListUnit() async {
+    var token = (await getToken()).toString();
+    if (token.length > 0) {
+      try {
+        var resultGetList = await fetch(
+          url: ApiList.getListUnit,
+          body: {
+            "filter": {"language": 2}
+          },
+        );
+        print('debugging');
+        if (resultGetList['success'] &&
+            resultGetList['data']['docs'].length > 0) {
+          return resultGetList['data']['docs'];
+        }
+      } catch (e) {
+        print('error get list Unit ' + e);
+      }
+    } else
+      return;
+  }
+
+  fetListLesson(String id) async {
+    // try {
+    //   var resultListLesson = await fetch(
+    //     url: ApiList.getListLesson,
+    //     body: {
+    //       "filter": {"unit": id}
+    //     },
+    //   );
+    //   List listLesson = [];
+    //   resultListLesson.forEach((e) {
+    //     LessonDataModel lesson = LessonDataModel.fromJson(e);
+    //     //fetListTopic(unit.id);
+    //     listLesson.add(listLesson);
+    //   });
+    //   await hiveService.addBoxes(listLesson, boxLesson);
+    //   print('save data lesson success');
+    // } catch (e) {
+    //   print('error get list lesson ');
+    // }
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -225,6 +293,8 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class TopButton extends StatelessWidget {
+  String boxName = "unit";
+  final HiveService hiveService = HiveService();
   _showModalTranslate(context) {
     showDialog(
         context: context,
@@ -292,7 +362,9 @@ class TopButton extends StatelessWidget {
                                       ),
                                       fit: BoxFit.contain),
                                 )),
-                            onTap: () {}),
+                            onTap: () {
+                              hiveService.clearBoxes(boxName);
+                            }),
                       ],
                     )),
               ]),

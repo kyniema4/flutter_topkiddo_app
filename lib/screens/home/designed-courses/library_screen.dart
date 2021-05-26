@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:topkiddo/Utils/hive_service.dart';
 import 'package:topkiddo/components/Loading_dialog.dart';
 
 import '../../../Utils/http_service.dart';
@@ -24,6 +25,11 @@ class _LibraryScreenState extends State<LibraryScreen> {
   var listUnitEasy = [];
   var listUnitMedium = [];
   var listUnitAdvanced = [];
+  final HiveService hiveService = HiveService();
+  String boxUnit = "unit";
+  String boxLesson = "lesson";
+  String boxTopic = "topic";
+
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
   _showLeveltem(BuildContext context, String title, List data, lessonDone) {
     double height = MediaQuery.of(context).size.height;
@@ -137,42 +143,27 @@ class _LibraryScreenState extends State<LibraryScreen> {
   }
 
   getListUnit() async {
+    var data = await hiveService.getBoxes(boxUnit);
+    var datalesson = await hiveService.getBoxes(boxLesson);
     print('debugging');
-    var token = (await getToken()).toString();
-    if (token.length > 0) {
-      try {
-        var resultGetList = await fetch(
-          url: ApiList.getListUnit,
-          body: {
-            "filter": {"language": 2}
-          },
-        );
-        print('debugging');
-        if (resultGetList['success'] &&
-            resultGetList['data']['docs'].length > 0) {
-          var data = resultGetList['data']['docs'];
-          List listDataEasy = [];
-          List listDataMedium = [];
-          List listDataAdvanced = [];
-          for (var i = 0; i < data.length; i++) {
-            var unit = UnitModel.fromJson(data[i]);
-            if (unit.level == 1) {
-              listDataEasy.add(unit);
-            } else if (unit.level == 2) {
-              listDataMedium.add(unit);
-            } else {
-              listDataAdvanced.add(unit);
-            }
-          }
-          setState(() {
-            listUnitEasy = listDataEasy;
-            listUnitMedium = listDataMedium;
-            listDataAdvanced = listDataAdvanced;
-          });
-        }
-      } catch (e) {}
+    List listDataEasy = [];
+    List listDataMedium = [];
+    List listDataAdvanced = [];
+    for (var i = 0; i < data.length; i++) {
+      var unit = UnitModel.fromJson(data[i].toMap());
+      if (unit.level == 1) {
+        listDataEasy.add(unit);
+      } else if (unit.level == 2) {
+        listDataMedium.add(unit);
+      } else {
+        listDataAdvanced.add(unit);
+      }
     }
-    ;
+    setState(() {
+      listUnitEasy = listDataEasy;
+      listUnitMedium = listDataMedium;
+      listDataAdvanced = listDataAdvanced;
+    });
   }
 
   getListLesson(String id) async {
@@ -205,6 +196,43 @@ class _LibraryScreenState extends State<LibraryScreen> {
           .showSnackBar(SnackBar(content: Text("Please try again")));
     }
   }
+
+  // getListLesson(String id) async {
+  //   try {
+  //     Dialogs.showLoadingDialog(context);
+  //     var resultListLesson = await fetch(
+  //       url: ApiList.getListLesson,
+  //       body: {
+  //         "filter": {"unit": id}
+  //       },
+  //     );
+  //     if (resultListLesson['success']) {
+  //       Navigator.of(context, rootNavigator: true).pop();
+  //       print(resultListLesson['data']['docs']);
+
+  //       Navigator.push(
+  //           context,
+  //           MaterialPageRoute(
+  //               builder: (BuildContext context) => DesignCourseScreen(
+  //                     lesson: resultListLesson['data'],
+  //                   )));
+  //     } else {
+  //       Navigator.of(context, rootNavigator: true).pop();
+  //       ScaffoldMessenger.of(context)
+  //           .showSnackBar(SnackBar(content: Text("Please try again")));
+  //     }
+  //   } catch (e) {
+  //     Navigator.of(context, rootNavigator: true).pop();
+  //     ScaffoldMessenger.of(context)
+  //         .showSnackBar(SnackBar(content: Text("Please try again")));
+  //   }
+  // }
+
+  getListTopic() async {}
+
+  getListFlashCard() async {}
+
+  getListGame() async {}
 
   @override
   void initState() {
@@ -389,7 +417,7 @@ class UnitModel {
 
   factory UnitModel.fromJson(Map<String, dynamic> parsedJson) {
     return UnitModel(
-      id: parsedJson['_id'] ?? "",
+      id: parsedJson['_id'] ?? parsedJson['id'] ?? "",
       name: parsedJson['name'] ?? "",
       level: parsedJson['level'] ?? 1,
       language: parsedJson['language'] ?? 2,

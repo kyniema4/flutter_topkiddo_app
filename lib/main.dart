@@ -7,17 +7,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart' as pathProvider;
+import 'package:topkiddo/data_local/lesson/lesson_data_model.dart';
 import 'package:topkiddo/screens/new_game/login_screen.dart';
 import 'package:topkiddo/data_local/favorite_sentence_model.dart';
+import 'package:topkiddo/data_local/lesson/unit_data_model.dart';
+import 'package:topkiddo/data_local/lesson/lesson_data_model.dart';
 import 'screens/splash_screen.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   await Firebase.initializeApp();
-  Directory directory = await pathProvider.getApplicationDocumentsDirectory();
-  Hive.init(directory.path);
-  Hive.registerAdapter(FavoriteSentenceModelAdapter());
+  // Directory directory = await pathProvider.getApplicationDocumentsDirectory();
+  // Hive.init(directory.path);
+  await Hive.initFlutter();
+  Hive.registerAdapter(UnitDataModelAdapter(), override: true);
+  Hive.registerAdapter(LessonDataModelAdapter(),override: true);
+  Hive.registerAdapter(FavoriteSentenceModelAdapter(), override: true);
 
   runApp(EasyLocalization(
       supportedLocales: [Locale('vi', 'VN'), Locale('en', 'US')],

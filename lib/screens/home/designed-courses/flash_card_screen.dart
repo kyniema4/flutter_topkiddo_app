@@ -24,6 +24,7 @@ class _FlashCardScreen extends State<FlashCardScreen> {
 
   void initState() {
     super.initState();
+    factoryBuildLessonModel();
   }
 
   final _pageController = PageController(initialPage: 0);
@@ -40,6 +41,19 @@ class _FlashCardScreen extends State<FlashCardScreen> {
       Navigator.pushReplacement(context,
           MaterialPageRoute(builder: (BuildContext context) => super.widget));
     }
+  }
+
+  factoryBuildLessonModel() async {
+    var data =widget.lessonDetail['part'];
+    print(data);
+    print('debugging');
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _pageController.dispose();
   }
 
   @override
