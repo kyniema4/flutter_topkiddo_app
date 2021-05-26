@@ -34,5 +34,15 @@
   "textChinese":"Trung quốc",
   "textFrance":"Pháp",
   "textJapanese":"Nhật",
-  "textSpanish":"Tây Ban Nha"
+  "textSpanish":"Tây Ban Nha",
+  "notification": "Thông báo",
+  "profile": "Thông tin",
+  "parent": "Bố mẹ",
+  "setting": "Cài đặt",
+  "writeForKid": "Viết cho bé của bạn",
+  "enterCode": "Nhập mã",
+  "library": "Thư viện",
+  "subscribe": "Đăng ký",
+  "logout": "Đăng xuất",
+  "addChild":"Thêm bé"
 }

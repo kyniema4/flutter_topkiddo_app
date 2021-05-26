@@ -34,8 +34,15 @@
     "textChinese":"Chinese",
     "textFrance":"French",
     "textJapanese":"Japanese",
-    "textSpanish":"Spanish"
-
-
-
+    "textSpanish":"Spanish",
+    "notification":"Notification",
+    "profile":"Profile",
+    "parent":"Parents",
+    "setting":"Settings",
+    "writeForKid":"Write for your kid read",
+    "enterCode":"Enter code",
+    "library":"Library",
+    "subscribe":"Subscribe",
+    "logout":"Logout",
+    "addChild":"Add child"
   }

@@ -3,12 +3,57 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../theme/theme.dart' as Theme;
 
+class Menu {
+  final String icon;
+  final String title;
+
+  Menu({this.icon, this.title});
+}
+
 class ModalMenu extends StatefulWidget {
   @override
   _ModalMenuState createState() => _ModalMenuState();
 }
 
 class _ModalMenuState extends State<ModalMenu> {
+  List<Menu> menuLists = [
+    Menu(
+      icon: 'assets/images/menu/notificationbutton.png',
+      title: 'notification'.tr(),
+    ),
+    Menu(
+      icon: 'assets/images/menu/profilebutton.png',
+      title: 'profile'.tr(),
+    ),
+    Menu(
+      icon: 'assets/images/menu/parentsbutton.png',
+      title: 'parent'.tr(),
+    ),
+    Menu(
+      icon: 'assets/images/menu/settingbutton.png',
+      title: 'setting'.tr(),
+    ),
+    Menu(
+      icon: 'assets/images/menu/writeforkidbutton.png',
+      title: 'writeForKid'.tr(),
+    ),
+    Menu(
+      icon: 'assets/images/menu/library.png',
+      title: 'library'.tr(),
+    ),
+    Menu(
+      icon: 'assets/images/menu/entercodebutton.png',
+      title: 'enterCode'.tr(),
+    ),
+    Menu(
+      icon: 'assets/images/menu/subscribebutton.png',
+      title: 'subscribe'.tr(),
+    ),
+    Menu(
+      icon: 'assets/images/menu/logout.png',
+      title: 'logout'.tr(),
+    ),
+  ];
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -33,267 +78,62 @@ class _ModalMenuState extends State<ModalMenu> {
                   ),
                   color: Theme.Colors.green400,
                 ),
-                height: 60.w,
+                height: 65.w,
                 width: width - 18.w,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                            child: Column(
-                          children: [
-                            Container(
-                              width: 20.w,
-                              child: Image.asset(
-                                'assets/images/menu/notificationbutton.png',
+                child: ListView.builder(
+                    padding: EdgeInsets.only(
+                      left: 7.w,
+                    ),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: menuLists.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final Menu menu = menuLists[index];
+                      return Container(
+                          margin: new EdgeInsets.only(
+                            right: 20.w,
+                          ),
+                          width: 40.w,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 30.w,
+                                child: Image.asset(
+                                  menu.icon,
+                                ),
                               ),
-                            ),
-                            Text('nobdagf')
-                          ],
-                        )),
-                        Container(
-                            child: Column(
-                          children: [
-                            Container(
-                              width: 20.w,
-                              child: Image.asset(
-                                'assets/images/menu/notificationbutton.png',
-                              ),
-                            ),
-                            Text('nobdagf')
-                          ],
-                        )),
-                        Container(
-                            child: Column(
-                          children: [
-                            Container(
-                              width: 20.w,
-                              child: Image.asset(
-                                'assets/images/menu/notificationbutton.png',
-                              ),
-                            ),
-                            Text('nobdagf')
-                          ],
-                        )),
-                        Container(
-                            child: Column(
-                          children: [
-                            Container(
-                              width: 20.w,
-                              child: Image.asset(
-                                'assets/images/menu/notificationbutton.png',
-                              ),
-                            ),
-                            Text('nobdagf')
-                          ],
-                        )),
-                        Container(
-                            child: Column(
-                          children: [
-                            Container(
-                              width: 20.w,
-                              child: Image.asset(
-                                'assets/images/menu/notificationbutton.png',
-                              ),
-                            ),
-                            Text('nobdagf')
-                          ],
-                        )),
-                        Container(
-                            child: Column(
-                          children: [
-                            Container(
-                              width: 20.w,
-                              child: Image.asset(
-                                'assets/images/menu/notificationbutton.png',
-                              ),
-                            ),
-                            Text('nobdagf')
-                          ],
-                        )),
-                        Container(
-                            child: Column(
-                          children: [
-                            Container(
-                              width: 20.w,
-                              child: Image.asset(
-                                'assets/images/menu/notificationbutton.png',
-                              ),
-                            ),
-                            Text('nobdagf')
-                          ],
-                        )),
-                        Container(
-                            child: Column(
-                          children: [
-                            Container(
-                              width: 20.w,
-                              child: Image.asset(
-                                'assets/images/menu/notificationbutton.png',
-                              ),
-                            ),
-                            Text('nobdagf')
-                          ],
-                        )),
-                        Container(
-                            child: Column(
-                          children: [
-                            Container(
-                              width: 20.w,
-                              child: Image.asset(
-                                'assets/images/menu/notificationbutton.png',
-                              ),
-                            ),
-                            Text('nobdagf')
-                          ],
-                        )),
-                        Container(
-                            child: Column(
-                          children: [
-                            Container(
-                              width: 20.w,
-                              child: Image.asset(
-                                'assets/images/menu/notificationbutton.png',
-                              ),
-                            ),
-                            Text('nobdagf')
-                          ],
-                        )),
-                        Container(
-                            child: Column(
-                          children: [
-                            Container(
-                              width: 20.w,
-                              child: Image.asset(
-                                'assets/images/menu/notificationbutton.png',
-                              ),
-                            ),
-                            Text('nobdagf')
-                          ],
-                        )),
-                        Container(
-                            child: Column(
-                          children: [
-                            Container(
-                              width: 20.w,
-                              child: Image.asset(
-                                'assets/images/menu/notificationbutton.png',
-                              ),
-                            ),
-                            Text('nobdagf')
-                          ],
-                        )),
-                        Container(
-                            child: Column(
-                          children: [
-                            Container(
-                              width: 20.w,
-                              child: Image.asset(
-                                'assets/images/menu/notificationbutton.png',
-                              ),
-                            ),
-                            Text('nobdagf')
-                          ],
-                        )),
-                        Container(
-                            child: Column(
-                          children: [
-                            Container(
-                              width: 20.w,
-                              child: Image.asset(
-                                'assets/images/menu/notificationbutton.png',
-                              ),
-                            ),
-                            Text('nobdagf')
-                          ],
-                        )),
-                        Container(
-                            child: Column(
-                          children: [
-                            Container(
-                              width: 20.w,
-                              child: Image.asset(
-                                'assets/images/menu/notificationbutton.png',
-                              ),
-                            ),
-                            Text('nobdagf')
-                          ],
-                        )),
-                        Container(
-                            child: Column(
-                          children: [
-                            Container(
-                              width: 20.w,
-                              child: Image.asset(
-                                'assets/images/menu/notificationbutton.png',
-                              ),
-                            ),
-                            Text('nobdagf')
-                          ],
-                        )),
-                        Container(
-                            child: Column(
-                          children: [
-                            Container(
-                              width: 20.w,
-                              child: Image.asset(
-                                'assets/images/menu/notificationbutton.png',
-                              ),
-                            ),
-                            Text('nobdagf')
-                          ],
-                        )),
-                        Container(
-                            child: Column(
-                          children: [
-                            Container(
-                              width: 20.w,
-                              child: Image.asset(
-                                'assets/images/menu/notificationbutton.png',
-                              ),
-                            ),
-                            Text('nobdagf')
-                          ],
-                        )),
-                        Container(
-                            child: Column(
-                          children: [
-                            Container(
-                              width: 20.w,
-                              child: Image.asset(
-                                'assets/images/menu/notificationbutton.png',
-                              ),
-                            ),
-                            Text('nobdagf')
-                          ],
-                        )),
-                        Container(
-                            child: Column(
-                          children: [
-                            Container(
-                              width: 20.w,
-                              child: Image.asset(
-                                'assets/images/menu/notificationbutton.png',
-                              ),
-                            ),
-                            Text('nobdagf')
-                          ],
-                        )),
-                      ],
-                    )
-                  ],
-                ),
+                              Container(
+                                height: 17.w,
+                                child: Text(
+                                  menu.title,
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                  style: TextStyle(
+                                      fontSize: height > 600 ? 17.sp : 24.sp,
+                                      fontFamily: 'UTMCooperBlack',
+                                      fontWeight: FontWeight.w900,
+                                      color: Theme.Colors.orange100,
+                                      letterSpacing: 0.7),
+                                ),
+                              )
+                            ],
+                          ));
+                    }),
               )),
           Positioned(
-              bottom: 50.w,
-              right: 20.w,
-              child: Container(
+            bottom: 53.w,
+            right: 20.w,
+            child: TextButton(
+              onPressed: () => {
+                Navigator.pop(context, false) //translate
+              },
+              child: Image.asset(
+                'assets/images/menu/dropdown.png',
                 width: 13.w,
-                child: Image.asset(
-                  'assets/images/menu/dropdown.png',
-                ),
-              )),
+              ),
+            ),
+          ),
         ],
       )),
     );
