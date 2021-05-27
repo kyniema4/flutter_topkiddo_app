@@ -55,7 +55,7 @@ class _TopicScreenState extends State<TopicScreen> {
                                   ),
                                 ),
                                 Positioned(
-                                  top: height > 600 ? 11.w : 13.w,
+                                  top: 11.w,
                                   left: 0,
                                   right: 0,
                                   child: Align(
@@ -86,7 +86,7 @@ class _TopicScreenState extends State<TopicScreen> {
                                   ),
                                 ),
                                 Positioned(
-                                  top: height > 600 ? 11.w : 13.w,
+                                  top: 11.w,
                                   left: 0,
                                   right: 0,
                                   child: Align(
@@ -116,7 +116,7 @@ class _TopicScreenState extends State<TopicScreen> {
                                   ),
                                 ),
                                 Positioned(
-                                  top: height > 600 ? 11.w : 13.w,
+                                  top: 11.w,
                                   left: 0,
                                   right: 0,
                                   child: Align(
@@ -146,7 +146,7 @@ class _TopicScreenState extends State<TopicScreen> {
                                   ),
                                 ),
                                 Positioned(
-                                  top: height > 600 ? 11.w : 13.w,
+                                  top: 11.w,
                                   left: 0,
                                   right: 0,
                                   child: Align(
@@ -177,7 +177,7 @@ class _TopicScreenState extends State<TopicScreen> {
                                   ),
                                 ),
                                 Positioned(
-                                  top: height > 600 ? 11.w : 13.w,
+                                  top: 11.w,
                                   left: 0,
                                   right: 0,
                                   child: Align(

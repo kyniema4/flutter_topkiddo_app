@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../theme/theme.dart' as Theme;
+import '.../../menu/write-for-kids.dart';
 
 class Menu {
   final String icon;
@@ -97,12 +98,20 @@ class _ModalMenuState extends State<ModalMenu> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Container(
-                                width: 30.w,
-                                child: Image.asset(
-                                  menu.icon,
-                                ),
-                              ),
+                              GestureDetector(
+                                  child: Container(
+                                    width: 30.w,
+                                    child: Image.asset(
+                                      menu.icon,
+                                    ),
+                                  ),
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (BuildContext context) =>
+                                                WriteForKidsScreen()));
+                                  }),
                               Container(
                                 height: 17.w,
                                 child: Text(
