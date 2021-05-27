@@ -16,6 +16,16 @@ class HiveService {
     }
   }
 
+  putBoxesWithId(String id, List items, String boxName) async {
+    final openBox = await Hive.openBox(boxName);
+    openBox.put(id, items);
+  }
+
+  getBoxesWithId<T>(String id, String boxName) async {
+    final openBox = await Hive.openBox(boxName);
+    return openBox.get(id);
+  }
+
   getBoxes<T>(String boxName) async {
     List boxList = [];
 

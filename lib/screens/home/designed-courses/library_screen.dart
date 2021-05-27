@@ -144,57 +144,69 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   getListUnit() async {
     var data = await hiveService.getBoxes(boxUnit);
-    var datalesson = await hiveService.getBoxes(boxLesson);
-    print('debugging');
+
     List listDataEasy = [];
     List listDataMedium = [];
     List listDataAdvanced = [];
-    for (var i = 0; i < data.length; i++) {
-      var unit = UnitModel.fromJson(data[i].toMap());
-      if (unit.level == 1) {
-        listDataEasy.add(unit);
-      } else if (unit.level == 2) {
-        listDataMedium.add(unit);
-      } else {
-        listDataAdvanced.add(unit);
+    if (data.length != 0) {
+      for (var i = 0; i < data.length; i++) {
+        var unit = UnitModel.fromJson(data[i].toMap());
+        if (unit.level == 1) {
+          listDataEasy.add(unit);
+        } else if (unit.level == 2) {
+          listDataMedium.add(unit);
+        } else {
+          listDataAdvanced.add(unit);
+        }
       }
+      setState(() {
+        listUnitEasy = listDataEasy;
+        listUnitMedium = listDataMedium;
+        listDataAdvanced = listDataAdvanced;
+      });
+    } else {
+      print('please connect to the network');
     }
-    setState(() {
-      listUnitEasy = listDataEasy;
-      listUnitMedium = listDataMedium;
-      listDataAdvanced = listDataAdvanced;
-    });
   }
 
   getListLesson(String id) async {
-    try {
-      Dialogs.showLoadingDialog(context);
-      var resultListLesson = await fetch(
-        url: ApiList.getListLesson,
-        body: {
-          "filter": {"unit": id}
-        },
-      );
-      if (resultListLesson['success']) {
-        Navigator.of(context, rootNavigator: true).pop();
-        print(resultListLesson['data']['docs']);
+    //Dialogs.showLoadingDialog(context);
+    var dataLesson = await hiveService.getBoxesWithId(id, boxLesson);
 
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (BuildContext context) => DesignCourseScreen(
-                      lesson: resultListLesson['data'],
-                    )));
-      } else {
-        Navigator.of(context, rootNavigator: true).pop();
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("Please try again")));
-      }
-    } catch (e) {
-      Navigator.of(context, rootNavigator: true).pop();
+    if (dataLesson != null) {
+      await fetchListTopic(dataLesson);
+      // Navigator.of(context, rootNavigator: true).pop();
+      // Navigator.push(
+      //     context,
+      //     MaterialPageRoute(
+      //         builder: (BuildContext context) => DesignCourseScreen(
+      //               lesson: dataLesson,
+      //             )));
+    } else {
+      //Navigator.of(context, rootNavigator: true).pop();
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Please try again")));
     }
+  }
+
+  fetchListTopic(List dataLesson) async {
+    //5f624e435a9e4942249c324b
+    print(dataLesson);
+    print('debugging');
+    // dataLesson.forEach((e) async {
+    
+    var fetchListTopic = await fetch(
+        url: ApiList.getLessonDetail,
+        body: {"lessionId": "5f624e435a9e4942249c324b"});
+    print(fetchListTopic);
+    print('debugging');
+
+    // });
+
+    // var fetchListTopic = await fetch(
+    //     url: ApiList.getLessonDetail, body: {"lessionId": lessonId});
+    //  print(fetchListTopic);
+    //   print('debugging');
   }
 
   // getListLesson(String id) async {
@@ -227,12 +239,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
   //         .showSnackBar(SnackBar(content: Text("Please try again")));
   //   }
   // }
-
-  getListTopic() async {}
-
-  getListFlashCard() async {}
-
-  getListGame() async {}
 
   @override
   void initState() {

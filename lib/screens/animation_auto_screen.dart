@@ -14,6 +14,7 @@ class _AnimationAutoScreen extends State<AnimationAutoScreen> {
   bool showKid1 = true;
   bool showKid2 = false;
   bool showKid3 = false;
+  final bgImage = Image.asset('assets/images/background/bg_iphone.jpg');
   // var posKidBottom = -50.w;
   // var posCloudLeft = 0.w;
   // var posCloudBottom = 0.w;
@@ -91,7 +92,12 @@ class _AnimationAutoScreen extends State<AnimationAutoScreen> {
           Container(
             width: width,
             height: height,
-            decoration: backgroundImage2,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: bgImage.image,
+                fit: BoxFit.cover,
+              ),
+            ),
             child: null,
           ),
           Container(

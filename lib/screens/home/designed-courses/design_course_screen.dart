@@ -48,16 +48,15 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
   }
 
   initData() async {
-    var lessonData = widget.lesson['docs'];
-    print('debugging');
+    var lessonData = widget.lesson;
     if (lessonData != null) {
-      var newList = [];
-      for (var item in lessonData) {
-        newList.add(LessonModel.fromJson(item));
-      }
+      
       setState(() {
-        listLesson = newList;
+        listLesson = [...lessonData];
       });
+      print(listLesson);
+      print('debugging');
+      
     } else
       return;
   }

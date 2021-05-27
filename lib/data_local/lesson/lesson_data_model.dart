@@ -34,7 +34,7 @@ class LessonDataModel extends HiveObject {
   });
   factory LessonDataModel.fromJson(Map<String, dynamic> parsedJson) {
     return LessonDataModel(
-        id: parsedJson['id'] ?? parsedJson['_id'] ?? '',
+        id: parsedJson['_id'] ?? '',
         name: parsedJson['name'] ?? '',
         description: parsedJson['description'] ?? '',
         unitId: parsedJson['unitId'] ?? '',

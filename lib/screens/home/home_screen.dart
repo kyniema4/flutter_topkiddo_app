@@ -179,12 +179,14 @@ class _HomeScreenState extends State<HomeScreen> {
       List listUnit = [];
       data.forEach((e) {
         UnitDataModel unit = UnitDataModel.fromJson(e);
-        fetListLesson(unit.id);
+        fetchListLesson(unit.id);
+        //getListLesson(unit.id);
         listUnit.add(unit);
       });
 
       await hiveService.addBoxes(listUnit, boxUnit);
       print('save data unit success');
+      //print('debugging');
     }
   }
 
@@ -198,7 +200,6 @@ class _HomeScreenState extends State<HomeScreen> {
             "filter": {"language": 2}
           },
         );
-        print('debugging');
         if (resultGetList['success'] &&
             resultGetList['data']['docs'].length > 0) {
           return resultGetList['data']['docs'];
@@ -210,25 +211,58 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
   }
 
-  fetListLesson(String id) async {
-    // try {
-    //   var resultListLesson = await fetch(
-    //     url: ApiList.getListLesson,
-    //     body: {
-    //       "filter": {"unit": id}
-    //     },
-    //   );
-    //   List listLesson = [];
-    //   resultListLesson.forEach((e) {
-    //     LessonDataModel lesson = LessonDataModel.fromJson(e);
-    //     //fetListTopic(unit.id);
-    //     listLesson.add(listLesson);
-    //   });
-    //   await hiveService.addBoxes(listLesson, boxLesson);
-    //   print('save data lesson success');
-    // } catch (e) {
-    //   print('error get list lesson ');
-    // }
+  // fetListLesson(String id) async {
+
+  //   try {
+  //     var resultListLesson = await fetch(
+  //         url: ApiList.getListLesson,
+  //         body: {
+  //           "filter": {"unit": id}
+  //         },
+  //         needAutoHeader: true);
+  //     List listLesson = [];
+  //     print(resultListLesson['data']['docs'].length);
+  //     print('debugging');
+  //     if (resultListLesson['success'] &&
+  //         resultListLesson['data']['docs'].length > 0) {
+  //       resultListLesson.forEach((e) async {
+  //         print(resultListLesson['data']['docs']);
+  //         print('debugging');
+  //        // LessonDataModel lesson = LessonDataModel.fromJson(e);
+  //         //fetListTopic(unit.id);
+  //         await listLesson.add(listLesson);
+  //       });
+  //       //await hiveService.addBoxes(listLesson, boxLesson);
+  //       print('save data lesson success');
+  //     }
+  //   } catch (e) {
+  //     print(e);
+  //     print('error get list lesson ');
+  //   }
+  // }
+
+  fetchListLesson(String unitId) async {
+    try {
+      var resultListLesson = await fetch(
+        url: ApiList.getListLesson,
+        body: {
+          "filter": {"unit": unitId}
+        },
+      );
+      List listLesson = [];
+      if (resultListLesson['success'] &&
+          resultListLesson['data']['docs'].length > 0) {
+        resultListLesson['data']['docs'].forEach((e) {
+          LessonDataModel lesson = LessonDataModel.fromJson(e);
+          listLesson.add(lesson);
+        });
+        //await hiveService.addBoxes(listLesson, boxLesson);
+        await hiveService.putBoxesWithId(unitId,listLesson,boxLesson);
+        print('save data lesson success');
+      } else {}
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -293,7 +327,9 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class TopButton extends StatelessWidget {
-  String boxName = "unit";
+  String boxUnit = "unit";
+  String boxLesson = "lesson";
+  String boxTopic = "topic";
   final HiveService hiveService = HiveService();
   _showModalTranslate(context) {
     showDialog(
@@ -363,7 +399,8 @@ class TopButton extends StatelessWidget {
                                       fit: BoxFit.contain),
                                 )),
                             onTap: () {
-                              hiveService.clearBoxes(boxName);
+                              hiveService.clearBoxes(boxUnit);
+                              hiveService.clearBoxes(boxLesson);
                             }),
                       ],
                     )),

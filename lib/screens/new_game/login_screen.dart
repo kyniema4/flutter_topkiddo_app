@@ -23,6 +23,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreen extends State<LoginScreen> {
+   final bgImage = AssetImage('assets/images/background/bg_iphone.jpg');
   TextEditingController numberController =
       new TextEditingController(text: "0961865858");
   TextEditingController passwordController =
@@ -93,8 +94,10 @@ class _LoginScreen extends State<LoginScreen> {
   }
 
   @override
+  
   Widget build(BuildContext context) {
-    
+    precacheImage(bgImage, context);
+   
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Container(
