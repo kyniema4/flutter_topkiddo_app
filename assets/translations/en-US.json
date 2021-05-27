@@ -44,5 +44,15 @@
     "library":"Library",
     "subscribe":"Subscribe",
     "logout":"Logout",
-    "addChild":"Add child"
-  }
+    "addChild":"Add child",
+    "bedTime": "assets/images/topic/5bedtime-topic.png",
+    "music": "assets/images/topic/4music-topic.png",
+    "makePair": "assets/images/topic/3makepair-topic.png",
+    "multiTopic": "assets/images/topic/2multi-topic.png",
+    "wordList": "assets/images/topic/1wordlist-topic.png",
+    "wordListTitle": "Word List",
+    "musicTitle": "Music",
+    "readAlongTitle": "Read Along",
+    "bedTimeTitle": "Bed Time",
+    "miniGame": "Mini Game"
+  } 

@@ -110,7 +110,7 @@ class _ModalMenuState extends State<ModalMenu> {
                                   textAlign: TextAlign.center,
                                   maxLines: 2,
                                   style: TextStyle(
-                                      fontSize: height > 600 ? 17.sp : 24.sp,
+                                      fontSize: height > 600 ? 18.sp : 24.sp,
                                       fontFamily: 'UTMCooperBlack',
                                       fontWeight: FontWeight.w900,
                                       color: Theme.Colors.orange100,
@@ -122,18 +122,18 @@ class _ModalMenuState extends State<ModalMenu> {
                     }),
               )),
           Positioned(
-            bottom: 53.w,
-            right: 20.w,
-            child: TextButton(
-              onPressed: () => {
-                Navigator.pop(context, false) //translate
-              },
-              child: Image.asset(
-                'assets/images/menu/dropdown.png',
-                width: 13.w,
-              ),
-            ),
-          ),
+              bottom: 55.w,
+              right: 20.w,
+              child: Container(
+                  width: 13.w,
+                  child: GestureDetector(
+                      child: Image.asset(
+                        'assets/images/menu/dropdown.png',
+                        fit: BoxFit.cover,
+                      ),
+                      onTap: () {
+                        Navigator.pop(context, false);
+                      }))),
         ],
       )),
     );

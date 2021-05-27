@@ -44,5 +44,15 @@
   "library": "Thư viện",
   "subscribe": "Đăng ký",
   "logout": "Đăng xuất",
-  "addChild":"Thêm bé"
+  "addChild":"Thêm bé",
+  "bedTime": "assets/images/topic/5chuyen-topic.png",
+  "music": "assets/images/topic/4amnhac-topic.png",
+  "makePair": "assets/images/topic/3tangcuong-topic.png",
+  "multiTopic": "assets/images/topic/2luyen-topic.png",
+  "wordList": "assets/images/topic/1tumoi-topic.png",
+  "wordListTitle": "Từ Mới",
+  "musicTitle": "Âm nhạc",
+  "readAlongTitle": "Đọc cùng",
+  "bedTimeTitle": "Giờ đi ngủ",
+  "miniGame": "Trò chơi nhỏ"
 }

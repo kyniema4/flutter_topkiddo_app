@@ -11,6 +11,7 @@ import '../new_game/loginhome_screen.dart';
 import './modal_translate.dart';
 import './modal_menu.dart';
 import 'designed-courses/library_screen.dart';
+import 'topic.dart';
 //import '../../localization/language/languages.dart';
 
 //import '../../localization/language/languages.dart';
@@ -97,7 +98,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                 builder: (BuildContext context) =>
                                     LibraryScreen()));
                       } else if (pressId == 2) {
-                        print('topic');
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    TopicScreen()));
                       } else
                         Navigator.push(
                             context,
