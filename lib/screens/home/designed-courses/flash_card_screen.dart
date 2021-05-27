@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:topkiddo/Utils/http_service.dart';
 import '../../../theme/style.dart';
+import '../../../theme/theme.dart' as Theme;
 import '../../../components/languages_app.dart';
 import '../../../components/swipe-configuration.dart';
 import '../../home/home_screen.dart';
+import './animation_balloon_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:video_player/video_player.dart';
@@ -21,6 +23,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
     with TickerProviderStateMixin {
   String _swipeDirection = "";
   bool isShowTopButton = true;
+  bool isShowQuestion = false;
   int number = 0;
   int _lastReportedPage = 0;
   int previousPage = 0;
@@ -44,6 +47,11 @@ class _FlashCardScreen extends State<FlashCardScreen>
     previousPage = page;
     setState(() {
       number = page;
+      if (page > 3) {
+        isShowQuestion = true;
+      } else {
+        isShowQuestion = false;
+      }
     });
   }
 
@@ -58,6 +66,168 @@ class _FlashCardScreen extends State<FlashCardScreen>
     _controller.repeat(reverse: false);
     flickManager.dispose();
     super.dispose();
+  }
+
+  //trường hợp câu hỏi chữ và trả lời ảnh
+  _buildQuestionTypeOne(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        Container(
+          alignment: Alignment.center,
+          margin: EdgeInsets.all(8.5.w),
+          child: Text('Câu hỏi: Which One Is "Cat" ?',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: height > 600 ? 35.sp : 50.sp,
+                  // fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                  fontFamily: 'UTMCooperBlack')),
+        ),
+        Container(
+          width: 1.sw,
+          height: height > 600 ? 0.65.sh : 0.7.sh,
+          child: Wrap(
+            alignment: WrapAlignment.center,
+            runAlignment: WrapAlignment.center,
+            children: [
+              for (var i = 0; i < 4; i++)
+                Stack(
+                  alignment: Alignment.center,
+                  clipBehavior: Clip.none,
+                  children: [
+                    Container(
+                      height: height > 600 ? 60.w : 50.w,
+                      width: height > 600 ? 114.w : 94.w,
+                      margin: EdgeInsets.symmetric(
+                          horizontal: 10.w, vertical: height > 600 ? 8.w : 4.w),
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage(
+                            'assets/images/lesson/khung.png',
+                          ),
+                          fit: BoxFit.fill,
+                        ),
+                      ),
+                      child: Container(
+                        alignment: Alignment.center,
+                        margin: EdgeInsets.all(3.w),
+                        clipBehavior: Clip.hardEdge,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(
+                                height > 600 ? 11.w : 8.5.w)),
+                        child: Center(
+                          child: Image.asset(
+                              'assets/images/flashcard/image5.jpg',
+                              fit: BoxFit.contain),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                        bottom: -1.w,
+                        child: Image.asset(
+                          // 'assets/images/lesson/correct.png',
+                          'assets/images/lesson/false.png',
+                          width: height > 600 ? 25.w : 20.w,
+                          fit: BoxFit.contain,
+                        ))
+                  ],
+                )
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  //trường hợp câu hỏi ảnh và trả lời chữ
+  _buildQuestionTypeTwo(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
+
+    return Column(
+      children: [
+        Container(
+          alignment: Alignment.center,
+          margin: EdgeInsets.all(8.5.w),
+          child: Text('Câu hỏi: Choose The Word That Goes With The Picture ?',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: height > 600 ? 30.sp : 45.sp,
+                  // fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                  fontFamily: 'UTMCooperBlack')),
+        ),
+        Container(
+          height: height > 600 ? 85.w : 68.w,
+          width: height > 600 ? 163.w : 129.w,
+          margin: EdgeInsets.symmetric(
+              horizontal: 10.w, vertical: height > 600 ? 8.w : 2.w),
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(
+                'assets/images/lesson/khung.png',
+              ),
+              fit: BoxFit.fill,
+            ),
+          ),
+          child: Container(
+            alignment: Alignment.center,
+            margin: EdgeInsets.all(3.5.w),
+            clipBehavior: Clip.hardEdge,
+            decoration: BoxDecoration(
+                borderRadius:
+                    BorderRadius.circular(height > 600 ? 17.w : 12.w)),
+            child: Center(
+              child: Image.asset('assets/images/flashcard/image5.jpg',
+                  fit: BoxFit.contain),
+            ),
+          ),
+        ),
+        Container(
+          height: 0.24.sh,
+          width: 1.sw,
+          child: Wrap(
+            alignment: WrapAlignment.center,
+            runAlignment: WrapAlignment.center,
+            children: [
+              for (var i = 0; i < 6; i++)
+                Wrap(
+                    alignment: WrapAlignment.center,
+                    runAlignment: WrapAlignment.center,
+                    children: [
+                      Stack(
+                        alignment: Alignment.center,
+                        clipBehavior: Clip.none,
+                        children: [
+                          Container(
+                            margin: EdgeInsets.symmetric(horizontal: 12.w),
+                            child: Text('Fish',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontSize: height > 600 ? 45.sp : 60.sp,
+                                    color: Colors.white,
+                                    fontFamily: 'UTMCooperBlack')),
+                          ),
+                          // Positioned(
+                          //     bottom: -1.w,
+                          //     child: Image.asset(
+                          //       // 'assets/images/lesson/correct.png',
+                          //       'assets/images/lesson/false.png',
+                          //       width: 20.w,
+                          //       fit: BoxFit.contain,
+                          //     ))
+                        ],
+                      )
+                    ]),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 
   @override
@@ -85,16 +255,21 @@ class _FlashCardScreen extends State<FlashCardScreen>
                   children: <Widget>[
                     Center(
                       child: Container(
-                        height: 165.w,
-                        width: 321.w,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(
-                              'assets/images/lesson/ip-full-board-white.png',
-                            ),
-                            fit: BoxFit.fill,
-                          ),
-                        ),
+                        height: isShowQuestion
+                            ? (height > 600 ? 0.85.sh : null)
+                            : 165.w,
+                        width: isShowQuestion ? 0.9.sw : 321.w,
+                        // khi đến phần câu hỏi thì bỏ bảng trắng
+                        decoration: isShowQuestion
+                            ? BoxDecoration(image: null)
+                            : BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage(
+                                    'assets/images/lesson/ip-full-board-white.png',
+                                  ),
+                                  fit: BoxFit.fill,
+                                ),
+                              ),
                         child: Container(
                           alignment: Alignment.center,
                           margin: EdgeInsets.all(4.5.w),
@@ -116,7 +291,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                           fontSize:
                                               height > 600 ? 80.sp : 140.sp,
                                           // fontWeight: FontWeight.w900,
-                                          color: Colors.red,
+                                          color: Theme.Colors.orange900,
                                           fontFamily: 'UTMCooperBlack')),
                                 ),
 
@@ -138,112 +313,113 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                           fontSize:
                                               height > 600 ? 70.sp : 100.sp,
                                           // fontWeight: FontWeight.w900,
-                                          color: Colors.red,
+                                          color: Theme.Colors.orange900,
                                           fontFamily: 'UTMCooperBlack')),
                                 ),
 
-                                //trường hợp ảnh full
-                                Center(
-                                  child: Image.asset(
-                                      'assets/images/flashcard/image2.jpg',
-                                      fit: BoxFit.contain),
-                                ),
+                                // //trường hợp ảnh full
+                                // //đoạn này comment lại lướt cho nhanh:v
+                                // Center(
+                                //   child: Image.asset(
+                                //       'assets/images/flashcard/image2.jpg',
+                                //       fit: BoxFit.contain),
+                                // ),
 
-                                //trường hợp click ảnh để nghe
-                                Container(
-                                    margin: EdgeInsets.all(8.5.w),
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                            'Click Vào Từng Hình Để Nghe Cách Đọc',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                fontSize: height > 600
-                                                    ? 25.sp
-                                                    : 35.sp,
-                                                // fontWeight: FontWeight.w900,
-                                                color: Colors.red,
-                                                fontFamily: 'UTMCooperBlack')),
-                                        SizedBox(
-                                          height: 20.w,
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceAround,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Image.asset(
-                                              'assets/images/flashcard/image4.jpg',
-                                              fit: BoxFit.contain,
-                                              height: 70.w,
-                                            ),
-                                            Image.asset(
-                                              'assets/images/flashcard/image6.jpg',
-                                              fit: BoxFit.contain,
-                                              height: 70.w,
-                                            ),
-                                          ],
-                                        )
-                                      ],
-                                    )),
+                                // //trường hợp click ảnh để nghe
+                                // Container(
+                                //     margin: EdgeInsets.all(8.5.w),
+                                //     child: Column(
+                                //       children: [
+                                //         Text(
+                                //             'Click Vào Từng Hình Để Nghe Cách Đọc',
+                                //             textAlign: TextAlign.center,
+                                //             style: TextStyle(
+                                //                 fontSize: height > 600
+                                //                     ? 25.sp
+                                //                     : 35.sp,
+                                //                 // fontWeight: FontWeight.w900,
+                                //                 color: Theme.Colors.orange900,
+                                //                 fontFamily: 'UTMCooperBlack')),
+                                //         SizedBox(
+                                //           height: 20.w,
+                                //         ),
+                                //         Row(
+                                //           mainAxisAlignment:
+                                //               MainAxisAlignment.spaceAround,
+                                //           crossAxisAlignment:
+                                //               CrossAxisAlignment.center,
+                                //           children: [
+                                //             Image.asset(
+                                //               'assets/images/flashcard/image4.jpg',
+                                //               fit: BoxFit.contain,
+                                //               height: 70.w,
+                                //             ),
+                                //             Image.asset(
+                                //               'assets/images/flashcard/image6.jpg',
+                                //               fit: BoxFit.contain,
+                                //               height: 70.w,
+                                //             ),
+                                //           ],
+                                //         )
+                                //       ],
+                                //     )),
 
-                                //trường hợp ảnh full
-                                Center(
-                                  child: Image.asset(
-                                      'assets/images/flashcard/image5.jpg',
-                                      fit: BoxFit.contain),
-                                ),
+                                // //trường hợp ảnh full
+                                // Center(
+                                //   child: Image.asset(
+                                //       'assets/images/flashcard/image5.jpg',
+                                //       fit: BoxFit.contain),
+                                // ),
 
-                                //trường hợp chỉ sử dụng cho text ít chữ
-                                Container(
-                                  alignment: Alignment.center,
-                                  margin: EdgeInsets.all(8.5.w),
-                                  child: ScaleTransition(
-                                    scale: _tween.animate(CurvedAnimation(
-                                        parent: _controller,
-                                        curve: Curves.elasticOut)),
-                                    child: SizedBox(
-                                      child: Text('Cat',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              fontSize:
-                                                  height > 600 ? 35.sp : 75.sp,
-                                              // fontWeight: FontWeight.w900,
-                                              color: Colors.red,
-                                              fontFamily: 'UTMCooperBlack')),
-                                    ),
-                                  ),
-                                ),
+                                // //trường hợp chỉ sử dụng cho text ít chữ
+                                // Container(
+                                //   alignment: Alignment.center,
+                                //   margin: EdgeInsets.all(8.5.w),
+                                //   child: ScaleTransition(
+                                //     scale: _tween.animate(CurvedAnimation(
+                                //         parent: _controller,
+                                //         curve: Curves.elasticOut)),
+                                //     child: SizedBox(
+                                //       child: Text('Cat',
+                                //           textAlign: TextAlign.center,
+                                //           style: TextStyle(
+                                //               fontSize:
+                                //                   height > 600 ? 35.sp : 75.sp,
+                                //               // fontWeight: FontWeight.w900,
+                                //               color: Theme.Colors.orange900,
+                                //               fontFamily: 'UTMCooperBlack')),
+                                //     ),
+                                //   ),
+                                // ),
 
-                                // trường hợp video
-                                Container(
-                                  height: 1.sh,
-                                  // width: 1.sw,
-                                  color: Colors.black,
-                                  child: ClipRRect(
-                                    child: Center(
-                                      child: FlickVideoPlayer(
-                                        flickVideoWithControls:
-                                            FlickVideoWithControls(
-                                          controls: FlickLandscapeControls(),
-                                        ),
-                                        // flickVideoWithControlsFullscreen:
-                                        //     FlickVideoWithControls(
-                                        //   controls: FlickLandscapeControls(),
-                                        // ),
-                                        flickManager: flickManager,
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                                // // trường hợp video
+                                // Container(
+                                //   height: 1.sh,
+                                //   // width: 1.sw,
+                                //   color: Colors.black,
+                                //   child: ClipRRect(
+                                //     child: Center(
+                                //       child: FlickVideoPlayer(
+                                //         flickVideoWithControls:
+                                //             FlickVideoWithControls(
+                                //           controls: FlickLandscapeControls(),
+                                //         ),
+                                //         // flickVideoWithControlsFullscreen:
+                                //         //     FlickVideoWithControls(
+                                //         //   controls: FlickLandscapeControls(),
+                                //         // ),
+                                //         flickManager: flickManager,
+                                //       ),
+                                //     ),
+                                //   ),
+                                // ),
 
-                                // trường hợp ảnh full
-                                Center(
-                                  child: Image.asset(
-                                      'assets/images/flashcard/image7.jpg',
-                                      fit: BoxFit.contain),
-                                ),
+                                // // trường hợp ảnh full
+                                // Center(
+                                //   child: Image.asset(
+                                //       'assets/images/flashcard/image7.jpg',
+                                //       fit: BoxFit.contain),
+                                // ),
 
                                 // trường hợp câu có lồng ảnh nhỏ
                                 Container(
@@ -264,8 +440,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                                   fontSize: height > 600
                                                       ? 70.sp
                                                       : 100.sp,
-                                                  // fontWeight: FontWeight.w900,
-                                                  color: Colors.red,
+                                                  color: Theme.Colors.orange900,
                                                   fontFamily:
                                                       'UTMCooperBlack')),
                                         ],
@@ -281,63 +456,12 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                                   fontSize: height > 600
                                                       ? 70.sp
                                                       : 100.sp,
-                                                  // fontWeight: FontWeight.w900,
-                                                  color: Colors.red,
+                                                  color: Theme.Colors.orange900,
                                                   fontFamily:
                                                       'UTMCooperBlack')),
                                         ],
                                       ),
-                                      SizedBox(width: 5.w),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Text('Love',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  fontSize: height > 600
-                                                      ? 70.sp
-                                                      : 100.sp,
-                                                  // fontWeight: FontWeight.w900,
-                                                  color: Colors.red,
-                                                  fontFamily:
-                                                      'UTMCooperBlack')),
-                                        ],
-                                      ),
-                                      SizedBox(width: 5.w),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Text('Love',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  fontSize: height > 600
-                                                      ? 70.sp
-                                                      : 100.sp,
-                                                  // fontWeight: FontWeight.w900,
-                                                  color: Colors.red,
-                                                  fontFamily:
-                                                      'UTMCooperBlack')),
-                                        ],
-                                      ),
-                                      SizedBox(width: 5.w),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Text('Love',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  fontSize: height > 600
-                                                      ? 70.sp
-                                                      : 100.sp,
-                                                  // fontWeight: FontWeight.w900,
-                                                  color: Colors.red,
-                                                  fontFamily:
-                                                      'UTMCooperBlack')),
-                                        ],
-                                      ),
+
                                       SizedBox(width: 5.w),
                                       Column(
                                         crossAxisAlignment:
@@ -349,8 +473,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                                   fontSize: height > 600
                                                       ? 70.sp
                                                       : 100.sp,
-                                                  // fontWeight: FontWeight.w900,
-                                                  color: Colors.red,
+                                                  color: Theme.Colors.orange900,
                                                   fontFamily:
                                                       'UTMCooperBlack')),
                                         ],
@@ -366,8 +489,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                                   fontSize: height > 600
                                                       ? 70.sp
                                                       : 100.sp,
-                                                  // fontWeight: FontWeight.w900,
-                                                  color: Colors.red,
+                                                  color: Theme.Colors.orange900,
                                                   fontFamily:
                                                       'UTMCooperBlack')),
                                         ],
@@ -391,8 +513,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                                   fontSize: height > 600
                                                       ? 45.sp
                                                       : 65.sp,
-                                                  // fontWeight: FontWeight.w900,
-                                                  color: Colors.red,
+                                                  color: Theme.Colors.orange900,
                                                   fontFamily:
                                                       'UTMCooperBlack')),
                                         ],
@@ -401,6 +522,24 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                     ],
                                   ),
                                 ),
+
+                                //trường hợp câu hỏi chữ và trả lời ảnh
+                                isShowQuestion
+                                    ? Container(
+                                        child: _buildQuestionTypeOne(context),
+                                      )
+                                    : Container(),
+
+                                //trường hợp câu hỏi ảnh và trả lời chữ
+                                (isShowQuestion)
+                                    ? Container(
+                                        // visible: isShowQuestion,
+                                        child: _buildQuestionTypeTwo(context),
+                                      )
+                                    : Container(),
+                                isShowQuestion
+                                    ? AnimationBalloonScreen()
+                                    : Container(),
                               ],
                             ),
                             onSwipeUp: () {
@@ -435,7 +574,12 @@ class _FlashCardScreen extends State<FlashCardScreen>
   }
 }
 
-class TopButton extends StatelessWidget {
+class TopButton extends StatefulWidget {
+  @override
+  _TopButtonState createState() => _TopButtonState();
+}
+
+class _TopButtonState extends State<TopButton> {
   @override
   Widget build(BuildContext context) {
     return Container(

@@ -19,4 +19,5 @@ class Colors {
   static const green200 = Color(0xFF5CA366);
   static const green400 = Color(0xFF2A8850);
   static const green700 = Color(0xFF104333);
+  static const orange900 = Color(0xFFCF5E41);
 }

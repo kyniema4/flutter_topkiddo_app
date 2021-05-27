@@ -78,6 +78,9 @@ flutter:
     - assets/images/firework/
     - assets/images/directory/
     - assets/images/menu/
+    - assets/images/balloon/orange_balloon/
+    - assets/images/balloon/blue_balloon/
+    - assets/images/balloon/red_balloon/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
