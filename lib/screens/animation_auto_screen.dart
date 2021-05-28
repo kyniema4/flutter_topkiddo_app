@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:topkiddo/theme/style.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import 'package:topkiddo/theme/style.dart';
 
 class AnimationAutoScreen extends StatefulWidget {
   AnimationAutoScreen({Key key}) : super(key: key);
@@ -11,29 +12,29 @@ class AnimationAutoScreen extends StatefulWidget {
 
 class _AnimationAutoScreen extends State<AnimationAutoScreen> {
   bool move = false;
+  bool moveClound = false;
   bool showKid1 = true;
   bool showKid2 = false;
   bool showKid3 = false;
+  bool showClound = true;
+  List<Widget> listClound = [];
   final bgImage = Image.asset('assets/images/background/bg_iphone.jpg');
-  // var posKidBottom = -50.w;
-  // var posCloudLeft = 0.w;
-  // var posCloudBottom = 0.w;
-  // int durationKid = 0;
+
   movingAnimation() async {
-    await Future.delayed(Duration(seconds: 1), () {
+    await Future.delayed(Duration(milliseconds: 500), () {
       if (!mounted) return;
       setState(() {
         move = true;
+        moveClound = true;
       });
     });
-    //3
     await Future.delayed(Duration(seconds: 3), () {
       if (!mounted) return;
+
       setState(() {
         showKid1 = false;
         showKid2 = true;
         move = false;
-        //showKid2 = true;
       });
     });
     await Future.delayed(Duration(seconds: 1), () {
@@ -57,21 +58,60 @@ class _AnimationAutoScreen extends State<AnimationAutoScreen> {
         move = true;
       });
     });
+  }
 
-    // await Future.delayed(Duration(seconds: 5), () {
-    //   setState(() {
-    //     posKidLeft = 50.w;
-    //     posKidBottom = -10.w;
-    //     durationKid = 1;
-    //   });
-    // });
+  handleShowClound() {
+    String pathClound = 'assets/images/animation/cloud';
+    List<Widget> clounds = [
+      Clound(path: pathClound + '1.png', top: 15, left: 0, width: 400)
+          .buildWidgetClound(),
+      Clound(path: pathClound + '2.png', top: 55, left: 0, width: 300)
+          .buildWidgetClound(),
+      Clound(path: pathClound + '3.png', top: 15, left: 0, width: 350)
+          .buildWidgetClound(),
+      Clound(path: pathClound + '4.png', top: 50, left: -30, width: 350)
+          .buildWidgetClound(),
+      Clound(path: pathClound + '5.png', top: 15, left: 0, width: 350)
+          .buildWidgetClound(),
+      Clound(path: pathClound + '6.png', top: 20, left: 0, width: 350)
+          .buildWidgetClound(),
+    ];
+    setState(() {
+      listClound = [...clounds];
+    });
   }
 
   @override
   void initState() {
     super.initState();
     movingAnimation();
+    handleShowClound();
+    //timer();
   }
+
+  // void timer() async {
+  //   await Future.delayed(Duration(seconds: 30), () {
+  //     setState(() {
+  //       showClound = false;
+  //       moveClound = true;
+  //     });
+  //   });
+  //   await Future.delayed(Duration(seconds: 1), () {
+  //     if (!mounted) return;
+  //     setState(() {
+  //       showClound = true;
+  //       moveClound = false;
+  //     });
+  //   });
+  //   await Future.delayed(Duration(seconds: 1), () {
+  //     if (!mounted) return;
+  //     setState(() {
+  //       print("call againt");
+  //       moveClound = true;
+  //     });
+  //     timer();
+  //   });
+  // }
 
   @override
   void dispose() {
@@ -176,72 +216,61 @@ class _AnimationAutoScreen extends State<AnimationAutoScreen> {
                         duration: Duration(seconds: 5),
                       )
                     : Container(),
-                // AnimatedPositioned(
-                //   top: 15.w,
-                //   left: false ? 500.w : 0.w,
-                //   width: 400.w,
-                //   child: Center(
-                //       child: Image.asset('assets/images/animation/cloud1.png',
-                //           fit: BoxFit.contain)),
-                //   duration: Duration(seconds: 1),
-                // ),
-                // AnimatedPositioned(
-                //   top: 60.w,
-                //   left: false ? 500.w : 0.w,
-                //   width: 300.w,
-                //   child: Center(
-                //       child: Image.asset('assets/images/animation/cloud2.png',
-                //           fit: BoxFit.contain)),
-                //   duration: Duration(seconds: 1),
-                // ),
-                // AnimatedPositioned(
-                //   top: 50.w,
-                //   left: false ? 500.w : 40.w,
-                //   width: 400.w,
-                //   child: Center(
-                //       child: Image.asset('assets/images/animation/cloud3.png',
-                //           fit: BoxFit.contain)),
-                //   duration: Duration(seconds: 1),
-                // ),
-                // AnimatedPositioned(
-                //   top: 20.w,
-                //   left: false ? 500.w : 80.w,
-                //   width: 300.w,
-                //   child: Center(
-                //       child: Image.asset('assets/images/animation/cloud4.png',
-                //           fit: BoxFit.contain)),
-                //   duration: Duration(seconds: 1),
-                // ),
-                // AnimatedPositioned(
-                //   top: 20.w,
-                //   left: false ? 500.w : 50.w,
-                //   width: 500.w,
-                //   child: Center(
-                //       child: Image.asset('assets/images/animation/cloud5.png',
-                //           fit: BoxFit.contain)),
-                //   duration: Duration(seconds: 1),
-                // ),
-                // AnimatedPositioned(
-                //   top: 60.w,
-                //   left: false ? 500.w : 0.w,
-                //   width: 150.w,
-                //   child: Center(
-                //       child: Image.asset('assets/images/animation/cloud6.png',
-                //           fit: BoxFit.contain)),
-                //   duration: Duration(seconds: 0),
-                // )
-                // SlideTransition(
-                //   position: Tween<Offset>(begin: Offset.zero, end: Offset(1, 0))
-                //       .animate(animationController),
-                //   child: Center(
-                //       child: Image.asset('assets/images/animation/kid1.gif',
-                //           fit: BoxFit.contain)),
-                // )
+
+                AnimatedPositioned(
+                  top: 0.w,
+                  right: moveClound ? -400.w : 50.w,
+                  child: Container(
+                    width: width,
+                    height: height,
+                    child: Stack(children: listClound),
+                  ),
+                  duration: Duration(seconds: 30),
+                ),
+
+                AnimatedPositioned(
+                  top: 0.w,
+                  right: moveClound ? 0.w : 350.w,
+                  child: Container(
+                    width: width,
+                    height: height,
+                    child: Stack(children: listClound),
+                  ),
+                  duration: Duration(seconds: 30),
+                ),
               ],
             ),
           ),
         ],
       ),
     ));
+  }
+}
+
+class Clound {
+  String path;
+  int bottom;
+  int right;
+  int left;
+  int top;
+  int width;
+  int height;
+  Clound({
+    this.path,
+    this.bottom,
+    this.right,
+    this.left,
+    this.top,
+    this.width,
+    this.height,
+  });
+
+  buildWidgetClound() {
+    return Positioned(
+      top: top.w,
+      left: left.w,
+      width: width.w,
+      child: Center(child: Image.asset(path, fit: BoxFit.contain)),
+    );
   }
 }

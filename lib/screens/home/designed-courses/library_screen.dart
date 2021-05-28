@@ -174,7 +174,8 @@ class _LibraryScreenState extends State<LibraryScreen> {
     var dataLesson = await hiveService.getBoxesWithId(id, boxLesson);
 
     if (dataLesson != null) {
-      await fetchListTopic(dataLesson);
+      fetchTopicData('5f624e435a9e4942249c324b');
+      //await fetchListTopic(dataLesson);
       // Navigator.of(context, rootNavigator: true).pop();
       // Navigator.push(
       //     context,
@@ -189,56 +190,49 @@ class _LibraryScreenState extends State<LibraryScreen> {
     }
   }
 
-  fetchListTopic(List dataLesson) async {
-    //5f624e435a9e4942249c324b
-    print(dataLesson);
-    print('debugging');
-    // dataLesson.forEach((e) async {
-    
-    var fetchListTopic = await fetch(
-        url: ApiList.getLessonDetail,
-        body: {"lessionId": "5f624e435a9e4942249c324b"});
-    print(fetchListTopic);
-    print('debugging');
-
-    // });
-
-    // var fetchListTopic = await fetch(
-    //     url: ApiList.getLessonDetail, body: {"lessionId": lessonId});
-    //  print(fetchListTopic);
-    //   print('debugging');
-  }
-
-  // getListLesson(String id) async {
-  //   try {
-  //     Dialogs.showLoadingDialog(context);
-  //     var resultListLesson = await fetch(
-  //       url: ApiList.getListLesson,
-  //       body: {
-  //         "filter": {"unit": id}
-  //       },
-  //     );
-  //     if (resultListLesson['success']) {
-  //       Navigator.of(context, rootNavigator: true).pop();
-  //       print(resultListLesson['data']['docs']);
-
-  //       Navigator.push(
-  //           context,
-  //           MaterialPageRoute(
-  //               builder: (BuildContext context) => DesignCourseScreen(
-  //                     lesson: resultListLesson['data'],
-  //                   )));
-  //     } else {
-  //       Navigator.of(context, rootNavigator: true).pop();
-  //       ScaffoldMessenger.of(context)
-  //           .showSnackBar(SnackBar(content: Text("Please try again")));
-  //     }
-  //   } catch (e) {
-  //     Navigator.of(context, rootNavigator: true).pop();
-  //     ScaffoldMessenger.of(context)
-  //         .showSnackBar(SnackBar(content: Text("Please try again")));
+  // Future<List> fetchListTopic(List dataLesson) async {
+  //   //5f624e435a9e4942249c324b
+  //   var futures = <Future>[];
+  //   print(dataLesson);
+  //   for (var i = 0; i < dataLesson.length; i++) {
+  //     futures.add();
   //   }
+  //   // dataLesson.forEach((e) async {
+    
+  //   var fetchListTopic = await fetch(
+  //       url: ApiList.getLessonDetail,
+  //       body: {"lessionId": "5f624e435a9e4942249c324b"});
+  //   print(fetchListTopic);
+  //   print('debugging');
+
+  //   // });
+
+  //   // var fetchListTopic = await fetch(
+  //   //     url: ApiList.getLessonDetail, body: {"lessionId": lessonId});
+  //   //  print(fetchListTopic);
+  //   //   print('debugging');
   // }
+
+  fetchTopicData(String id) async {
+    try {
+     
+      var resultTopic = await fetch(
+        url: ApiList.getLessonDetail,
+        body: {
+          "filter": {"unit": id}
+        },
+      );
+       print('debugging');
+      if (resultTopic['success']) {
+
+       return resultTopic['data']['docs'];
+      } else {
+        return;
+      }
+    } catch (e) {
+      print('occurred error in $id detail: $e');
+    }
+  }
 
   @override
   void initState() {
