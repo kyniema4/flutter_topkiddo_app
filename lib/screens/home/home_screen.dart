@@ -12,9 +12,15 @@ import '../../theme/theme.dart' as Theme;
 
 import '../new_game/loginhome_screen.dart';
 import './modal_translate.dart';
+import './modal_menu.dart';
 import 'designed-courses/library_screen.dart';
-import '../../components/languages_app.dart';
 import 'package:topkiddo/data_local/lesson/unit_data_model.dart';
+import 'topic.dart';
+//import '../../localization/language/languages.dart';
+
+//import '../../localization/language/languages.dart';
+import '../../components/languages_app.dart';
+
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -102,7 +108,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                 builder: (BuildContext context) =>
                                     LibraryScreen()));
                       } else if (pressId == 2) {
-                        print('topic');
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    TopicScreen()));
                       } else
                         Navigator.push(
                             context,
@@ -341,6 +351,16 @@ class TopButton extends StatelessWidget {
         });
   }
 
+  _showModalMenu(context) {
+    showDialog(
+        context: context,
+        useSafeArea: false,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return ModalMenu();
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -401,6 +421,7 @@ class TopButton extends StatelessWidget {
                             onTap: () {
                               hiveService.clearBoxes(boxUnit);
                               hiveService.clearBoxes(boxLesson);
+                              //_showModalMenu(context);
                             }),
                       ],
                     )),

@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
@@ -7,13 +6,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart' as pathProvider;
-import 'package:topkiddo/data_local/lesson/lesson_data_model.dart';
 import 'package:topkiddo/screens/new_game/login_screen.dart';
 import 'package:topkiddo/data_local/favorite_sentence_model.dart';
 import 'package:topkiddo/data_local/lesson/unit_data_model.dart';
 import 'package:topkiddo/data_local/lesson/lesson_data_model.dart';
 import 'screens/splash_screen.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'screens/home/modal_language.dart';
+import 'screens/home/home_screen.dart';
+import 'screens/home/designed-courses/flash_card_screen.dart';
+import 'screens/home/designed-courses/animation_screen.dart';
+import 'screens/home/designed-courses/library_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -70,7 +73,11 @@ class _MyAppState extends State<MyApp> {
 
         routes: {
           // '/': (BuildContext context) => SplashScreen(),
-          '/': (BuildContext context) => LoginScreen(),
+          // '/': (BuildContext context) => HomeScreen(),
+          // '/': (BuildContext context) => FlashCardScreen(),
+          // '/': (BuildContext context) => AnimationScreen(),
+          // '/': (BuildContext context) => ModalLanguage(),
+          '/': (BuildContext context) => LibraryScreen(),
         },
         //translate
         // locale: _locale,

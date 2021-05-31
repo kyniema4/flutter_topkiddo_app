@@ -60,7 +60,7 @@ class _ModalTranslateState extends State<ModalTranslate> {
                               opacity: opacity == 1 ? 0 : 1,
                               duration: Duration(milliseconds: 10),
                               child: Image.asset(
-                                'assets/images/languages/babe2.png',
+                                'assets/images/languages/2-em-be.png',
                                 width: 90.w,
                               ),
                             ),
