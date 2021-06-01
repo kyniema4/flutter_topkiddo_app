@@ -1,10 +1,13 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:topkiddo/Utils/hive_service.dart';
+import 'package:topkiddo/Utils/download_data.dart';
 import 'package:topkiddo/data_local/lesson/lesson_data_model.dart';
+import 'package:topkiddo/screens/animation_auto_screen.dart';
 import 'package:topkiddo/screens/home/directory-page/directory_screen.dart';
 import '../../Utils/http_service.dart';
 import '../../theme/style.dart';
@@ -16,6 +19,8 @@ import './modal_menu.dart';
 import 'designed-courses/library_screen.dart';
 import 'package:topkiddo/data_local/lesson/unit_data_model.dart';
 import 'topic.dart';
+import 'package:path_provider/path_provider.dart';
+
 //import '../../localization/language/languages.dart';
 
 //import '../../localization/language/languages.dart';
@@ -38,7 +43,8 @@ class _HomeScreenState extends State<HomeScreen> {
   String boxLesson = "lesson";
   String boxTopic = "topic";
   final HiveService hiveService = HiveService();
-
+  final HandleDownload download= HandleDownload();
+  DateTime now = DateTime.now();
   @override
   void initState() {
     super.initState();
@@ -141,38 +147,6 @@ class _HomeScreenState extends State<HomeScreen> {
   // }
 
   initFunction() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-
-    var getLanguage = await pref.getString('lng_key');
-    if (getLanguage == null) {
-      pref.setString('lng_key', 'en');
-      // this.languageService.setLanguage('en')
-      // this.languageKey = 'en'
-      // this.imageLanguage = 1
-    }
-
-    if (getLanguage == 'vi') {
-      // this.languageKey = val
-      // this.imageLanguage = 1
-      // this.languageService.setLanguage('vi')
-    }
-
-    if (getLanguage == 'en') {
-      // this.languageKey = val
-      // this.imageLanguage = 2
-      // this.languageService.setLanguage('en')
-    }
-    var getUnitLanguage = await pref.getString('unitLanguage');
-    // 1 english - english
-    // 2 english  - american
-    if (getUnitLanguage == null) {
-      pref.setInt('unitLanguage', 2);
-    }
-
-    if (!pref.getBool('isCheck')) {
-      pref.setBool('isCheck', false);
-    }
-
     // this.downloadLanguageLocal()
     // this.checkLogin();
     // this.updateLoginFcmToken();
@@ -185,16 +159,16 @@ class _HomeScreenState extends State<HomeScreen> {
       print('data already');
       //var listUnit = await hiveService.getBoxes(boxName);
     } else {
-      var data = await fetchListUnit();
-      List listUnit = [];
-      data.forEach((e) {
-        UnitDataModel unit = UnitDataModel.fromJson(e);
-        fetchListLesson(unit.id);
-        //getListLesson(unit.id);
-        listUnit.add(unit);
-      });
+      await fetchListUnit();
+      // List listUnit = [];
+      // data.forEach((e) {
+      //   UnitDataModel unit = UnitDataModel.fromJson(e);
+      //   fetchListLesson(unit.id);
+      //   //getListLesson(unit.id);
+      //   listUnit.add(unit);
+      // });
 
-      await hiveService.addBoxes(listUnit, boxUnit);
+      // await hiveService.addBoxes(listUnit, boxUnit);
       print('save data unit success');
       //print('debugging');
     }
@@ -202,17 +176,31 @@ class _HomeScreenState extends State<HomeScreen> {
 
   fetchListUnit() async {
     var token = (await getToken()).toString();
+    //*get unitLanguage
+    int unitLanguage = 1;
     if (token.length > 0) {
       try {
-        var resultGetList = await fetch(
+        var resultListUnit = await fetch(
           url: ApiList.getListUnit,
           body: {
-            "filter": {"language": 2}
+            "filter": {"language": unitLanguage ?? 2}
           },
         );
-        if (resultGetList['success'] &&
-            resultGetList['data']['docs'].length > 0) {
-          return resultGetList['data']['docs'];
+
+        if (resultListUnit['success'] &&
+            resultListUnit['data']['docs'].length > 0) {
+          var resultListLesson =
+              await fetchListLesson(resultListUnit['data']['docs'][0]['_id']);
+
+          if (resultListLesson['success'] &&
+              resultListLesson['data']['docs'].length > 0) {
+            List listSaveContent = [...resultListLesson['data']['docs']];
+            for (var i = 0; i < listSaveContent.length; i++) {
+              await downloadListContent(listSaveContent[i]);
+            }
+          }
+        } else {
+          print('error when fetch list Unit');
         }
       } catch (e) {
         print('error get list Unit ' + e);
@@ -221,58 +209,128 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
   }
 
-  // fetListLesson(String id) async {
-
-  //   try {
-  //     var resultListLesson = await fetch(
-  //         url: ApiList.getListLesson,
-  //         body: {
-  //           "filter": {"unit": id}
-  //         },
-  //         needAutoHeader: true);
-  //     List listLesson = [];
-  //     print(resultListLesson['data']['docs'].length);
-  //     print('debugging');
-  //     if (resultListLesson['success'] &&
-  //         resultListLesson['data']['docs'].length > 0) {
-  //       resultListLesson.forEach((e) async {
-  //         print(resultListLesson['data']['docs']);
-  //         print('debugging');
-  //        // LessonDataModel lesson = LessonDataModel.fromJson(e);
-  //         //fetListTopic(unit.id);
-  //         await listLesson.add(listLesson);
-  //       });
-  //       //await hiveService.addBoxes(listLesson, boxLesson);
-  //       print('save data lesson success');
-  //     }
-  //   } catch (e) {
-  //     print(e);
-  //     print('error get list lesson ');
-  //   }
-  // }
-
   fetchListLesson(String unitId) async {
     try {
       var resultListLesson = await fetch(
-        url: ApiList.getListLesson,
-        body: {
-          "filter": {"unit": unitId}
-        },
-      );
-      List listLesson = [];
-      if (resultListLesson['success'] &&
-          resultListLesson['data']['docs'].length > 0) {
-        resultListLesson['data']['docs'].forEach((e) {
-          LessonDataModel lesson = LessonDataModel.fromJson(e);
-          listLesson.add(lesson);
-        });
-        //await hiveService.addBoxes(listLesson, boxLesson);
-        await hiveService.putBoxesWithId(unitId,listLesson,boxLesson);
-        print('save data lesson success');
-      } else {}
+          url: ApiList.getListLesson,
+          body: {
+            "filter": {"unit": unitId}
+          },
+          needAutoHeader: true);
+
+      return resultListLesson;
+      // List listLesson = [];
+      // print(resultListLesson['data']['docs'].length);
+      // print('debugging');
+      // if (resultListLesson['success'] &&
+      //     resultListLesson['data']['docs'].length > 0) {
+      //   resultListLesson.forEach((e) async {
+      //     print(resultListLesson['data']['docs']);
+      //     print('debugging');
+      //    // LessonDataModel lesson = LessonDataModel.fromJson(e);
+      //     //fetListTopic(unit.id);
+      //     await listLesson.add(listLesson);
+      //   });
+      //   //await hiveService.addBoxes(listLesson, boxLesson);
+      //   print('save data lesson success');
+      // }
     } catch (e) {
       print(e);
+      print('error get list lesson ');
     }
+  }
+
+  Future downloadListContent(dataLesson) async {
+    if (dataLesson['part'].length > 0) {
+      List<Future> listDataHandle = [];
+      dataLesson['part'].forEach((item) {
+        print(item);
+        print('debugging');
+
+        if (item['audio'] != null) {
+          print(item['audio']);
+          listDataHandle.add(download.downloadFile(item['audio'], dataLesson['_id']));
+          //HandleDownload().checkFileExists();
+        }
+        if (item['game'] != null) {
+          print(item['game']);
+          print('debugging');
+        }
+        if (item['content']?.length > 0) {
+          print(item['content']);
+          print('debugging');
+        }
+        if (item['flashcard']?.length > 0) {
+          print(item['content']);
+          print('debugging');
+        }
+      });
+      print('debugging');
+      await Future.wait(listDataHandle);
+    }
+  }
+
+ 
+  // downloadFile(data, lessonId) async {
+  //   String dir = (await getApplicationDocumentsDirectory()).path;
+  //   File file = new File('$dir/test');
+  //   String params =
+  //       '?token=${(await getToken())}&resourceId=${data['_id']}&time=${now.toString()}';
+
+  //   try {
+  //     var resultDownload = await fetch(
+  //         url: BaseUrl + "resources/get_resource_from_local" + params,
+  //         method: 5);
+  //     var bytes = await resultDownload.bodyBytes; //close();
+  //      await file.writeAsBytes(bytes);
+  //     print(file.path);
+  //     print('debugging');
+  //   } catch (e) {
+  //     print('error downloadFile ' + e);
+  //   }
+  // }
+
+  getGame(String gameId) async {
+    try {
+      var resultGameIfo = await fetch(
+        url: ApiList.getGameInfo,
+        body: {"gameId": gameId},
+      );
+      print(resultGameIfo);
+      print('debugging');
+      return resultGameIfo;
+    } catch (e) {
+      print('error get gameInfo ' + e);
+    }
+  }
+  // fetchListLesson(String unitId) async {
+  //   try {
+  //     var resultListLesson = await fetch(
+  //       url: ApiList.getListLesson,
+  //       body: {
+  //         "filter": {"unit": unitId}
+  //       },
+  //     );
+  //     List listLesson = [];
+  //     if (resultListLesson['success'] &&
+  //         resultListLesson['data']['docs'].length > 0) {
+  //       resultListLesson['data']['docs'].forEach((e) {
+  //         LessonDataModel lesson = LessonDataModel.fromJson(e);
+  //         listLesson.add(lesson);
+  //       });
+  //       //await hiveService.addBoxes(listLesson, boxLesson);
+  //       await hiveService.putBoxesWithId(unitId, listLesson, boxLesson);
+  //       print('save data lesson success');
+  //     } else {}
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override
@@ -287,8 +345,10 @@ class _HomeScreenState extends State<HomeScreen> {
           alignment: Alignment.center,
           children: [
             Container(
-              decoration: backgroundImage,
-              child: null,
+              // decoration: backgroundImage,
+              child: AnimationAutoScreen(
+                kidAction: false,
+              ),
             ),
             Container(
                 height: height,

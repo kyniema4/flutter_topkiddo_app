@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart' as pathProvider;
@@ -22,11 +23,14 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   await Firebase.initializeApp();
+  await FlutterDownloader.initialize(
+  debug: true // optional: set false to disable printing logs to console
+);
   // Directory directory = await pathProvider.getApplicationDocumentsDirectory();
   // Hive.init(directory.path);
   await Hive.initFlutter();
   Hive.registerAdapter(UnitDataModelAdapter(), override: true);
-  Hive.registerAdapter(LessonDataModelAdapter(),override: true);
+  Hive.registerAdapter(LessonDataModelAdapter(), override: true);
   Hive.registerAdapter(FavoriteSentenceModelAdapter(), override: true);
 
   runApp(EasyLocalization(
@@ -73,11 +77,12 @@ class _MyAppState extends State<MyApp> {
 
         routes: {
           // '/': (BuildContext context) => SplashScreen(),
-          // '/': (BuildContext context) => HomeScreen(),
+          '/': (BuildContext context) => HomeScreen(),
           // '/': (BuildContext context) => FlashCardScreen(),
           // '/': (BuildContext context) => AnimationScreen(),
           // '/': (BuildContext context) => ModalLanguage(),
-          '/': (BuildContext context) => LibraryScreen(),
+          // '/': (BuildContext context) => LibraryScreen(),
+          //'/': (BuildContext context) => LoginScreen(),
         },
         //translate
         // locale: _locale,

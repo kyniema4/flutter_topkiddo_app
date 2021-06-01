@@ -5,7 +5,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:topkiddo/theme/style.dart';
 
 class AnimationAutoScreen extends StatefulWidget {
-  AnimationAutoScreen({Key key}) : super(key: key);
+  final bool kidAction;
+  AnimationAutoScreen({
+    this.kidAction: true,
+  }) : super();
 
   _AnimationAutoScreen createState() => _AnimationAutoScreen();
 }
@@ -117,6 +120,7 @@ class _AnimationAutoScreen extends State<AnimationAutoScreen> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+    print('handle dispose');
   }
 
   @override
@@ -180,7 +184,7 @@ class _AnimationAutoScreen extends State<AnimationAutoScreen> {
                       child: Image.asset('assets/images/animation/house2.gif',
                           fit: BoxFit.contain)),
                 ),
-                showKid1
+                showKid1 && widget.kidAction
                     ? AnimatedPositioned(
                         bottom: -50.w,
                         right: move ? 50.w : 30.w,
@@ -192,7 +196,7 @@ class _AnimationAutoScreen extends State<AnimationAutoScreen> {
                         duration: Duration(seconds: 1),
                       )
                     : Container(),
-                showKid2
+                showKid2 && widget.kidAction
                     ? AnimatedPositioned(
                         bottom: -12.w,
                         right: move ? 200.w : 30.w,
@@ -204,7 +208,7 @@ class _AnimationAutoScreen extends State<AnimationAutoScreen> {
                         duration: Duration(seconds: 5),
                       )
                     : Container(),
-                showKid3
+                showKid3 && widget.kidAction
                     ? AnimatedPositioned(
                         bottom: -12.w,
                         right: move ? 200.w : 30.w,
@@ -216,7 +220,6 @@ class _AnimationAutoScreen extends State<AnimationAutoScreen> {
                         duration: Duration(seconds: 5),
                       )
                     : Container(),
-
                 AnimatedPositioned(
                   top: 0.w,
                   right: moveClound ? -400.w : 50.w,
@@ -227,7 +230,6 @@ class _AnimationAutoScreen extends State<AnimationAutoScreen> {
                   ),
                   duration: Duration(seconds: 30),
                 ),
-
                 AnimatedPositioned(
                   top: 0.w,
                   right: moveClound ? 0.w : 350.w,

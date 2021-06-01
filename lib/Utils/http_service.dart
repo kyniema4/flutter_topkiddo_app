@@ -21,6 +21,7 @@ class ApiList {
   static const getLessonDetail = 'lessions/get_lession_detail';
   static const getListTopTrans = 'translate/get_top_request_translated';
   static const searchDirectory = 'translate/translate_elac';
+  static const getGameInfo='lessions/get_game_info';
 }
 
 void setToken(_token) async {
@@ -113,13 +114,14 @@ Future fetch(
       }
     } else {
       // get
-
+  
       http.Response response = await http.get(
         Uri.parse(baseUrl + url),
         headers: headers,
       );
       if (response.statusCode == 200) {
-        return jsonDecode(response.body);
+        // return jsonDecode(response.body);
+        return response;
       } else {
         throw Exception('Failed to get data from ' + url);
       }
