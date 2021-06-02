@@ -10,6 +10,8 @@ import 'package:topkiddo/data_local/lesson/lesson_data_model.dart';
 import 'package:topkiddo/screens/animation_auto_screen.dart';
 import 'package:topkiddo/screens/home/directory-page/directory_screen.dart';
 import '../../Utils/http_service.dart';
+import '../../Utils/http_service.dart';
+import '../../Utils/http_service.dart';
 import '../../theme/style.dart';
 import '../../theme/theme.dart' as Theme;
 
@@ -41,9 +43,9 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _local = true;
   String boxUnit = "unit";
   String boxLesson = "lesson";
-  String boxTopic = "topic";
+  String boxContent = "content";
   final HiveService hiveService = HiveService();
-  final HandleDownload download= HandleDownload();
+  final HandleDownload download = HandleDownload();
   DateTime now = DateTime.now();
   @override
   void initState() {
@@ -154,12 +156,50 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   getDataLesson() async {
-    bool exists = await hiveService.isExists(boxName: boxUnit);
-    if (exists) {
-      print('data already');
-      //var listUnit = await hiveService.getBoxes(boxName);
+    bool checkListContent = await hiveService.isExists(boxName: boxContent);
+    
+
+    //check đã save content?
+    if (checkListContent) {
+      String currentUnit = await getCurrentUnit();
+      //String currentUnit ='';
+      //đã từng học
+      if (currentUnit.isNotEmpty && currentUnit.length > 0) {
+        print('debugging');
+        //lấy lesson Part đang học
+        //*check currentLesssonPart
+        String currentLessonPart = "";
+        if (currentLessonPart.isNotEmpty && currentLessonPart.length > 0) {
+          bool checkListLesson = await hiveService.isExists(boxName: boxLesson);
+          if (checkListLesson) {
+            var listLesson =
+                await hiveService.getBoxesWithId(currentUnit, boxLesson);
+            print('debugging');
+          }
+        } else {
+          //chưa học part lesson nào
+          var resultListLesson = await fetchListLesson(currentUnit);
+          if (resultListLesson['success'] &&
+              resultListLesson['data']['docs'].length > 0) {
+            List listSaveContent = resultListLesson['data']['docs'].length < 10
+                ? resultListLesson['data']['docs']
+                : resultListLesson['data']['docs'].sublist(0, 10);
+            for (var i = 0; i < listSaveContent.length; i++) {
+              await downloadListContent(listSaveContent[i]);
+            }
+            await hiveService.addBoxes(listSaveContent, boxContent);
+          }
+        }
+      } else {
+        //học lần đầu
+        print('debugging');
+        await fetchListUnit();
+      }
     } else {
-      await fetchListUnit();
+      
+      print('debugging');
+      // await fetchListUnit();
+
       // List listUnit = [];
       // data.forEach((e) {
       //   UnitDataModel unit = UnitDataModel.fromJson(e);
@@ -169,7 +209,7 @@ class _HomeScreenState extends State<HomeScreen> {
       // });
 
       // await hiveService.addBoxes(listUnit, boxUnit);
-      print('save data unit success');
+    
       //print('debugging');
     }
   }
@@ -178,6 +218,7 @@ class _HomeScreenState extends State<HomeScreen> {
     var token = (await getToken()).toString();
     //*get unitLanguage
     int unitLanguage = 1;
+    List listUnit = [];
     if (token.length > 0) {
       try {
         var resultListUnit = await fetch(
@@ -189,15 +230,26 @@ class _HomeScreenState extends State<HomeScreen> {
 
         if (resultListUnit['success'] &&
             resultListUnit['data']['docs'].length > 0) {
+          //handle save Unit
+          resultListUnit['data']['docs'].forEach((e) {
+            UnitDataModel unit = UnitDataModel.fromJson(e);
+            listUnit.add(unit);
+          });
+
+          await hiveService.addBoxes(listUnit, boxUnit);
+          //call save data list lesson to local storage
           var resultListLesson =
               await fetchListLesson(resultListUnit['data']['docs'][0]['_id']);
 
           if (resultListLesson['success'] &&
               resultListLesson['data']['docs'].length > 0) {
             List listSaveContent = [...resultListLesson['data']['docs']];
+
             for (var i = 0; i < listSaveContent.length; i++) {
               await downloadListContent(listSaveContent[i]);
             }
+            setCurrentUnit(resultListUnit['data']['docs'][0]['_id']);
+            await hiveService.addBoxes(listSaveContent, boxContent);
           }
         } else {
           print('error when fetch list Unit');
@@ -217,23 +269,19 @@ class _HomeScreenState extends State<HomeScreen> {
             "filter": {"unit": unitId}
           },
           needAutoHeader: true);
+      //print('debugging');
+      List listLesson = [];
+      if (resultListLesson['success'] &&
+          resultListLesson['data']['docs'].length > 0) {
+        resultListLesson['data']['docs'].forEach((e) {
+          LessonDataModel lesson = LessonDataModel.fromJson(e);
+          listLesson.add(lesson);
+        });
 
-      return resultListLesson;
-      // List listLesson = [];
-      // print(resultListLesson['data']['docs'].length);
-      // print('debugging');
-      // if (resultListLesson['success'] &&
-      //     resultListLesson['data']['docs'].length > 0) {
-      //   resultListLesson.forEach((e) async {
-      //     print(resultListLesson['data']['docs']);
-      //     print('debugging');
-      //    // LessonDataModel lesson = LessonDataModel.fromJson(e);
-      //     //fetListTopic(unit.id);
-      //     await listLesson.add(listLesson);
-      //   });
-      //   //await hiveService.addBoxes(listLesson, boxLesson);
-      //   print('save data lesson success');
-      // }
+        await hiveService.putBoxesWithId(unitId, listLesson, boxLesson);
+        print('save data lesson success');
+        return resultListLesson;
+      }
     } catch (e) {
       print(e);
       print('error get list lesson ');
@@ -249,7 +297,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
         if (item['audio'] != null) {
           print(item['audio']);
-          listDataHandle.add(download.downloadFile(item['audio'], dataLesson['_id']));
+          listDataHandle
+              .add(download.downloadFile(item['audio'], dataLesson['_id']));
           //HandleDownload().checkFileExists();
         }
         if (item['game'] != null) {
@@ -269,26 +318,6 @@ class _HomeScreenState extends State<HomeScreen> {
       await Future.wait(listDataHandle);
     }
   }
-
- 
-  // downloadFile(data, lessonId) async {
-  //   String dir = (await getApplicationDocumentsDirectory()).path;
-  //   File file = new File('$dir/test');
-  //   String params =
-  //       '?token=${(await getToken())}&resourceId=${data['_id']}&time=${now.toString()}';
-
-  //   try {
-  //     var resultDownload = await fetch(
-  //         url: BaseUrl + "resources/get_resource_from_local" + params,
-  //         method: 5);
-  //     var bytes = await resultDownload.bodyBytes; //close();
-  //      await file.writeAsBytes(bytes);
-  //     print(file.path);
-  //     print('debugging');
-  //   } catch (e) {
-  //     print('error downloadFile ' + e);
-  //   }
-  // }
 
   getGame(String gameId) async {
     try {
@@ -399,7 +428,7 @@ class _HomeScreenState extends State<HomeScreen> {
 class TopButton extends StatelessWidget {
   String boxUnit = "unit";
   String boxLesson = "lesson";
-  String boxTopic = "topic";
+  String boxContent = "content";
   final HiveService hiveService = HiveService();
   _showModalTranslate(context) {
     showDialog(
@@ -481,6 +510,7 @@ class TopButton extends StatelessWidget {
                             onTap: () {
                               hiveService.clearBoxes(boxUnit);
                               hiveService.clearBoxes(boxLesson);
+                              hiveService.clearBoxes(boxContent);
                               //_showModalMenu(context);
                             }),
                       ],

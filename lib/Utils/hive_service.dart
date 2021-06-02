@@ -1,6 +1,8 @@
 import 'package:hive/hive.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HiveService {
+  
   isExists({String boxName}) async {
     final openBox = await Hive.openBox(boxName);
     int length = openBox.length;

@@ -145,7 +145,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   getListUnit() async {
     var data = await hiveService.getBoxes(boxUnit);
-
+    
     List listDataEasy = [];
     List listDataMedium = [];
     List listDataAdvanced = [];
@@ -171,21 +171,21 @@ class _LibraryScreenState extends State<LibraryScreen> {
   }
 
   getListLesson(String id) async {
-    //Dialogs.showLoadingDialog(context);
+    Dialogs.showLoadingDialog(context);
     var dataLesson = await hiveService.getBoxesWithId(id, boxLesson);
 
     if (dataLesson != null) {
-      fetchTopicData('5f624e435a9e4942249c324b');
-      //await fetchListTopic(dataLesson);
-      // Navigator.of(context, rootNavigator: true).pop();
-      // Navigator.push(
-      //     context,
-      //     MaterialPageRoute(
-      //         builder: (BuildContext context) => DesignCourseScreen(
-      //               lesson: dataLesson,
-      //             )));
+      //fetchTopicData(id);
+      // await fetchListTopic(dataLesson);
+      Navigator.of(context, rootNavigator: true).pop();
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (BuildContext context) => DesignCourseScreen(
+                    lesson: dataLesson,
+                  )));
     } else {
-      //Navigator.of(context, rootNavigator: true).pop();
+      Navigator.of(context, rootNavigator: true).pop();
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Please try again")));
     }
@@ -223,7 +223,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
           "filter": {"unit": id}
         },
       );
-       print('debugging');
       if (resultTopic['success']) {
 
        return resultTopic['data']['docs'];

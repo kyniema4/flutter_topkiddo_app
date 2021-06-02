@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 final BaseUrl = "http://backend.topkiddovn.com/";
 String token = '';
+String currentUnit = '';
 
 class ApiList {
   static const signinFacebook = 'users/signin_with_facebook';
@@ -21,7 +22,7 @@ class ApiList {
   static const getLessonDetail = 'lessions/get_lession_detail';
   static const getListTopTrans = 'translate/get_top_request_translated';
   static const searchDirectory = 'translate/translate_elac';
-  static const getGameInfo='lessions/get_game_info';
+  static const getGameInfo = 'lessions/get_game_info';
 }
 
 void setToken(_token) async {
@@ -114,7 +115,7 @@ Future fetch(
       }
     } else {
       // get
-  
+
       http.Response response = await http.get(
         Uri.parse(baseUrl + url),
         headers: headers,
@@ -133,4 +134,19 @@ Future fetch(
   } on Error catch (e) {
     print('General Error: $e');
   }
+}
+
+void setCurrentUnit(String unitId) async {
+  currentUnit = unitId;
+  SharedPreferences pref = await SharedPreferences.getInstance();
+  pref.setString('currentUnit', currentUnit);
+}
+
+Future<String> getCurrentUnit() async {
+  if (currentUnit.length < 2) {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    currentUnit = pref.getString('currentUnit');
+  }
+  print(currentUnit);
+  return currentUnit;
 }
