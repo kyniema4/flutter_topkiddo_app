@@ -29,7 +29,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
   final HiveService hiveService = HiveService();
   String boxUnit = "unit";
   String boxLesson = "lesson";
-  String boxTopic = "topic";
+  String boxContent = "topic";
 
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
   _showLeveltem(BuildContext context, String title, List data, lessonDone) {

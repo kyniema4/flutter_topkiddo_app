@@ -11,7 +11,7 @@ class HandleDownload {
 
     return directory.path;
   }
-  
+
   Future checkFileExists(String path) async {
     return await Io.File(path).exists();
   }
@@ -42,12 +42,11 @@ class HandleDownload {
       }
     } else {
       print('file is exists');
-     // deleteFile(dir + subPath);
+      // deleteFile(dir + subPath);
     }
   }
-  Future getFileFromLocal(){
 
-  } 
+  Future getFileFromLocal() {}
 
   Future<int> deleteFile(String path) async {
     try {
@@ -57,6 +56,18 @@ class HandleDownload {
       print('delete complete');
     } catch (e) {
       return 0;
+    }
+  }
+
+  Future<int> deleteAll() async {
+  
+  //   String dir = await _localPath;
+    try {
+      final dir= Io.Directory(await _localPath);
+      dir.deleteSync(recursive:true);
+      print('delete all data complete');
+    } catch (e) {
+     print('delete all erorr: '+e);
     }
   }
 }

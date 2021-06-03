@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -157,12 +158,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   getDataLesson() async {
     bool checkListContent = await hiveService.isExists(boxName: boxContent);
-    
-
+    print('checkListContent: ' + checkListContent.toString());
     //check đã save content?
-    if (checkListContent) {
-      String currentUnit = await getCurrentUnit();
-      //String currentUnit ='';
+    if (!checkListContent) {
+      //String currentUnit = await getCurrentUnit();
+      String currentUnit = '';
       //đã từng học
       if (currentUnit.isNotEmpty && currentUnit.length > 0) {
         print('debugging');
@@ -192,12 +192,11 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       } else {
         //học lần đầu
-        print('debugging');
+        print('học lần đầu');
         await fetchListUnit();
       }
     } else {
-      
-      print('debugging');
+      print('Đã có content');
       // await fetchListUnit();
 
       // List listUnit = [];
@@ -209,7 +208,7 @@ class _HomeScreenState extends State<HomeScreen> {
       // });
 
       // await hiveService.addBoxes(listUnit, boxUnit);
-    
+
       //print('debugging');
     }
   }
@@ -217,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
   fetchListUnit() async {
     var token = (await getToken()).toString();
     //*get unitLanguage
-    int unitLanguage = 1;
+    int unitLanguage = 2;
     List listUnit = [];
     if (token.length > 0) {
       try {
@@ -332,6 +331,7 @@ class _HomeScreenState extends State<HomeScreen> {
       print('error get gameInfo ' + e);
     }
   }
+
   // fetchListLesson(String unitId) async {
   //   try {
   //     var resultListLesson = await fetch(
@@ -429,6 +429,7 @@ class TopButton extends StatelessWidget {
   String boxUnit = "unit";
   String boxLesson = "lesson";
   String boxContent = "content";
+  final HandleDownload download = HandleDownload();
   final HiveService hiveService = HiveService();
   _showModalTranslate(context) {
     showDialog(
@@ -448,6 +449,14 @@ class TopButton extends StatelessWidget {
         builder: (BuildContext context) {
           return ModalMenu();
         });
+  }
+
+  //test
+  clearAllDataApp() async {
+    await hiveService.clearBoxes(boxUnit);
+    await hiveService.clearBoxes(boxLesson);
+    await hiveService.clearBoxes(boxContent);
+    await download.deleteAll();
   }
 
   @override
@@ -508,10 +517,8 @@ class TopButton extends StatelessWidget {
                                       fit: BoxFit.contain),
                                 )),
                             onTap: () {
-                              hiveService.clearBoxes(boxUnit);
-                              hiveService.clearBoxes(boxLesson);
-                              hiveService.clearBoxes(boxContent);
-                              //_showModalMenu(context);
+                              clearAllDataApp();
+                              // _showModalMenu(context);
                             }),
                       ],
                     )),

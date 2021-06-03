@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:topkiddo/Utils/http_service.dart';
 import 'package:topkiddo/components/Loading_dialog.dart';
 
+import '../../../Utils/hive_service.dart';
 import '../../../components/back.dart';
 import '../../../theme/style.dart';
 import '../../../theme/theme.dart' as Theme;
@@ -30,6 +31,8 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
   AnimationController _controller;
   Animation<Offset> _offsetAnimation;
   List listLesson = [];
+  final HiveService hiveService = HiveService();
+  String boxContent = 'content';
   @override
   void initState() {
     super.initState();
@@ -50,32 +53,31 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
   initData() async {
     var lessonData = widget.lesson;
     if (lessonData != null) {
-      
       setState(() {
         listLesson = [...lessonData];
       });
       print(listLesson);
       print('debugging');
-      
     } else
       return;
   }
 
-  getDataFlashCard(String lessonId) async {
+  //get data from localstorage
+  getDataFlashCard(String lessonId, int index) async {
     setState(() {
       _pressId = !_pressId;
     });
     try {
+      List data = await hiveService.getBoxes(boxContent);
       Dialogs.showLoadingDialog(context);
-      var resultLessonDetail = await fetch(
-          url: ApiList.getLessonDetail, body: {"lessionId": lessonId});
-      if (resultLessonDetail['success']) {
+
+      if (data.length > 0 && data.isNotEmpty) {
         Navigator.of(context, rootNavigator: true).pop();
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (BuildContext context) => FlashCardScreen(
-                      lessonDetail: resultLessonDetail['data'],
+                      lessonDetail: data[index],
                     )));
       } else {
         Navigator.of(context, rootNavigator: true).pop();
@@ -88,6 +90,33 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
           .showSnackBar(SnackBar(content: Text("Please try again")));
     }
   }
+  // getDataFlashCard(String lessonId) async {
+  //   setState(() {
+  //     _pressId = !_pressId;
+  //   });
+  //   try {
+  //     Dialogs.showLoadingDialog(context);
+  //     var resultLessonDetail = await fetch(
+  //         url: ApiList.getLessonDetail, body: {"lessionId": lessonId});
+  //     if (resultLessonDetail['success']) {
+  //       Navigator.of(context, rootNavigator: true).pop();
+  //       Navigator.push(
+  //           context,
+  //           MaterialPageRoute(
+  //               builder: (BuildContext context) => FlashCardScreen(
+  //                     lessonDetail: resultLessonDetail['data'],
+  //                   )));
+  //     } else {
+  //       Navigator.of(context, rootNavigator: true).pop();
+  //       ScaffoldMessenger.of(context)
+  //           .showSnackBar(SnackBar(content: Text("Please try again")));
+  //     }
+  //   } catch (e) {
+  //     Navigator.of(context, rootNavigator: true).pop();
+  //     ScaffoldMessenger.of(context)
+  //         .showSnackBar(SnackBar(content: Text("Please try again")));
+  //   }
+  // }
 
   @override
   void dispose() {
@@ -216,8 +245,7 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
                                                   ),
                                                   onTap: () async {
                                                     await getDataFlashCard(
-                                                        widget.lesson['docs'][i]
-                                                            ['_id']);
+                                                        listLesson[i].id, i);
                                                     // AnimationScreen()));
                                                   })))
                                     ]),
