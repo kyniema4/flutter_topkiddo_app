@@ -1,6 +1,8 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:topkiddo/Utils/download_data.dart';
 import 'package:video_player/video_player.dart';
 
 import 'package:topkiddo/Utils/http_service.dart';
@@ -16,7 +18,7 @@ import './animation_balloon_screen.dart';
 class FlashCardScreen extends StatefulWidget {
   final lessonDetail;
 
-  const FlashCardScreen({this.lessonDetail});
+  const FlashCardScreen({Key key, this.lessonDetail}) : super(key: key);
   @override
   _FlashCardScreen createState() => _FlashCardScreen();
 }
@@ -33,14 +35,37 @@ class _FlashCardScreen extends State<FlashCardScreen>
   AnimationController _controller;
   Tween<double> _tween = Tween(begin: 1.5, end: 1.8);
   FlickManager flickManager;
+  AudioPlayer audioPlayer = AudioPlayer();
   List<Widget> listFlashCard = [];
+  HandleDownload download = HandleDownload();
+  String idAudio = "";
+//content-audio =>image-audio
+
+  playAudio() async {
+    await audioPlayer.play(
+        "/data/user/0/com.example.topkiddo/app_flutter/60b7862add38fc1918816a24/60b79aa1dd38fc1918818a26.mp3",
+        isLocal: true);
+  }
 
   createFlashCard() {
-    
-
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
+    // List<Widget> listWidget = [];
+    // Map data = widget.lessonDetail;
+    // if (data.isNotEmpty) {
+    //   if (data['part'].length > 0) {
+    //     data['part'].forEach((e) {
+    //       String topic = data['part'][e]['topic'];
+    //       List content=data['part'][e]['content'];
+    //       listWidget
+    //           .add(FlashCard(height: height, content: topic).cardTitle());
+    //       print(content);
+    //       print('debugging');
+    //     });
+    //   }
+    // }
 
+    FlashCard flashCard = FlashCard();
     List<Widget> listWidget = [
       FlashCard(height: height).cardTitle(),
       FlashCard(height: height).cardImageFull(),
@@ -66,7 +91,16 @@ class _FlashCardScreen extends State<FlashCardScreen>
     // );
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    createFlashCard();
+  }
+
   _onPageViewChange(int page) {
+    final flashCardCurrent = listFlashCard[page];
+    print(flashCardCurrent);
+    print('debugging');
     print("Current Page: " + page.toString());
     previousPage = page;
     setState(() {
@@ -256,7 +290,6 @@ class _FlashCardScreen extends State<FlashCardScreen>
 
   @override
   Widget build(BuildContext context) {
-    createFlashCard();
     print(widget.lessonDetail);
     print('debugging');
     double height = MediaQuery.of(context).size.height;
@@ -569,15 +602,17 @@ class _FlashCardScreen extends State<FlashCardScreen>
                               //   ],
                             ),
                             onSwipeUp: () {
-                              setState(() {
-                                _swipeDirection = "Swipe Up";
-                                _reset();
-                              });
+                              // setState(() {
+                              //   _swipeDirection = "Swipe Up";
+                              //   _reset();
+                              // });
+                              playAudio();
                             },
                             onSwipeDown: () {
-                              setState(() {
-                                _swipeDirection = "Swipe Down";
-                              });
+                              playAudio();
+                              // setState(() {
+                              //   _swipeDirection = "Swipe Down";
+                              // });
                             },
                             swipeConfiguration: SwipeConfiguration(
                                 verticalSwipeMinVelocity: 100.0,
@@ -710,6 +745,8 @@ class FlashCard {
   String colorContent;
   int animationContent;
   String highlightColor;
+  String sourceAudio;
+  String sourceImage;
   int type;
   List resource;
   List letterResources;
@@ -730,7 +767,8 @@ class FlashCard {
     this.type,
     this.resource,
     this.letterResources,
-
+    this.sourceAudio,
+    this.sourceImage,
     //style
     this.height,
     this.width,
@@ -739,18 +777,35 @@ class FlashCard {
     this.flickManager,
   });
   //trường hợp chữ tiêu đề
+  // cardTitle() {
+  //   return Container(
+  //     alignment: Alignment.center,
+  //     margin: EdgeInsets.all(8.5.w),
+  //     child: Text("Common Animals",
+  //         textAlign: TextAlign.center,
+  //         style: TextStyle(
+  //             fontSize: height > 600 ? 80.sp : 140.sp,
+  //             // fontWeight: FontWeight.w900,
+  //             color: Theme.Colors.orange900,
+  //             fontFamily: 'UTMCooperBlack')),
+  //   );
+  // }
   cardTitle() {
     return Container(
-      alignment: Alignment.center,
-      margin: EdgeInsets.all(8.5.w),
-      child: Text("Common Animals",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              fontSize: height > 600 ? 80.sp : 140.sp,
-              // fontWeight: FontWeight.w900,
-              color: Theme.Colors.orange900,
-              fontFamily: 'UTMCooperBlack')),
-    );
+        alignment: Alignment.center,
+        margin: EdgeInsets.all(8.5.w),
+        child: GestureDetector(
+          child: Text('Common Animals',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: height > 600 ? 80.sp : 140.sp,
+                  // fontWeight: FontWeight.w900,
+                  color: Theme.Colors.orange900,
+                  fontFamily: 'UTMCooperBlack')),
+          onTap: () async {
+            _FlashCardScreen().playAudio();
+          },
+        ));
   }
 
   //trường hợp ảnh full

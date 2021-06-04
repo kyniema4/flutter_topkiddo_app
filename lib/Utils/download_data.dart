@@ -32,11 +32,9 @@ class HandleDownload {
         var resultDownload = await fetch(
             url: BaseUrl + "resources/get_resource_from_local" + params,
             method: 5);
-        print('debugging');
         var bytes = await resultDownload.bodyBytes; //close();
-        // await file.writeAsBytes(bytes);
+        await file.writeAsBytes(bytes);
         print(file.path);
-        print('debugging');
       } catch (e) {
         print('error downloadFile ' + e);
       }
@@ -46,7 +44,16 @@ class HandleDownload {
     }
   }
 
-  Future getFileFromLocal() {}
+  // Future getFileFromLocal() async {
+  //   //String file="/data/user/0/com.example.topkiddo/app_flutter/60b7862add38fc1918816a24/60b79aa1dd38fc1918818a26.mp3";
+  //   String path = "/60b7862add38fc1918816a24/60b79aa1dd38fc1918818a26.mp3";
+  //   String dir = await _localPath;
+  //   bool check = await checkFileExists(dir+path);
+  //   if(check){
+  //     return 
+  //   }
+  //   print('debugging');
+  // }
 
   Future<int> deleteFile(String path) async {
     try {
@@ -60,14 +67,13 @@ class HandleDownload {
   }
 
   Future<int> deleteAll() async {
-  
-  //   String dir = await _localPath;
+    //   String dir = await _localPath;
     try {
-      final dir= Io.Directory(await _localPath);
-      dir.deleteSync(recursive:true);
+      final dir = Io.Directory(await _localPath);
+      dir.deleteSync(recursive: true);
       print('delete all data complete');
     } catch (e) {
-     print('delete all erorr: '+e);
+      print('delete all erorr: ' + e);
     }
   }
 }
