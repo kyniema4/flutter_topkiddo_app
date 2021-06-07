@@ -23,7 +23,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
     with TickerProviderStateMixin {
   String _swipeDirection = "";
   bool isShowTopButton = true;
-  bool isShowQuestion = false;
+  bool isShowQuestion = true;
   int number = 0;
   int _lastReportedPage = 0;
   int previousPage = 0;
@@ -47,7 +47,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
     previousPage = page;
     setState(() {
       number = page;
-      if (page > 3) {
+      if (page == 0 || page > 4) {
         isShowQuestion = true;
       } else {
         isShowQuestion = false;
@@ -149,6 +149,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
     double width = MediaQuery.of(context).size.width;
 
     return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         Container(
           alignment: Alignment.center,
@@ -281,18 +282,214 @@ class _FlashCardScreen extends State<FlashCardScreen>
                               physics: BouncingScrollPhysics(),
                               onPageChanged: _onPageViewChange,
                               children: [
+                                //multisensory cho người mới bắt đầu
+                                isShowQuestion
+                                    ? Container(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text('Multisensory',
+                                                style: TextStyle(
+                                                    fontSize: height > 600
+                                                        ? 68.sp
+                                                        : 120.sp,
+                                                    color: Colors.white,
+                                                    fontFamily:
+                                                        'UTMCooperBlack')),
+                                            Stack(
+                                              clipBehavior: Clip.none,
+                                              children: [
+                                                Container(
+                                                  width: 60.w,
+                                                  height: 35.w,
+                                                  child: Image.asset(
+                                                    'assets/images/lesson/hand/swipt-arrow.png',
+                                                    fit: BoxFit.contain,
+                                                  ),
+                                                ),
+                                                Positioned(
+                                                  right: 0,
+                                                  bottom: -16.w,
+                                                  child: Container(
+                                                    height: 35.w,
+                                                    child: Image.asset(
+                                                      'assets/images/lesson/hand/hand-click1.png',
+                                                      fit: BoxFit.contain,
+                                                    ),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              height: 6.w,
+                                            )
+                                          ],
+                                        ),
+                                      )
+                                    : Container(),
+
                                 //trường hợp chữ tiêu đề
                                 Container(
                                   alignment: Alignment.center,
                                   margin: EdgeInsets.all(8.5.w),
-                                  child: Text('Common Animals',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontSize:
-                                              height > 600 ? 80.sp : 140.sp,
-                                          // fontWeight: FontWeight.w900,
-                                          color: Theme.Colors.orange900,
-                                          fontFamily: 'UTMCooperBlack')),
+                                  child: Stack(
+                                    clipBehavior: Clip.none,
+                                    alignment: Alignment.center,
+                                    children: [
+                                      Text('Common Animals',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              fontSize:
+                                                  height > 600 ? 80.sp : 140.sp,
+                                              // fontWeight: FontWeight.w900,
+                                              color: Theme.Colors.orange900,
+                                              fontFamily: 'UTMCooperBlack')),
+
+                                      //mũi tên phía trái
+                                      Positioned(
+                                        left: 10.w,
+                                        child: Stack(
+                                          clipBehavior: Clip.none,
+                                          children: [
+                                            Container(
+                                              width: 50.w,
+                                              height: 28.w,
+                                              child: RotatedBox(
+                                                quarterTurns: 2,
+                                                child: Image.asset(
+                                                  'assets/images/lesson/hand/swipt-arrow.png',
+                                                  fit: BoxFit.contain,
+                                                ),
+                                              ),
+                                            ),
+                                            Positioned(
+                                              right: 10.w,
+                                              top: 9.w,
+                                              // bottom: -12.w,
+                                              child: Text('Previous',
+                                                  style: TextStyle(
+                                                      fontSize: height > 600
+                                                          ? 21.sp
+                                                          : 30.sp,
+                                                      color: Theme
+                                                          .Colors.yellow300,
+                                                      fontFamily:
+                                                          'UTMCooperBlack')),
+                                            ),
+                                            Positioned(
+                                              left: 0,
+                                              bottom: -12.w,
+                                              child: Container(
+                                                height: 25.w,
+                                                child: Image.asset(
+                                                  'assets/images/lesson/hand/hand-click1.png',
+                                                  fit: BoxFit.contain,
+                                                ),
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+
+                                      //mũi tên ở giữa
+                                      Positioned(
+                                        bottom: -30.w,
+                                        // left: 10.w,
+                                        child: Stack(
+                                          clipBehavior: Clip.none,
+                                          children: [
+                                            RotatedBox(
+                                              quarterTurns: -1,
+                                              child: Container(
+                                                width: 40.w,
+                                                height: 28.w,
+                                                child: Image.asset(
+                                                  'assets/images/lesson/hand/swipt-arrow.png',
+                                                  fit: BoxFit.contain,
+                                                ),
+                                              ),
+                                            ),
+                                            Positioned(
+                                              right: 10.w,
+                                              top: 6.w,
+                                              // bottom: -12.w,
+                                              child: RotatedBox(
+                                                quarterTurns: -1,
+                                                child: Text('Repeat',
+                                                    style: TextStyle(
+                                                        fontSize: height > 600
+                                                            ? 21.sp
+                                                            : 30.sp,
+                                                        color: Theme
+                                                            .Colors.yellow300,
+                                                        fontFamily:
+                                                            'UTMCooperBlack')),
+                                              ),
+                                            ),
+                                            Positioned(
+                                                right: -30,
+                                                top: 0,
+                                                child: RotatedBox(
+                                                  quarterTurns: -1,
+                                                  child: Container(
+                                                    height: 25.w,
+                                                    child: Image.asset(
+                                                      'assets/images/lesson/hand/hand-click1.png',
+                                                      fit: BoxFit.contain,
+                                                    ),
+                                                  ),
+                                                ))
+                                          ],
+                                        ),
+                                      ),
+
+                                      //mũi tên phía phải
+                                      Positioned(
+                                        right: 10.w,
+                                        child: Stack(
+                                          clipBehavior: Clip.none,
+                                          children: [
+                                            Container(
+                                              width: 50.w,
+                                              height: 28.w,
+                                              child: Image.asset(
+                                                'assets/images/lesson/hand/swipt-arrow.png',
+                                                fit: BoxFit.contain,
+                                              ),
+                                            ),
+                                            Positioned(
+                                              left: 15.w,
+                                              top: 8.w,
+                                              // bottom: -12.w,
+                                              child: Text('Next',
+                                                  style: TextStyle(
+                                                      fontSize: height > 600
+                                                          ? 21.sp
+                                                          : 30.sp,
+                                                      color: Theme
+                                                          .Colors.yellow300,
+                                                      fontFamily:
+                                                          'UTMCooperBlack')),
+                                            ),
+                                            Positioned(
+                                              right: 0,
+                                              bottom: -12.w,
+                                              child: Container(
+                                                height: 25.w,
+                                                child: Image.asset(
+                                                  'assets/images/lesson/hand/hand-click1.png',
+                                                  fit: BoxFit.contain,
+                                                ),
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
 
                                 //trường hợp ảnh full

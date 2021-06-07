@@ -69,6 +69,7 @@ flutter:
     - assets/images/background/
     - assets/images/button/
     - assets/images/lesson/
+    - assets/images/lesson/hand/
     - assets/images/login_page/
     - assets/images/topic/
     - assets/images/namegame.png

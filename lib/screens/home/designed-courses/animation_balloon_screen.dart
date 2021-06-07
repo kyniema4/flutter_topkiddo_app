@@ -19,34 +19,40 @@ class _AnimationBalloonScreen extends State<AnimationBalloonScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            // color: Colors.red,
-            width: 0.26.sw,
-            padding: EdgeInsets.only(top: 3.w),
-            child: Image.asset(
-                'assets/images/balloon/orange_balloon/orange-airballoon-1.png',
-                // width: 0.25.sw,
-                fit: BoxFit.contain),
+          GestureDetector(
+            onTap: () {},
+            child: Container(
+              width: 0.26.sw,
+              padding: EdgeInsets.only(top: 3.w),
+              child: Image.asset(
+                  'assets/images/balloon/orange_balloon/orange-airballoon-1.png',
+                  //ảnh từ 1 đến 15
+                  fit: BoxFit.contain),
+            ),
           ),
-          Container(
-            // color: Colors.yellow,
-            width: 0.26.sw,
-            margin: EdgeInsets.symmetric(horizontal: 10.w),
-            padding: EdgeInsets.only(bottom: 35.w),
-            child: Image.asset(
-                'assets/images/balloon/red_balloon/red-airballoon-1.png',
-                // width: 0.25.sw,
-                fit: BoxFit.contain),
+          GestureDetector(
+            onTap: () {},
+            child: Container(
+              width: 0.26.sw,
+              margin: EdgeInsets.symmetric(horizontal: 10.w),
+              padding: EdgeInsets.only(bottom: 35.w),
+              child: Image.asset(
+                  'assets/images/balloon/red_balloon/red-airballoon-1.png',
+                  //ảnh từ 1 đến 15
+                  fit: BoxFit.contain),
+            ),
           ),
-          Container(
-            // color: Colors.blue,
-            width: 0.26.sw,
-            padding: EdgeInsets.only(top: 15.w),
-            child: Image.asset(
-                'assets/images/balloon/blue_balloon/blue-airballoon-1.png',
-                //ảnh từ 1 đến 15ç
-                fit: BoxFit.contain),
-          ),
+          GestureDetector(
+            onTap: () {},
+            child: Container(
+              width: 0.26.sw,
+              padding: EdgeInsets.only(top: 15.w),
+              child: Image.asset(
+                  'assets/images/balloon/blue_balloon/blue-airballoon-1.png',
+                  //ảnh từ 1 đến 15
+                  fit: BoxFit.contain),
+            ),
+          )
         ],
       ),
     );
