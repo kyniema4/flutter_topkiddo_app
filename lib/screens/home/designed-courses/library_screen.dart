@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:topkiddo/Utils/download_data.dart';
 import 'package:topkiddo/Utils/hive_service.dart';
 import 'package:topkiddo/components/Loading_dialog.dart';
 
@@ -27,9 +28,11 @@ class _LibraryScreenState extends State<LibraryScreen> {
   var listUnitMedium = [];
   var listUnitAdvanced = [];
   final HiveService hiveService = HiveService();
+  final HandleDownload download = HandleDownload();
+
   String boxUnit = "unit";
   String boxLesson = "lesson";
-  String boxContent = "topic";
+  String boxContent = "content";
 
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
   _showLeveltem(BuildContext context, String title, List data, lessonDone) {
@@ -145,7 +148,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   getListUnit() async {
     var data = await hiveService.getBoxes(boxUnit);
-    
     List listDataEasy = [];
     List listDataMedium = [];
     List listDataAdvanced = [];
@@ -154,16 +156,18 @@ class _LibraryScreenState extends State<LibraryScreen> {
         var unit = UnitModel.fromJson(data[i].toMap());
         if (unit.level == 1) {
           listDataEasy.add(unit);
-        } else if (unit.level == 2) {
+        }
+        if (unit.level == 2) {
           listDataMedium.add(unit);
-        } else {
+        }
+        if (unit.level == 3) {
           listDataAdvanced.add(unit);
         }
       }
       setState(() {
         listUnitEasy = listDataEasy;
         listUnitMedium = listDataMedium;
-        listDataAdvanced = listDataAdvanced;
+        listUnitAdvanced = listDataAdvanced;
       });
     } else {
       print('please connect to the network');
@@ -172,66 +176,119 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   getListLesson(String id) async {
     Dialogs.showLoadingDialog(context);
-    var dataLesson = await hiveService.getBoxesWithId(id, boxLesson);
+    var listLesson = await hiveService.getBoxesWithId(id, boxLesson);
 
-    if (dataLesson != null) {
-      //fetchTopicData(id);
-      // await fetchListTopic(dataLesson);
+    if (listLesson != null) {
+      //fetch data lesson and save to local
+      var futures = <Future>[];
+      for (var lesson in listLesson) {
+        futures.add(downloadDataLesson(lesson.id));
+      }
+      await Future.wait(futures);
       Navigator.of(context, rootNavigator: true).pop();
       Navigator.push(
           context,
           MaterialPageRoute(
               builder: (BuildContext context) => DesignCourseScreen(
-                    lesson: dataLesson,
+                    lesson: listLesson,
                   )));
     } else {
+      //fetch listlesson Api
       Navigator.of(context, rootNavigator: true).pop();
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Please try again")));
     }
   }
 
-  // Future<List> fetchListTopic(List dataLesson) async {
-  //   //5f624e435a9e4942249c324b
-  //   var futures = <Future>[];
-  //   print(dataLesson);
-  //   for (var i = 0; i < dataLesson.length; i++) {
-  //     futures.add();
-  //   }
-  //   // dataLesson.forEach((e) async {
-    
-  //   var fetchListTopic = await fetch(
-  //       url: ApiList.getLessonDetail,
-  //       body: {"lessionId": "5f624e435a9e4942249c324b"});
-  //   print(fetchListTopic);
-  //   print('debugging');
+  downloadDataLesson(String lessonId) async {
+    List listDataLesson = await hiveService.getBoxes(boxContent);
 
-  //   // });
-
-  //   // var fetchListTopic = await fetch(
-  //   //     url: ApiList.getLessonDetail, body: {"lessionId": lessonId});
-  //   //  print(fetchListTopic);
-  //   //   print('debugging');
-  // }
-
-  fetchTopicData(String id) async {
-    try {
-     
-      var resultTopic = await fetch(
-        url: ApiList.getLessonDetail,
-        body: {
-          "filter": {"unit": id}
-        },
-      );
-      if (resultTopic['success']) {
-
-       return resultTopic['data']['docs'];
-      } else {
-        return;
+    if (listDataLesson.length > 0 && listDataLesson.isNotEmpty) {
+      for (var i = 0; i < listDataLesson.length; i++) {
+        await handleDataLesson(listDataLesson[i], lessonId);
       }
-    } catch (e) {
-      print('occurred error in $id detail: $e');
+    } else {
+      //fetch list lesson
+      //save lesson content againt
     }
+  }
+
+  Future handleDataLesson(dataLesson, String lessonId) async {
+    List listPart = dataLesson['part'];
+    if (listPart.length > 0) {
+      //lấy 2 part
+      for (var i = 0; i <= 2; i++) {
+        List listContent = listPart[i]['content'];
+        listContent.forEach((content) {
+          if (content['resources'].length > 0) {
+            List data = content['resources'];
+            downloadData(data, lessonId);
+          }
+          if (content['letterResources'].length > 0) {
+            List dataLetterResources = content['letterResources'];
+            dataLetterResources.forEach((e) {
+              List data = e['resources'];
+              downloadData(data, lessonId);
+            });
+          }
+        });
+      }
+    }
+  }
+
+  Future downloadData(List listResource, String lessonId) async {
+    if (listResource.length > 0 && listResource.isNotEmpty) {
+      listResource.forEach((resource) {
+        if (resource['type'] < 3) {
+          print(resource);
+          print('debugging');
+        }
+      });
+    }
+    //  var futures = <Future>[];
+    //     for (var lesson in listLesson) {
+    //       futures.add(downloadLessonData(lesson.id));
+    //     }
+    //     await Future.wait(futures);
+
+    // listPart.forEach((part) async {
+    //   await Future.forEach(part['content'], (e) {
+    //     print(e);
+    //     print('debugging');
+    //   });
+
+    //       await Future.forEach(listPart, (part) async {
+    //    part['content'];
+    // }).then((value) {
+    //   print(value);
+    //   print('debugigng');
+    // });
+
+    // dataLesson['part'].forEach((listPart) async {
+    //   if(item['content'].l)
+
+    //   if (item['audio'] != null) {
+    //     print(item['audio']);
+    //     await listDataHandle
+    //         .add(download.downloadFile(item['audio'], dataLesson['_id']));
+    //     //HandleDownload().checkFileExists();
+    //   }
+    //   if (item['game'] != null) {
+    //     print(item['game']);
+    //     print('debugging');
+    //   }
+    //   if (item['content']?.length > 0) {
+    //     print(item['content']);
+    //     print('debugging');
+    //   }
+    //   if (item['flashcard']?.length > 0) {
+    //     print(item['content']);
+    //     print('debugging');
+    //   }
+    // });
+
+    // await Future.wait(listDataHandle);
+    // print('debugging');
   }
 
   @override

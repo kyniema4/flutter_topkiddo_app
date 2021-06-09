@@ -1,10 +1,12 @@
+import 'dart:convert';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:topkiddo/Utils/download_data.dart';
 import 'package:video_player/video_player.dart';
 
+import 'package:topkiddo/Utils/download_data.dart';
 import 'package:topkiddo/Utils/http_service.dart';
 
 import '../../../components/languages_app.dart';
@@ -13,7 +15,6 @@ import '../../../theme/style.dart';
 import '../../../theme/theme.dart' as Theme;
 import '../../home/home_screen.dart';
 import './animation_balloon_screen.dart';
-// import 'package:swipedetector/swipedetector.dart';
 
 class FlashCardScreen extends StatefulWidget {
   final lessonDetail;
@@ -28,58 +29,116 @@ class _FlashCardScreen extends State<FlashCardScreen>
   String _swipeDirection = "";
   bool isShowTopButton = true;
   bool isShowQuestion = false;
-  int number = 0;
+  int number = 5;
   int _lastReportedPage = 0;
   int previousPage = 0;
   ScrollController s;
   AnimationController _controller;
+  PageController _pageController =
+      PageController(viewportFraction: 1, keepPage: true);
+  int currentPage = 0;
   Tween<double> _tween = Tween(begin: 1.5, end: 1.8);
   FlickManager flickManager;
   AudioPlayer audioPlayer = AudioPlayer();
-  List<Widget> listFlashCard = [];
+  List listFlashCard = [];
+  List<Widget> listWidget = [];
   HandleDownload download = HandleDownload();
   String idAudio = "";
 //content-audio =>image-audio
 
   playAudio() async {
-    await audioPlayer.play(
-        "/data/user/0/com.example.topkiddo/app_flutter/60b7862add38fc1918816a24/60b79aa1dd38fc1918818a26.mp3",
-        isLocal: true);
+    try {
+      var result = await audioPlayer.play(
+          "/data/user/0/com.example.topkiddo/app_flutter/60b7862add38fc1918816a24/60b84655dd38fc1918818b0b.mp3",
+          isLocal: true);
+      print('debugging');
+    } catch (e) {
+      print(e);
+    }
   }
 
-  createFlashCard() {
+  //check part and add data
+  createFlashCard() async {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
-    // List<Widget> listWidget = [];
-    // Map data = widget.lessonDetail;
-    // if (data.isNotEmpty) {
-    //   if (data['part'].length > 0) {
-    //     data['part'].forEach((e) {
-    //       String topic = data['part'][e]['topic'];
-    //       List content=data['part'][e]['content'];
-    //       listWidget
-    //           .add(FlashCard(height: height, content: topic).cardTitle());
-    //       print(content);
-    //       print('debugging');
-    //     });
+    Map data = widget.lessonDetail;
+    List tempList = [];
+    //-------------test
+    //  FlashCard oneFlashCard = FlashCard()..height = height;
+    // List<Widget> listWidget = [
+    //   oneFlashCard.cardTitle(),
+    //   oneFlashCard.cardShortText(text: "Dinh Tien"),
+    //   oneFlashCard.cardFewText(tween: _tween, controller: _controller),
+    // ];
+    //--------------------------------
+    if (data.isNotEmpty) {
+      List listPart = data['part'];
+      if (listPart.length > 0) {
+        await Future.forEach(listPart, (part) async {
+          List listContent = part['content'];
+          if (listContent.length > 0) {
+            try {
+              await Future.forEach(listContent, (content) async {
+                var result = await dealerWidget(content);
+                tempList.addAll(result);
+              });
+            } catch (e) {
+              print(e);
+            }
+          }
+        });
+      }
+    } else {
+      //fetch data;
+    }
+
+    // print(tempList);
+    // //build widget
+    // List tempListWidget = [];
+    // for (var item in tempList) {
+    //   if (item < 10) {
+    //     tempListWidget.add(item.widget);
     //   }
     // }
-
-    FlashCard flashCard = FlashCard();
-    List<Widget> listWidget = [
-      FlashCard(height: height).cardTitle(),
-      FlashCard(height: height).cardImageFull(),
-      FlashCard(height: height).cardShortText(),
-      FlashCard(height: height).cardTitle(),
-      FlashCard(height: height).cardImageFull(),
-      FlashCard(height: height).cardSentence(),
-      FlashCard(height: height).cardClickEachImage()
-    ];
     setState(() {
-      listFlashCard = [...listWidget];
+      listFlashCard = [...tempList];
     });
+    _pageController.jumpToPage(4);
   }
 
+  dealerWidget(Map data) async {
+    List tempList = [];
+    Map<String, dynamic> oneFlashCard;
+
+    var flashCard = FlashCard.fromJson(Map<String, dynamic>.from(data));
+    flashCard.height = MediaQuery.of(context).size.height;
+    List listResource = flashCard.resource;
+    List listLetterResource = flashCard.letterResources;
+    //add 2 widget CardTittle and ImageFull
+    if (listResource.length > 0 &&
+        listResource.length <= 2 &&
+        listLetterResource.length == 0) {
+      if (listResource.where((e) => (e["type"] == 1)).isNotEmpty) {
+        oneFlashCard = {'data': flashCard, 'widget': flashCard.cardTitle()};
+        tempList.add(oneFlashCard);
+        // flashCard.widget = flashCard.cardTitle();
+        // tempList.add(flashCard);
+        // print('debugging');
+
+      }
+      if (listResource.where((e) => (e["type"] == 2)).isNotEmpty) {
+        oneFlashCard = {'data': flashCard, 'widget': flashCard.cardImageFull()};
+        tempList.add(oneFlashCard);
+        // flashCard.widget = flashCard.cardImageFull();
+        // tempList.add(flashCard);
+        // print('debugging');
+
+      }
+    }
+    return tempList;
+  }
+
+  checkType(int type) {}
   void initState() {
     super.initState();
     s = PageController();
@@ -336,271 +395,12 @@ class _FlashCardScreen extends State<FlashCardScreen>
                               borderRadius: BorderRadius.circular(11.5.w)),
                           child: SwipeDetector(
                             child: PageView(
-                              physics: BouncingScrollPhysics(),
-                              onPageChanged: _onPageViewChange,
-                              children: listFlashCard,
-                              //   children: [
-                              //     //trường hợp chữ tiêu đề
-                              //     Container(
-                              //       alignment: Alignment.center,
-                              //       margin: EdgeInsets.all(8.5.w),
-                              //       child: Text('Common Animals',
-                              //           textAlign: TextAlign.center,
-                              //           style: TextStyle(
-                              //               fontSize:
-                              //                   height > 600 ? 80.sp : 140.sp,
-                              //               // fontWeight: FontWeight.w900,
-                              //               color: Theme.Colors.orange900,
-                              //               fontFamily: 'UTMCooperBlack')),
-                              //     ),
-
-                              //     //trường hợp ảnh full
-                              //     Center(
-                              //       child: Image.asset(
-                              //         'assets/images/flashcard/image1.jpg',
-                              //         fit: BoxFit.contain,
-                              //       ),
-                              //     ),
-
-                              //     //trường hợp chữ ngắn
-                              //     Container(
-                              //       alignment: Alignment.center,
-                              //       margin: EdgeInsets.all(8.5.w),
-                              //       child: Text('Cat And Dog',
-                              //           textAlign: TextAlign.center,
-                              //           style: TextStyle(
-                              //               fontSize:
-                              //                   height > 600 ? 70.sp : 100.sp,
-                              //               // fontWeight: FontWeight.w900,
-                              //               color: Theme.Colors.orange900,
-                              //               fontFamily: 'UTMCooperBlack')),
-                              //     ),
-
-                              //     // //trường hợp ảnh full
-                              //     // //đoạn này comment lại lướt cho nhanh:v
-                              //     Center(
-                              //       child: Image.asset(
-                              //           'assets/images/flashcard/image2.jpg',
-                              //           fit: BoxFit.contain),
-                              //     ),
-
-                              //     // //trường hợp click ảnh để nghe
-                              //     Container(
-                              //         margin: EdgeInsets.all(8.5.w),
-                              //         child: Column(
-                              //           children: [
-                              //             Text(
-                              //                 'Click Vào Từng Hình Để Nghe Cách Đọc',
-                              //                 textAlign: TextAlign.center,
-                              //                 style: TextStyle(
-                              //                     fontSize: height > 600
-                              //                         ? 25.sp
-                              //                         : 35.sp,
-                              //                     // fontWeight: FontWeight.w900,
-                              //                     color: Theme.Colors.orange900,
-                              //                     fontFamily: 'UTMCooperBlack')),
-                              //             SizedBox(
-                              //               height: 20.w,
-                              //             ),
-                              //             Row(
-                              //               mainAxisAlignment:
-                              //                   MainAxisAlignment.spaceAround,
-                              //               crossAxisAlignment:
-                              //                   CrossAxisAlignment.center,
-                              //               children: [
-                              //                 Image.asset(
-                              //                   'assets/images/flashcard/image4.jpg',
-                              //                   fit: BoxFit.contain,
-                              //                   height: 70.w,
-                              //                 ),
-                              //                 Image.asset(
-                              //                   'assets/images/flashcard/image6.jpg',
-                              //                   fit: BoxFit.contain,
-                              //                   height: 70.w,
-                              //                 ),
-                              //               ],
-                              //             )
-                              //           ],
-                              //         )),
-
-                              //     //trường hợp ảnh full
-                              //     Center(
-                              //       child: Image.asset(
-                              //           'assets/images/flashcard/image5.jpg',
-                              //           fit: BoxFit.contain),
-                              //     ),
-
-                              //     // //trường hợp chỉ sử dụng cho text ít chữ
-                              //     Container(
-                              //       alignment: Alignment.center,
-                              //       margin: EdgeInsets.all(8.5.w),
-                              //       child: ScaleTransition(
-                              //         scale: _tween.animate(CurvedAnimation(
-                              //             parent: _controller,
-                              //             curve: Curves.elasticOut)),
-                              //         child: SizedBox(
-                              //           child: Text('Cat',
-                              //               textAlign: TextAlign.center,
-                              //               style: TextStyle(
-                              //                   fontSize:
-                              //                       height > 600 ? 35.sp : 75.sp,
-                              //                   // fontWeight: FontWeight.w900,
-                              //                   color: Theme.Colors.orange900,
-                              //                   fontFamily: 'UTMCooperBlack')),
-                              //         ),
-                              //       ),
-                              //     ),
-
-                              //     // // trường hợp video
-                              //     Container(
-                              //       height: 1.sh,
-                              //       // width: 1.sw,
-                              //       color: Colors.black,
-                              //       child: ClipRRect(
-                              //         child: Center(
-                              //           child: FlickVideoPlayer(
-                              //             flickVideoWithControls:
-                              //                 FlickVideoWithControls(
-                              //               controls: FlickLandscapeControls(),
-                              //             ),
-                              //             // flickVideoWithControlsFullscreen:
-                              //             //     FlickVideoWithControls(
-                              //             //   controls: FlickLandscapeControls(),
-                              //             // ),
-                              //             flickManager: flickManager,
-                              //           ),
-                              //         ),
-                              //       ),
-                              //     ),
-
-                              //     // trường hợp ảnh full
-                              //     Center(
-                              //       child: Image.asset(
-                              //           'assets/images/flashcard/image7.jpg',
-                              //           fit: BoxFit.contain),
-                              //     ),
-
-                              //     //trường hợp câu có lồng ảnh nhỏ
-                              //     Container(
-                              //       alignment: Alignment.center,
-                              //       margin: EdgeInsets.all(8.5.w),
-                              //       child: Wrap(
-                              //         crossAxisAlignment:
-                              //             WrapCrossAlignment.center,
-                              //         alignment: WrapAlignment.center,
-                              //         children: [
-                              //           Column(
-                              //             crossAxisAlignment:
-                              //                 CrossAxisAlignment.center,
-                              //             children: [
-                              //               Text('I',
-                              //                   textAlign: TextAlign.center,
-                              //                   style: TextStyle(
-                              //                       fontSize: height > 600
-                              //                           ? 70.sp
-                              //                           : 100.sp,
-                              //                       color: Theme.Colors.orange900,
-                              //                       fontFamily:
-                              //                           'UTMCooperBlack')),
-                              //             ],
-                              //           ),
-                              //           SizedBox(width: 5.w),
-                              //           Column(
-                              //             crossAxisAlignment:
-                              //                 CrossAxisAlignment.center,
-                              //             children: [
-                              //               Text('Love',
-                              //                   textAlign: TextAlign.center,
-                              //                   style: TextStyle(
-                              //                       fontSize: height > 600
-                              //                           ? 70.sp
-                              //                           : 100.sp,
-                              //                       color: Theme.Colors.orange900,
-                              //                       fontFamily:
-                              //                           'UTMCooperBlack')),
-                              //             ],
-                              //           ),
-
-                              //           SizedBox(width: 5.w),
-                              //           Column(
-                              //             crossAxisAlignment:
-                              //                 CrossAxisAlignment.center,
-                              //             children: [
-                              //               Text('My',
-                              //                   textAlign: TextAlign.center,
-                              //                   style: TextStyle(
-                              //                       fontSize: height > 600
-                              //                           ? 70.sp
-                              //                           : 100.sp,
-                              //                       color: Theme.Colors.orange900,
-                              //                       fontFamily:
-                              //                           'UTMCooperBlack')),
-                              //             ],
-                              //           ),
-                              //           SizedBox(width: 5.w),
-                              //           Column(
-                              //             crossAxisAlignment:
-                              //                 CrossAxisAlignment.center,
-                              //             children: [
-                              //               Text('Little',
-                              //                   textAlign: TextAlign.center,
-                              //                   style: TextStyle(
-                              //                       fontSize: height > 600
-                              //                           ? 70.sp
-                              //                           : 100.sp,
-                              //                       color: Theme.Colors.orange900,
-                              //                       fontFamily:
-                              //                           'UTMCooperBlack')),
-                              //             ],
-                              //           ),
-                              //           SizedBox(width: 5.w),
-                              //           Column(
-                              //             crossAxisAlignment:
-                              //                 CrossAxisAlignment.center,
-                              //             children: [
-                              //               Container(
-                              //                 margin: EdgeInsets.only(top: 3.w),
-                              //                 child: Image.asset(
-                              //                   'assets/images/flashcard/image3.jpg',
-                              //                   height: 17.w,
-                              //                   fit: BoxFit.contain,
-                              //                 ),
-                              //               ),
-                              //               Text('Cat',
-                              //                   textAlign: TextAlign.center,
-                              //                   style: TextStyle(
-                              //                       fontSize: height > 600
-                              //                           ? 45.sp
-                              //                           : 65.sp,
-                              //                       color: Theme.Colors.orange900,
-                              //                       fontFamily:
-                              //                           'UTMCooperBlack')),
-                              //             ],
-                              //           ),
-                              //           //hết bài học chuyển đến page animation_screen.dart
-                              //         ],
-                              //       ),
-                              //     ),
-
-                              //     //trường hợp câu hỏi chữ và trả lời ảnh
-                              //     isShowQuestion
-                              //         ? Container(
-                              //             child: _buildQuestionTypeOne(context),
-                              //           )
-                              //         : Container(),
-
-                              //     //trường hợp câu hỏi ảnh và trả lời chữ
-                              //     (isShowQuestion)
-                              //         ? Container(
-                              //             // visible: isShowQuestion,
-                              //             child: _buildQuestionTypeTwo(context),
-                              //           )
-                              //         : Container(),
-                              //     isShowQuestion
-                              //         ? AnimationBalloonScreen()
-                              //         : Container(),
-                              //   ],
-                            ),
+                                controller: _pageController,
+                                physics: BouncingScrollPhysics(),
+                                onPageChanged: _onPageViewChange,
+                                children:listFlashCard!=null?[...listFlashCard.map((e) => e['widget'])]:[]
+                                //listFlashCard,
+                                ),
                             onSwipeUp: () {
                               // setState(() {
                               //   _swipeDirection = "Swipe Up";
@@ -745,37 +545,34 @@ class FlashCard {
   String colorContent;
   int animationContent;
   String highlightColor;
-  String sourceAudio;
-  String sourceImage;
+  // Map sourceAudio;
+  // Map sourceImage;
   int type;
   List resource;
   List letterResources;
   double height;
-  double width;
-  AnimationController controller;
-  Tween<double> tween;
-  FlickManager flickManager;
-  FlashCard({
-    this.id,
-    this.content,
-    this.language,
-    this.sizeContent,
-    this.contentPosition,
-    this.colorContent,
-    this.animationContent,
-    this.highlightColor,
-    this.type,
-    this.resource,
-    this.letterResources,
-    this.sourceAudio,
-    this.sourceImage,
-    //style
-    this.height,
-    this.width,
-    this.controller,
-    this.tween,
-    this.flickManager,
-  });
+  Widget widget;
+  // double width;
+  // AnimationController controller;
+  // Tween<double> tween;
+  // FlickManager flickManager;
+
+  FlashCard(
+      {this.id,
+      this.content,
+      this.language,
+      this.sizeContent,
+      this.contentPosition,
+      this.colorContent,
+      this.animationContent,
+      this.highlightColor,
+      this.type,
+      this.resource,
+      this.letterResources,
+      //this.sourceAudio,
+      //this.sourceImage,
+      this.height,
+      this.widget});
   //trường hợp chữ tiêu đề
   // cardTitle() {
   //   return Container(
@@ -790,12 +587,13 @@ class FlashCard {
   //             fontFamily: 'UTMCooperBlack')),
   //   );
   // }
-  cardTitle() {
+
+  cardTitle({pathAudio, pathImg}) {
     return Container(
         alignment: Alignment.center,
         margin: EdgeInsets.all(8.5.w),
         child: GestureDetector(
-          child: Text('Common Animals',
+          child: Text(this.content,
               textAlign: TextAlign.center,
               style: TextStyle(
                   fontSize: height > 600 ? 80.sp : 140.sp,
@@ -803,27 +601,28 @@ class FlashCard {
                   color: Theme.Colors.orange900,
                   fontFamily: 'UTMCooperBlack')),
           onTap: () async {
-            _FlashCardScreen().playAudio();
+            print('this is id: ' + id);
+            // _FlashCardScreen().playAudio();
           },
         ));
   }
 
   //trường hợp ảnh full
-  cardImageFull() {
+  cardImageFull({pathImg: 'assets/images/flashcard/image1.jpg'}) {
     return Center(
       child: Image.asset(
-        'assets/images/flashcard/image1.jpg',
+        pathImg,
         fit: BoxFit.contain,
       ),
     );
   }
 
   // trường hợp chữ ngắn
-  cardShortText() {
+  cardShortText({text: 'Cat and Dog'}) {
     return Container(
       alignment: Alignment.center,
       margin: EdgeInsets.all(8.5.w),
-      child: Text('Cat And Dog',
+      child: Text(text,
           textAlign: TextAlign.center,
           style: TextStyle(
               fontSize: height > 600 ? 70.sp : 100.sp,
@@ -834,7 +633,9 @@ class FlashCard {
   }
 
   //trường hợp click từng hình để nghe
-  cardClickEachImage() {
+  cardClickEachImage(
+      {pathImg1: 'assets/images/flashcard/image4.jpg',
+      pathImg2: 'assets/images/flashcard/image6.jpg'}) {
     return Container(
         margin: EdgeInsets.all(8.5.w),
         child: Column(
@@ -854,12 +655,12 @@ class FlashCard {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Image.asset(
-                  'assets/images/flashcard/image4.jpg',
+                  pathImg1,
                   fit: BoxFit.contain,
                   height: 70.w,
                 ),
                 Image.asset(
-                  'assets/images/flashcard/image6.jpg',
+                  pathImg2,
                   fit: BoxFit.contain,
                   height: 70.w,
                 ),
@@ -870,7 +671,7 @@ class FlashCard {
   }
 
   //trường hợp chỉ sử dụng cho text ít chữ
-  cardFewText() {
+  cardFewText({tween, controller, text}) {
     return Container(
       alignment: Alignment.center,
       margin: EdgeInsets.all(8.5.w),
@@ -891,7 +692,7 @@ class FlashCard {
   }
 
   //trường hợp video
-  cardVideo() {
+  cardVideo({flickManager}) {
     return Container(
       height: 1.sh,
       // width: 1.sw,
@@ -994,7 +795,7 @@ class FlashCard {
     );
   }
 
-  cardSubSentence() {
+  cardSubSentence({text}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -1008,7 +809,7 @@ class FlashCard {
     );
   }
 
-  cardSubSentenceWithImage() {
+  cardSubSentenceWithImage({pathImg, text}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -1030,4 +831,27 @@ class FlashCard {
     );
   }
   // hết trường hợp có lồng ảnh nhỏ
+
+  factory FlashCard.fromJson(Map<String, dynamic> parsedJson) {
+    return FlashCard(
+      id: parsedJson['_id'] ?? '',
+      content: parsedJson['topic'] ?? parsedJson['content'] ?? '',
+      language: parsedJson['language'] ?? 2,
+      sizeContent: parsedJson['sizeContent'] ?? null,
+      contentPosition: parsedJson['contentPosition'] ?? null,
+      colorContent: parsedJson['colorContent'] ?? null,
+      animationContent: parsedJson['animationContent'] ?? null,
+      highlightColor: parsedJson['highlightColor'] ?? null,
+      type: parsedJson['type'] ?? null,
+
+      // sourceImage: parsedJson['resources']['type'] == '1'
+      //     ? {
+      //         '_id': parsedJson['resources']['_id'],
+      //         'localPath': parsedJson['resources']['localPath']
+      //       }
+      //     : null
+      resource: parsedJson['resources'] ?? null,
+      letterResources: parsedJson['letterResources'] ?? null,
+    );
+  }
 }

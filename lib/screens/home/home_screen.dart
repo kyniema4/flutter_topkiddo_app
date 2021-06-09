@@ -168,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
         print('debugging');
         //lấy lesson Part đang học
         //*check currentLesssonPart
-        String currentLessonPart = "";
+        String currentLessonPart = '';
         if (currentLessonPart.isNotEmpty && currentLessonPart.length > 0) {
           bool checkListLesson = await hiveService.isExists(boxName: boxLesson);
           if (checkListLesson) {
@@ -181,6 +181,7 @@ class _HomeScreenState extends State<HomeScreen> {
           var resultListLesson = await fetchListLesson(currentUnit);
           if (resultListLesson['success'] &&
               resultListLesson['data']['docs'].length > 0) {
+            print('debugging');
             List listSaveContent = resultListLesson['data']['docs'].length < 10
                 ? resultListLesson['data']['docs']
                 : resultListLesson['data']['docs'].sublist(0, 10);
@@ -243,7 +244,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if (resultListLesson['success'] &&
               resultListLesson['data']['docs'].length > 0) {
             List listSaveContent = [...resultListLesson['data']['docs']];
-
+            print('debugging');
             for (var i = 0; i < listSaveContent.length; i++) {
               await downloadListContent(listSaveContent[i]);
             }
@@ -288,15 +289,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future downloadListContent(dataLesson) async {
+    
     if (dataLesson['part'].length > 0) {
       List<Future> listDataHandle = [];
-      dataLesson['part'].forEach((item) {
+      dataLesson['part'].forEach((item) async{
         print(item);
         print('debugging');
 
         if (item['audio'] != null) {
           print(item['audio']);
-          listDataHandle
+          await listDataHandle
               .add(download.downloadFile(item['audio'], dataLesson['_id']));
           //HandleDownload().checkFileExists();
         }
@@ -313,8 +315,9 @@ class _HomeScreenState extends State<HomeScreen> {
           print('debugging');
         }
       });
-      print('debugging');
+      
       await Future.wait(listDataHandle);
+      print('debugging');
     }
   }
 
