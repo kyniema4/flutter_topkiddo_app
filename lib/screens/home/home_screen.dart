@@ -289,17 +289,19 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future downloadListContent(dataLesson) async {
-    
     if (dataLesson['part'].length > 0) {
       List<Future> listDataHandle = [];
-      dataLesson['part'].forEach((item) async{
-        print(item);
-        print('debugging');
-
+      dataLesson['part'].forEach((item) async {
         if (item['audio'] != null) {
           print(item['audio']);
           await listDataHandle
               .add(download.downloadFile(item['audio'], dataLesson['_id']));
+          //HandleDownload().checkFileExists();
+        }
+        if (item['image'] != null) {
+          print(item['image']);
+          await listDataHandle
+              .add(download.downloadFile(item['image'], dataLesson['_id']));
           //HandleDownload().checkFileExists();
         }
         if (item['game'] != null) {
@@ -315,9 +317,8 @@ class _HomeScreenState extends State<HomeScreen> {
           print('debugging');
         }
       });
-      
+
       await Future.wait(listDataHandle);
-      print('debugging');
     }
   }
 

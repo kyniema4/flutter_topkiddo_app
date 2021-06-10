@@ -185,6 +185,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
         futures.add(downloadDataLesson(lesson.id));
       }
       await Future.wait(futures);
+
       Navigator.of(context, rootNavigator: true).pop();
       Navigator.push(
           context,
@@ -219,18 +220,22 @@ class _LibraryScreenState extends State<LibraryScreen> {
       //lấy 2 part
       for (var i = 0; i <= 2; i++) {
         List listContent = listPart[i]['content'];
-        listContent.forEach((content) {
+
+        Future.forEach(listContent, (content) {
+          List data = [];
           if (content['resources'].length > 0) {
-            List data = content['resources'];
-            downloadData(data, lessonId);
+            data.addAll(content['resources']);
           }
           if (content['letterResources'].length > 0) {
             List dataLetterResources = content['letterResources'];
             dataLetterResources.forEach((e) {
-              List data = e['resources'];
-              downloadData(data, lessonId);
+              data.addAll(e['resources']);
             });
           }
+          if (content['outsideResources'].length > 0) {
+            data.addAll(content['outsideResources']);
+          }
+          downloadData(data, lessonId);
         });
       }
     }
@@ -238,12 +243,13 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   Future downloadData(List listResource, String lessonId) async {
     if (listResource.length > 0 && listResource.isNotEmpty) {
-      listResource.forEach((resource) {
+      List<Future> listDataHandle = [];
+      listResource.forEach((resource) async {
         if (resource['type'] < 3) {
-          print(resource);
-          print('debugging');
+          await listDataHandle.add(download.downloadFile(resource, lessonId));
         }
       });
+      await Future.wait(listDataHandle);
     }
     //  var futures = <Future>[];
     //     for (var lesson in listLesson) {

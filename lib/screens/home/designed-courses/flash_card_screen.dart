@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flick_video_player/flick_video_player.dart';
@@ -57,35 +58,54 @@ class _FlashCardScreen extends State<FlashCardScreen>
     }
   }
 
+  getPathImage(String lessonId, sourceImage) async {
+    if (sourceImage != null) {
+      var typeFile = sourceImage['localPath']
+          .substring(sourceImage['localPath'].indexOf('.'));
+      String subPath = "/$lessonId/${sourceImage['_id']}$typeFile";
+      var path = await download.getFileFromLocal(subPath);
+
+      return path;
+    }
+  }
+
   //check part and add data
   createFlashCard() async {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     Map data = widget.lessonDetail;
     List tempList = [];
-    //-------------test
-    //  FlashCard oneFlashCard = FlashCard()..height = height;
-    // List<Widget> listWidget = [
-    //   oneFlashCard.cardTitle(),
-    //   oneFlashCard.cardShortText(text: "Dinh Tien"),
-    //   oneFlashCard.cardFewText(tween: _tween, controller: _controller),
-    // ];
-    //--------------------------------
+
     if (data.isNotEmpty) {
       List listPart = data['part'];
       if (listPart.length > 0) {
         await Future.forEach(listPart, (part) async {
           List listContent = part['content'];
-          if (listContent.length > 0) {
+          //lấy content của topic
+          if (part['topic'] != null) {
             try {
-              await Future.forEach(listContent, (content) async {
-                var result = await dealerWidget(content);
-                tempList.addAll(result);
-              });
+              var result = await dealerWidget(part);
+              tempList.addAll(result);
             } catch (e) {
               print(e);
             }
           }
+          //lấy content trong topic
+          // if (listContent.length > 0) {
+          //   try {
+          //     await Future.forEach(listContent, (content) async {
+                 
+          //       var result = await dealerWidget(content);
+          //       tempList.addAll(result);
+          //     });
+          //     // for (var i = 0; i < 2; i++) {
+          //     //   var result = await dealerWidget(listContent[i]);
+          //     //   tempList.addAll(result);
+          //     // }
+          //   } catch (e) {
+          //     print(e);
+          //   }
+          // }
         });
       }
     } else {
@@ -103,7 +123,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
     setState(() {
       listFlashCard = [...tempList];
     });
-    _pageController.jumpToPage(4);
+    _pageController.jumpToPage(currentPage);
   }
 
   dealerWidget(Map data) async {
@@ -112,29 +132,46 @@ class _FlashCardScreen extends State<FlashCardScreen>
 
     var flashCard = FlashCard.fromJson(Map<String, dynamic>.from(data));
     flashCard.height = MediaQuery.of(context).size.height;
+    flashCard.lessonId = widget.lessonDetail['_id'];
     List listResource = flashCard.resource;
     List listLetterResource = flashCard.letterResources;
-    //add 2 widget CardTittle and ImageFull
-    if (listResource.length > 0 &&
-        listResource.length <= 2 &&
-        listLetterResource.length == 0) {
-      if (listResource.where((e) => (e["type"] == 1)).isNotEmpty) {
-        oneFlashCard = {'data': flashCard, 'widget': flashCard.cardTitle()};
-        tempList.add(oneFlashCard);
-        // flashCard.widget = flashCard.cardTitle();
-        // tempList.add(flashCard);
-        // print('debugging');
+    
+    //trường hợp title có hoặc k có ảnh
+    if (data['topic'] != null) {
+      tempList.add(
+          oneFlashCard = {'data': flashCard, 'widget': flashCard.cardTitle()});
 
-      }
+      data['image'].isNotEmpty
+          ? tempList.add(oneFlashCard = {
+              'data': flashCard,
+              'widget': flashCard.cardImageFull(
+                  pathImg: await getPathImage(
+                      flashCard.lessonId, flashCard.sourceImage))
+            })
+          : tempList;
+      return tempList;
+    }
+    //trường hợp chữ ngắn
+    if (listResource.length > 0 && listResource.length <= 1) {
       if (listResource.where((e) => (e["type"] == 2)).isNotEmpty) {
-        oneFlashCard = {'data': flashCard, 'widget': flashCard.cardImageFull()};
+        oneFlashCard = {'data': flashCard, 'widget': flashCard.cardShortText()};
         tempList.add(oneFlashCard);
-        // flashCard.widget = flashCard.cardImageFull();
-        // tempList.add(flashCard);
-        // print('debugging');
-
+        return tempList;
       }
     }
+    //add 2 widget CardTittle and ImageFull
+    // if (listResource.length > 0 &&
+    //     listResource.length <= 2 &&
+    //     listLetterResource.length == 0) {
+    //   if (listResource.where((e) => (e["type"] == 1)).isNotEmpty) {
+    //     oneFlashCard = {'data': flashCard, 'widget': flashCard.cardTitle()};
+    //     tempList.add(oneFlashCard);
+    //   }
+    //   if (listResource.where((e) => (e["type"] == 2)).isNotEmpty) {
+    //     oneFlashCard = {'data': flashCard, 'widget': flashCard.cardImageFull()};
+    //     tempList.add(oneFlashCard);
+    //   }
+    // }
     return tempList;
   }
 
@@ -158,8 +195,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
 
   _onPageViewChange(int page) {
     final flashCardCurrent = listFlashCard[page];
-    print(flashCardCurrent);
-    print('debugging');
+
     print("Current Page: " + page.toString());
     previousPage = page;
     setState(() {
@@ -349,8 +385,6 @@ class _FlashCardScreen extends State<FlashCardScreen>
 
   @override
   Widget build(BuildContext context) {
-    print(widget.lessonDetail);
-    print('debugging');
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
 
@@ -398,7 +432,9 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                 controller: _pageController,
                                 physics: BouncingScrollPhysics(),
                                 onPageChanged: _onPageViewChange,
-                                children:listFlashCard!=null?[...listFlashCard.map((e) => e['widget'])]:[]
+                                children: listFlashCard != null
+                                    ? [...listFlashCard.map((e) => e['widget'])]
+                                    : []
                                 //listFlashCard,
                                 ),
                             onSwipeUp: () {
@@ -538,6 +574,7 @@ class _TopButtonState extends State<TopButton> {
 
 class FlashCard {
   String id;
+  String lessonId;
   String content;
   int language;
   int sizeContent;
@@ -545,8 +582,8 @@ class FlashCard {
   String colorContent;
   int animationContent;
   String highlightColor;
-  // Map sourceAudio;
-  // Map sourceImage;
+  Map sourceAudio;
+  Map sourceImage;
   int type;
   List resource;
   List letterResources;
@@ -559,6 +596,7 @@ class FlashCard {
 
   FlashCard(
       {this.id,
+      this.lessonId,
       this.content,
       this.language,
       this.sizeContent,
@@ -569,8 +607,8 @@ class FlashCard {
       this.type,
       this.resource,
       this.letterResources,
-      //this.sourceAudio,
-      //this.sourceImage,
+      this.sourceAudio,
+      this.sourceImage,
       this.height,
       this.widget});
   //trường hợp chữ tiêu đề
@@ -593,7 +631,7 @@ class FlashCard {
         alignment: Alignment.center,
         margin: EdgeInsets.all(8.5.w),
         child: GestureDetector(
-          child: Text(this.content,
+          child: Text(content,
               textAlign: TextAlign.center,
               style: TextStyle(
                   fontSize: height > 600 ? 80.sp : 140.sp,
@@ -608,13 +646,19 @@ class FlashCard {
   }
 
   //trường hợp ảnh full
-  cardImageFull({pathImg: 'assets/images/flashcard/image1.jpg'}) {
+  cardImageFull({pathImg}) {
+    // var newPath = _FlashCardScreen().getPathImage(lessonId, sourceImage);
+    // pathImg = newPath;
     return Center(
-      child: Image.asset(
-        pathImg,
-        fit: BoxFit.contain,
-      ),
-    );
+        child: pathImg.isNotEmpty
+            ? Image(
+                image: FileImage(File(pathImg)),
+                fit: BoxFit.contain,
+              )
+            : Image.asset(
+                'assets/images/flashcard/image1.jpg',
+                fit: BoxFit.contain,
+              ));
   }
 
   // trường hợp chữ ngắn
@@ -622,7 +666,7 @@ class FlashCard {
     return Container(
       alignment: Alignment.center,
       margin: EdgeInsets.all(8.5.w),
-      child: Text(text,
+      child: Text(content,
           textAlign: TextAlign.center,
           style: TextStyle(
               fontSize: height > 600 ? 70.sp : 100.sp,
@@ -843,7 +887,14 @@ class FlashCard {
       animationContent: parsedJson['animationContent'] ?? null,
       highlightColor: parsedJson['highlightColor'] ?? null,
       type: parsedJson['type'] ?? null,
-
+      sourceImage: {
+        '_id': parsedJson['image']['_id'] ?? "",
+        'localPath': parsedJson['image']['localPath'] ?? ""
+      },
+      sourceAudio: {
+        '_id': parsedJson['audio']['_id'] ?? "",
+        'localPath': parsedJson['audio']['localPath'] ?? ""
+      },
       // sourceImage: parsedJson['resources']['type'] == '1'
       //     ? {
       //         '_id': parsedJson['resources']['_id'],

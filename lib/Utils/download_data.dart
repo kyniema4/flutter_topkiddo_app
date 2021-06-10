@@ -13,19 +13,17 @@ class HandleDownload {
   }
 
   Future checkFileExists(String path) async {
-    return await Io.File(path).exists();
+    String dir = await _localPath;
+    return await Io.File(dir + path).exists();
   }
 
   Future<dynamic> downloadFile(data, lessonId) async {
     var typeFile = data['localPath'].substring(data['localPath'].indexOf('.'));
     String dir = await _localPath;
     String subPath = "/$lessonId/${data['_id']}$typeFile";
-    bool check = await checkFileExists(dir + subPath);
-
+    bool check = await checkFileExists(subPath);
     if (!check) {
       Io.File file = await Io.File('$dir' + '$subPath').create(recursive: true);
-      print(file);
-      print('debugging');
       String params =
           '?token=${(await getToken())}&resourceId=${data['_id']}&time=${DateTime.now().toString()}';
       try {
@@ -44,16 +42,18 @@ class HandleDownload {
     }
   }
 
-  // Future getFileFromLocal() async {
-  //   //String file="/data/user/0/com.example.topkiddo/app_flutter/60b7862add38fc1918816a24/60b79aa1dd38fc1918818a26.mp3";
-  //   String path = "/60b7862add38fc1918816a24/60b79aa1dd38fc1918818a26.mp3";
-  //   String dir = await _localPath;
-  //   bool check = await checkFileExists(dir+path);
-  //   if(check){
-  //     return 
-  //   }
-  //   print('debugging');
-  // }
+  Future getFileFromLocal(String subPath) async {
+    //String file="/data/user/0/com.example.topkiddo/app_flutter/60b7862add38fc1918816a24/60b79aa1dd38fc1918818a26.mp3";
+    String path = subPath;
+    String dir = await _localPath;
+    bool check = await checkFileExists(path);
+    if(check){
+      return dir+path;
+    }else{
+      //fetch and save data again
+    }
+   
+  }
 
   Future<int> deleteFile(String path) async {
     try {
