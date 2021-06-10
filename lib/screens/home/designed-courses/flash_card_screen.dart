@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:topkiddo/Utils/http_service.dart';
+import 'dart:async';
 import '../../../theme/style.dart';
 import '../../../theme/theme.dart' as Theme;
 import '../../../components/languages_app.dart';
 import '../../../components/swipe-configuration.dart';
 import '../../home/home_screen.dart';
-import './animation_balloon_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flick_video_player/flick_video_player.dart';
 import 'package:video_player/video_player.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/rendering.dart';
 // import 'package:swipedetector/swipedetector.dart';
 
 class FlashCardScreen extends StatefulWidget {
@@ -30,16 +30,20 @@ class _FlashCardScreen extends State<FlashCardScreen>
   ScrollController s;
   AnimationController _controller;
   Tween<double> _tween = Tween(begin: 1.5, end: 1.8);
-  FlickManager flickManager;
+  VideoPlayerController _controllerVideo;
+  Future<void> _initializeVideoPlayerFuture;
+
   void initState() {
     super.initState();
     s = PageController();
     _controller = AnimationController(
         duration: const Duration(milliseconds: 700), vsync: this);
-    flickManager = FlickManager(
-      videoPlayerController: VideoPlayerController.network(
-          "http://www.sample-videos.com/video123/mp4/720/big_buck_bunny_720p_20mb.mp4"),
+    _controllerVideo = VideoPlayerController.network(
+      'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
     );
+    _initializeVideoPlayerFuture = _controllerVideo.initialize();
+
+    _controllerVideo.setLooping(true);
   }
 
   _onPageViewChange(int page) {
@@ -47,10 +51,18 @@ class _FlashCardScreen extends State<FlashCardScreen>
     previousPage = page;
     setState(() {
       number = page;
-      if (page == 0 || page > 4) {
+      // nếu page number = 0 hoặc
+      // kết thúc bài học chuyển sang phần câu hỏi thì mất bảng trắng
+      if (page == 0 || page > 8) {
         isShowQuestion = true;
       } else {
         isShowQuestion = false;
+      }
+
+      if (page == 7) {
+        _controllerVideo.play();
+      } else {
+        _controllerVideo.pause();
       }
     });
   }
@@ -62,9 +74,14 @@ class _FlashCardScreen extends State<FlashCardScreen>
   }
 
   @override
+  void deactivate() {
+    super.deactivate();
+  }
+
+  @override
   void dispose() {
     _controller.repeat(reverse: false);
-    flickManager.dispose();
+    _controllerVideo.dispose();
     super.dispose();
   }
 
@@ -530,93 +547,105 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                 // ),
 
                                 // //trường hợp click ảnh để nghe
-                                // Container(
-                                //     margin: EdgeInsets.all(8.5.w),
-                                //     child: Column(
-                                //       children: [
-                                //         Text(
-                                //             'Click Vào Từng Hình Để Nghe Cách Đọc',
-                                //             textAlign: TextAlign.center,
-                                //             style: TextStyle(
-                                //                 fontSize: height > 600
-                                //                     ? 25.sp
-                                //                     : 35.sp,
-                                //                 // fontWeight: FontWeight.w900,
-                                //                 color: Theme.Colors.orange900,
-                                //                 fontFamily: 'UTMCooperBlack')),
-                                //         SizedBox(
-                                //           height: 20.w,
-                                //         ),
-                                //         Row(
-                                //           mainAxisAlignment:
-                                //               MainAxisAlignment.spaceAround,
-                                //           crossAxisAlignment:
-                                //               CrossAxisAlignment.center,
-                                //           children: [
-                                //             Image.asset(
-                                //               'assets/images/flashcard/image4.jpg',
-                                //               fit: BoxFit.contain,
-                                //               height: 70.w,
-                                //             ),
-                                //             Image.asset(
-                                //               'assets/images/flashcard/image6.jpg',
-                                //               fit: BoxFit.contain,
-                                //               height: 70.w,
-                                //             ),
-                                //           ],
-                                //         )
-                                //       ],
-                                //     )),
+                                Container(
+                                    margin: EdgeInsets.all(8.5.w),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                            'Click Vào Từng Hình Để Nghe Cách Đọc',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                fontSize: height > 600
+                                                    ? 25.sp
+                                                    : 35.sp,
+                                                // fontWeight: FontWeight.w900,
+                                                color: Theme.Colors.orange900,
+                                                fontFamily: 'UTMCooperBlack')),
+                                        SizedBox(
+                                          height: 20.w,
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Image.asset(
+                                              'assets/images/flashcard/image4.jpg',
+                                              fit: BoxFit.contain,
+                                              height: 70.w,
+                                            ),
+                                            Image.asset(
+                                              'assets/images/flashcard/image6.jpg',
+                                              fit: BoxFit.contain,
+                                              height: 70.w,
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    )),
 
-                                // //trường hợp ảnh full
-                                // Center(
-                                //   child: Image.asset(
-                                //       'assets/images/flashcard/image5.jpg',
-                                //       fit: BoxFit.contain),
-                                // ),
+                                //trường hợp ảnh full
+                                Center(
+                                  child: Image.asset(
+                                      'assets/images/flashcard/image5.jpg',
+                                      fit: BoxFit.contain),
+                                ),
 
                                 // //trường hợp chỉ sử dụng cho text ít chữ
-                                // Container(
-                                //   alignment: Alignment.center,
-                                //   margin: EdgeInsets.all(8.5.w),
-                                //   child: ScaleTransition(
-                                //     scale: _tween.animate(CurvedAnimation(
-                                //         parent: _controller,
-                                //         curve: Curves.elasticOut)),
-                                //     child: SizedBox(
-                                //       child: Text('Cat',
-                                //           textAlign: TextAlign.center,
-                                //           style: TextStyle(
-                                //               fontSize:
-                                //                   height > 600 ? 35.sp : 75.sp,
-                                //               // fontWeight: FontWeight.w900,
-                                //               color: Theme.Colors.orange900,
-                                //               fontFamily: 'UTMCooperBlack')),
-                                //     ),
-                                //   ),
-                                // ),
+                                Container(
+                                  alignment: Alignment.center,
+                                  margin: EdgeInsets.all(8.5.w),
+                                  child: ScaleTransition(
+                                    scale: _tween.animate(CurvedAnimation(
+                                        parent: _controller,
+                                        curve: Curves.elasticOut)),
+                                    child: SizedBox(
+                                      child: Text('Cat',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              fontSize:
+                                                  height > 600 ? 35.sp : 75.sp,
+                                              // fontWeight: FontWeight.w900,
+                                              color: Theme.Colors.orange900,
+                                              fontFamily: 'UTMCooperBlack')),
+                                    ),
+                                  ),
+                                ),
 
                                 // // trường hợp video
-                                // Container(
-                                //   height: 1.sh,
-                                //   // width: 1.sw,
-                                //   color: Colors.black,
-                                //   child: ClipRRect(
-                                //     child: Center(
-                                //       child: FlickVideoPlayer(
-                                //         flickVideoWithControls:
-                                //             FlickVideoWithControls(
-                                //           controls: FlickLandscapeControls(),
-                                //         ),
-                                //         // flickVideoWithControlsFullscreen:
-                                //         //     FlickVideoWithControls(
-                                //         //   controls: FlickLandscapeControls(),
-                                //         // ),
-                                //         flickManager: flickManager,
-                                //       ),
-                                //     ),
-                                //   ),
-                                // ),
+                                Container(
+                                  height: 1.sh,
+                                  // width: 1.sw,
+                                  color: Colors.black,
+                                  child: ClipRRect(
+                                    child: Center(
+                                      child: FutureBuilder(
+                                        future: _initializeVideoPlayerFuture,
+                                        builder: (context, snapshot) {
+                                          if (snapshot.connectionState ==
+                                              ConnectionState.done) {
+                                            // If the VideoPlayerController has finished initialization, use
+                                            // the data it provides to limit the aspect ratio of the video.
+                                            return AspectRatio(
+                                              aspectRatio: _controllerVideo
+                                                  .value.aspectRatio,
+                                              // Use the VideoPlayer widget to display the video.
+                                              child:
+                                                  VideoPlayer(_controllerVideo),
+                                            );
+                                          } else {
+                                            // If the VideoPlayerController is still initializing, show a
+                                            // loading spinner.
+                                            return Center(
+                                                child:
+                                                    CircularProgressIndicator());
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ),
 
                                 // // trường hợp ảnh full
                                 // Center(
@@ -741,9 +770,9 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                         child: _buildQuestionTypeTwo(context),
                                       )
                                     : Container(),
-                                isShowQuestion
-                                    ? AnimationBalloonScreen()
-                                    : Container(),
+                                // isShowQuestion
+                                //     ? AnimationBalloonScreen()
+                                //     : Container(),
                               ],
                             ),
                             onSwipeUp: () {
