@@ -294,7 +294,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                             Text('Multisensory',
                                                 style: TextStyle(
                                                     fontSize: height > 600
-                                                        ? 68.sp
+                                                        ? 80.sp
                                                         : 120.sp,
                                                     color: Colors.white,
                                                     fontFamily:
@@ -333,20 +333,25 @@ class _FlashCardScreen extends State<FlashCardScreen>
 
                                 //trường hợp chữ tiêu đề
                                 Container(
+                                  // color: Colors.red,
                                   alignment: Alignment.center,
                                   margin: EdgeInsets.all(8.5.w),
                                   child: Stack(
                                     clipBehavior: Clip.none,
                                     alignment: Alignment.center,
                                     children: [
-                                      Text('Common Animals',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              fontSize:
-                                                  height > 600 ? 80.sp : 140.sp,
-                                              // fontWeight: FontWeight.w900,
-                                              color: Theme.Colors.orange900,
-                                              fontFamily: 'UTMCooperBlack')),
+                                      Container(
+                                        child: Text('Common Animals',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                height: 1.2,
+                                                fontSize: height > 600
+                                                    ? 80.sp
+                                                    : 140.sp,
+                                                // fontWeight: FontWeight.w900,
+                                                color: Theme.Colors.orange900,
+                                                fontFamily: 'UTMCooperBlack')),
+                                      ),
 
                                       //mũi tên phía trái
                                       Positioned(
@@ -373,7 +378,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                                   style: TextStyle(
                                                       fontSize: height > 600
                                                           ? 21.sp
-                                                          : 30.sp,
+                                                          : 25.sp,
                                                       color: Theme
                                                           .Colors.yellow300,
                                                       fontFamily:
@@ -396,7 +401,9 @@ class _FlashCardScreen extends State<FlashCardScreen>
 
                                       //mũi tên ở giữa
                                       Positioned(
-                                        bottom: -30.w,
+                                        top: height > 600 ? 30.w : 0.25.sh,
+                                        // bottom: 0,
+                                        // bottom: -30.w,
                                         // left: 10.w,
                                         child: Stack(
                                           clipBehavior: Clip.none,
@@ -413,7 +420,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                               ),
                                             ),
                                             Positioned(
-                                              right: 10.w,
+                                              right: 11.w,
                                               top: 6.w,
                                               // bottom: -12.w,
                                               child: RotatedBox(
@@ -422,7 +429,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                                     style: TextStyle(
                                                         fontSize: height > 600
                                                             ? 21.sp
-                                                            : 30.sp,
+                                                            : 25.sp,
                                                         color: Theme
                                                             .Colors.yellow300,
                                                         fontFamily:
@@ -462,13 +469,13 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                             ),
                                             Positioned(
                                               left: 15.w,
-                                              top: 8.w,
+                                              top: 9.w,
                                               // bottom: -12.w,
                                               child: Text('Next',
                                                   style: TextStyle(
                                                       fontSize: height > 600
                                                           ? 21.sp
-                                                          : 30.sp,
+                                                          : 25.sp,
                                                       color: Theme
                                                           .Colors.yellow300,
                                                       fontFamily:

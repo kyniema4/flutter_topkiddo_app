@@ -3,12 +3,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../theme/theme.dart' as Theme;
 import '.../../menu/write-for-kids.dart';
+import '.../../profile/profile-father-screen.dart';
+import '.../../profile/profile-kid-screen.dart';
+import '.../../profile/profile-add-child-screen.dart';
 
 class Menu {
   final String icon;
   final String title;
+  final dynamic page;
 
-  Menu({this.icon, this.title});
+  Menu({this.icon, this.title, this.page});
 }
 
 class ModalMenu extends StatefulWidget {
@@ -21,38 +25,52 @@ class _ModalMenuState extends State<ModalMenu> {
     Menu(
       icon: 'assets/images/menu/notificationbutton.png',
       title: 'notification'.tr(),
+      page: WriteForKidsScreen(),
     ),
     Menu(
       icon: 'assets/images/menu/profilebutton.png',
       title: 'profile'.tr(),
+      page: ProfileFatherScreen(),
     ),
     Menu(
       icon: 'assets/images/menu/parentsbutton.png',
       title: 'parent'.tr(),
+      page: ProfileKidScreen(),
+    ),
+    Menu(
+      icon: 'assets/images/menu/profilebutton.png',
+      title: 'addChild'.tr(),
+      page: ProfileAddChildScreen(),
     ),
     Menu(
       icon: 'assets/images/menu/settingbutton.png',
       title: 'setting'.tr(),
+      page: Container(),
     ),
     Menu(
       icon: 'assets/images/menu/writeforkidbutton.png',
       title: 'writeForKid'.tr(),
+      page: Container(),
     ),
     Menu(
       icon: 'assets/images/menu/library.png',
       title: 'library'.tr(),
+      page: Container(),
     ),
     Menu(
       icon: 'assets/images/menu/entercodebutton.png',
       title: 'enterCode'.tr(),
+      page: Container(),
     ),
     Menu(
       icon: 'assets/images/menu/subscribebutton.png',
       title: 'subscribe'.tr(),
+      page: Container(),
     ),
     Menu(
       icon: 'assets/images/menu/logout.png',
       title: 'logout'.tr(),
+      page: Container(),
     ),
   ];
   @override
@@ -110,7 +128,7 @@ class _ModalMenuState extends State<ModalMenu> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (BuildContext context) =>
-                                                WriteForKidsScreen()));
+                                                menu.page));
                                   }),
                               Container(
                                 height: 17.w,
