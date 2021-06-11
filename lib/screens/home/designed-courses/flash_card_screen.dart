@@ -47,26 +47,41 @@ class _FlashCardScreen extends State<FlashCardScreen>
   String idAudio = "";
 //content-audio =>image-audio
 
-  playAudio() async {
-    try {
-      var result = await audioPlayer.play(
-          "/data/user/0/com.example.topkiddo/app_flutter/60b7862add38fc1918816a24/60b84655dd38fc1918818b0b.mp3",
-          isLocal: true);
+  playAudio(sourceAudio) async {
+    print(sourceAudio);
+    print('debugging');
+    String lessonId = widget.lessonDetail['_id'];
+    if (sourceAudio.isNotEmpty) {
+      print(sourceAudio);
       print('debugging');
-    } catch (e) {
-      print(e);
-    }
+      var typeFile = sourceAudio['localPath']
+          .substring(sourceAudio['localPath'].indexOf('.'));
+      String subPath = "/$lessonId/${sourceAudio['_id']}$typeFile";
+      var path = await download.getFileFromLocal(subPath);
+      print('debugging');
+    } else
+      return;
+    // print(sourceAudio);
+    // try {
+    //   var result = await audioPlayer.play(
+    //       "/data/user/0/com.example.topkiddo/app_flutter/60b7862add38fc1918816a24/60b84655dd38fc1918818b0b.mp3",
+    //       isLocal: true);
+    //   print('debugging');
+    // } catch (e) {
+    //   print(e);
+    // }
   }
 
-  getPathImage(String lessonId, sourceImage) async {
-    if (sourceImage != null) {
+  getPathImage(sourceImage) async {
+    String lessonId = widget.lessonDetail['_id'];
+    if (sourceImage is Map && sourceImage != null) {
       var typeFile = sourceImage['localPath']
           .substring(sourceImage['localPath'].indexOf('.'));
       String subPath = "/$lessonId/${sourceImage['_id']}$typeFile";
       var path = await download.getFileFromLocal(subPath);
-
       return path;
-    }
+    } else
+      return;
   }
 
   //check part and add data
@@ -75,7 +90,6 @@ class _FlashCardScreen extends State<FlashCardScreen>
     double width = MediaQuery.of(context).size.width;
     Map data = widget.lessonDetail;
     List tempList = [];
-
     if (data.isNotEmpty) {
       List listPart = data['part'];
       if (listPart.length > 0) {
@@ -85,41 +99,35 @@ class _FlashCardScreen extends State<FlashCardScreen>
           if (part['topic'] != null) {
             try {
               var result = await dealerWidget(part);
+              print('debugging');
               tempList.addAll(result);
             } catch (e) {
               print(e);
             }
           }
-          //lấy content trong topic
-          // if (listContent.length > 0) {
-          //   try {
-          //     await Future.forEach(listContent, (content) async {
-                 
-          //       var result = await dealerWidget(content);
-          //       tempList.addAll(result);
-          //     });
-          //     // for (var i = 0; i < 2; i++) {
-          //     //   var result = await dealerWidget(listContent[i]);
-          //     //   tempList.addAll(result);
-          //     // }
-          //   } catch (e) {
-          //     print(e);
-          //   }
-          // }
+          // lấy content trong topic
+          if (listContent.length > 0) {
+            try {
+              await Future.forEach(listContent, (content) async {
+                var result = await dealerWidget(content);
+                if (result != null) {
+                  tempList.addAll(result);
+                }
+              });
+              // for (var i = 0; i < 2; i++) {
+              //   var result = await dealerWidget(listContent[i]);
+              //   tempList.addAll(result);
+              // }
+            } catch (e) {
+              print(e);
+            }
+          }
         });
       }
     } else {
       //fetch data;
     }
 
-    // print(tempList);
-    // //build widget
-    // List tempListWidget = [];
-    // for (var item in tempList) {
-    //   if (item < 10) {
-    //     tempListWidget.add(item.widget);
-    //   }
-    // }
     setState(() {
       listFlashCard = [...tempList];
     });
@@ -129,50 +137,95 @@ class _FlashCardScreen extends State<FlashCardScreen>
   dealerWidget(Map data) async {
     List tempList = [];
     Map<String, dynamic> oneFlashCard;
-
     var flashCard = FlashCard.fromJson(Map<String, dynamic>.from(data));
     flashCard.height = MediaQuery.of(context).size.height;
-    flashCard.lessonId = widget.lessonDetail['_id'];
     List listResource = flashCard.resource;
     List listLetterResource = flashCard.letterResources;
-    
-    //trường hợp title có hoặc k có ảnh
+    print('debugging');
+    //trường hợp title có hoặc k có ảnh, âm thanh
     if (data['topic'] != null) {
+      flashCard.sourceAudio = data['audio'] != null
+          ? {
+              '_id': data['audio']['_id'] ?? "",
+              'localPath': data['audio']['localPath'] ?? ""
+            }
+          : {};
+
       tempList.add(
           oneFlashCard = {'data': flashCard, 'widget': flashCard.cardTitle()});
-
+      flashCard.sourceImage = data['image'] != null
+          ? {
+              '_id': data['image']['_id'] ?? "",
+              'localPath': data['image']['localPath'] ?? ""
+            }
+          : {};
       data['image'].isNotEmpty
           ? tempList.add(oneFlashCard = {
               'data': flashCard,
               'widget': flashCard.cardImageFull(
-                  pathImg: await getPathImage(
-                      flashCard.lessonId, flashCard.sourceImage))
+                  pathImg: await getPathImage(flashCard.sourceImage))
             })
           : tempList;
       return tempList;
     }
-    //trường hợp chữ ngắn
-    if (listResource.length > 0 && listResource.length <= 1) {
+    // trương hợp chữ ngắn
+    if (data['type'] == 1 &&
+        listResource.length > 0 &&
+        listResource.length < 2) {
       if (listResource.where((e) => (e["type"] == 2)).isNotEmpty) {
         oneFlashCard = {'data': flashCard, 'widget': flashCard.cardShortText()};
         tempList.add(oneFlashCard);
         return tempList;
       }
     }
-    //add 2 widget CardTittle and ImageFull
-    // if (listResource.length > 0 &&
-    //     listResource.length <= 2 &&
-    //     listLetterResource.length == 0) {
-    //   if (listResource.where((e) => (e["type"] == 1)).isNotEmpty) {
-    //     oneFlashCard = {'data': flashCard, 'widget': flashCard.cardTitle()};
-    //     tempList.add(oneFlashCard);
-    //   }
-    //   if (listResource.where((e) => (e["type"] == 2)).isNotEmpty) {
-    //     oneFlashCard = {'data': flashCard, 'widget': flashCard.cardImageFull()};
-    //     tempList.add(oneFlashCard);
-    //   }
-    // }
-    return tempList;
+    // trường hợp click vào từng hình để nghe
+    if (data['type'] == 3 && listLetterResource.length > 0) {
+      print(flashCard);
+      print('debugging');
+      List listPathImage = [];
+      for (var i in listLetterResource) {
+        var resource = i['resources'][0]['type'];
+        if (i['resources'][0]['type'] == 1) {
+          Map sourceImage = {
+            '_id': i['resources'][0]['_id'],
+            'localPath': i['resources'][0]['localPath']
+          };
+          var pathImage = await getPathImage(sourceImage);
+          listPathImage.add(pathImage);
+        }
+      }
+      oneFlashCard = {
+        'data': flashCard,
+        'widget': flashCard.cardClickEachImage(
+            pathImg1: listPathImage[0],
+            pathImg2: listPathImage[1],
+            pathSound1: '',
+            pathSound2: '')
+      };
+      tempList.add(oneFlashCard);
+      return tempList;
+    }
+    //trương hợp image full
+    if (data['type'] == 1 &&
+        listResource.length > 0 &&
+        listResource.length < 3 &&
+        listResource[0]['type'] < 3) {
+      print('debugging');
+      var sourceImage = listResource.where((e) => e['type'] == 1);
+      flashCard.sourceImage = sourceImage.isNotEmpty
+          ? {
+              '_id': sourceImage.single['_id'] ?? "",
+              'localPath': sourceImage.single['localPath'] ?? ""
+            }
+          : {};
+      oneFlashCard = {
+        'data': flashCard,
+        'widget': flashCard.cardImageFull(
+            pathImg: await getPathImage(flashCard.sourceImage))
+      };
+      tempList.add(oneFlashCard);
+      return tempList;
+    }
   }
 
   checkType(int type) {}
@@ -217,6 +270,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
   @override
   void dispose() {
     _controller.repeat(reverse: false);
+    _controller.dispose();
     //flickManager.dispose();
     super.dispose();
   }
@@ -442,10 +496,10 @@ class _FlashCardScreen extends State<FlashCardScreen>
                               //   _swipeDirection = "Swipe Up";
                               //   _reset();
                               // });
-                              playAudio();
+                              //playAudio();
                             },
                             onSwipeDown: () {
-                              playAudio();
+                              // playAudio();
                               // setState(() {
                               //   _swipeDirection = "Swipe Down";
                               // });
@@ -639,18 +693,17 @@ class FlashCard {
                   color: Theme.Colors.orange900,
                   fontFamily: 'UTMCooperBlack')),
           onTap: () async {
-            print('this is id: ' + id);
-            // _FlashCardScreen().playAudio();
+            //await  _FlashCardScreen().playAudio(sourceAudio);
           },
         ));
   }
 
   //trường hợp ảnh full
-  cardImageFull({pathImg}) {
+  cardImageFull({pathImg: ''}) {
     // var newPath = _FlashCardScreen().getPathImage(lessonId, sourceImage);
     // pathImg = newPath;
     return Center(
-        child: pathImg.isNotEmpty
+        child: pathImg != null
             ? Image(
                 image: FileImage(File(pathImg)),
                 fit: BoxFit.contain,
@@ -678,8 +731,7 @@ class FlashCard {
 
   //trường hợp click từng hình để nghe
   cardClickEachImage(
-      {pathImg1: 'assets/images/flashcard/image4.jpg',
-      pathImg2: 'assets/images/flashcard/image6.jpg'}) {
+      {pathImg1: '', pathImg2: '', pathSound1: '', pathSound2: ''}) {
     return Container(
         margin: EdgeInsets.all(8.5.w),
         child: Column(
@@ -698,16 +750,21 @@ class FlashCard {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Image.asset(
-                  pathImg1,
-                  fit: BoxFit.contain,
-                  height: 70.w,
-                ),
-                Image.asset(
-                  pathImg2,
-                  fit: BoxFit.contain,
-                  height: 70.w,
-                ),
+                pathImg1 != null
+                    ? Image(
+                        image: FileImage(File(pathImg1)),
+                        fit: BoxFit.contain,
+                        height: 70.w,
+                      )
+                    : Image.asset('assets/images/flashcard/image4.jpg',
+                        fit: BoxFit.contain, height: 70.w),
+                pathImg2 != null
+                    ? Image(
+                        image: FileImage(File(pathImg2)),
+                        fit: BoxFit.contain,
+                        height: 70.w)
+                    : Image.asset('assets/images/flashcard/image6.jpg',
+                        fit: BoxFit.contain, height: 70.w),
               ],
             )
           ],
@@ -887,14 +944,14 @@ class FlashCard {
       animationContent: parsedJson['animationContent'] ?? null,
       highlightColor: parsedJson['highlightColor'] ?? null,
       type: parsedJson['type'] ?? null,
-      sourceImage: {
-        '_id': parsedJson['image']['_id'] ?? "",
-        'localPath': parsedJson['image']['localPath'] ?? ""
-      },
-      sourceAudio: {
-        '_id': parsedJson['audio']['_id'] ?? "",
-        'localPath': parsedJson['audio']['localPath'] ?? ""
-      },
+      // sourceImage: {
+      //   '_id': parsedJson['image']['_id'] ?? "",
+      //   'localPath': parsedJson['image']['localPath'] ?? ""
+      // },
+      // sourceAudio: {
+      //   '_id': parsedJson['audio']['_id'] ?? "",
+      //   'localPath': parsedJson['audio']['localPath'] ?? ""
+      // },
       // sourceImage: parsedJson['resources']['type'] == '1'
       //     ? {
       //         '_id': parsedJson['resources']['_id'],
