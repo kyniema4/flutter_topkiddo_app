@@ -67,5 +67,17 @@
   "viewBtn": "assets/images/profile/xembutton.png",
   "gender": "Giới tính",
   "male": "Nam",
-  "female": "Nữ"
+  "female": "Nữ",
+  "startBtn": "assets/images/button/batdau-button.png",
+  "startDisableBtn": "assets/images/button/batdau-disable-button.png",
+  "transportation": "Lộ trình",
+  "limitModalContent": "Tính năng này chỉ áp dụng cho tài khoản đã mua trọn gói",
+  "buyNow": "assets/images/lesson/muangay-button.png",
+  "courses" : "khoá học",
+  "words": "Từ vựng",
+  "multiSensory": "Đa giác quan",
+  "flashCards": "Flash cards",
+  "readMyself": "Tôi tự đọc",
+  "playGame": "Chơi trò chơi"
+
 }

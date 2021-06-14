@@ -67,5 +67,16 @@
     "viewBtn": "assets/images/profile/viewbutton.png",
     "gender": "Gender",
     "male": "Male",
-    "female": "Female"
+    "female": "Female",
+    "startBtn": "assets/images/button/start-button.png",
+    "startDisableBtn": "assets/images/button/start-disable-button.png",
+    "transportation": "Transportation",
+    "limitModalContent": "This feature only applies to accounts purchase all package",
+    "buyNow": "assets/images/lesson/buynow-button.png",
+    "courses" : "Courses",
+    "words": "Words",
+    "multiSensory": "Multi sensory",
+    "flashCards": "Flash cards",
+    "readMyself": "I read it myself",
+    "playGame": "Play game"
   } 
