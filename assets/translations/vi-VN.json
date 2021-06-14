@@ -56,5 +56,16 @@
   "bedTimeTitle": "Giờ đi ngủ",
   "miniGame": "Trò chơi nhỏ",
   "writeForKidTitle":"Viết cho bé",
-  "typeAnything":"Viết bất cứ cái gì cho con của bạn đọc"
+  "typeAnything":"Viết bất cứ cái gì cho con của bạn đọc",
+  "editProfile": "Sửa thông tin",
+  "saveBtn": "assets/images/button/luu-button.png",
+  "editBtn": "assets/images/button/chinhsua-button.png",
+  "name": "Tên",
+  "email": "Email",
+  "phone": "Số điện thoại",
+  "address": "Địa chỉ",
+  "viewBtn": "assets/images/profile/xembutton.png",
+  "gender": "Giới tính",
+  "male": "Nam",
+  "female": "Nữ"
 }

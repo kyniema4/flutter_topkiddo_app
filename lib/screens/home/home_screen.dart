@@ -467,7 +467,7 @@ class TopButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         height: 32.w,
-        // padding: new EdgeInsets.only(top: 10.w),
+        padding: new EdgeInsets.only(top: 10.w),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -475,7 +475,7 @@ class TopButton extends StatelessWidget {
             Expanded(
               child: Stack(children: [
                 Positioned(
-                  top: 13.5.w,
+                  top: 3.5.w,
                   left: -40.w,
                   child: Image.asset(
                     'assets/images/button/bar-long.png',
@@ -484,31 +484,10 @@ class TopButton extends StatelessWidget {
                   ),
                 ),
                 Positioned(
-                    top: 10.w,
+                    // top: 10.w,
                     left: 16.w,
                     child: Row(
                       children: [
-                        GestureDetector(
-                            child: Container(
-                                width: 20.w,
-                                height: 20.w,
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                      image: AssetImage(
-                                        'assets/images/button/logout.png',
-                                      ),
-                                      fit: BoxFit.contain),
-                                )),
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (BuildContext context) =>
-                                          LoginHomeScreen()));
-                            }),
-                        SizedBox(
-                          width: 8.w,
-                        ),
                         GestureDetector(
                             child: Container(
                                 width: 20.w,
@@ -521,8 +500,30 @@ class TopButton extends StatelessWidget {
                                       fit: BoxFit.contain),
                                 )),
                             onTap: () {
+                              _showModalMenu(context);
+                            }),
+                        SizedBox(
+                          width: 8.w,
+                        ),
+                        GestureDetector(
+                            child: Container(
+                                width: 20.w,
+                                height: 20.w,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      image: AssetImage(
+                                        'assets/images/button/logout.png',
+                                      ),
+                                      fit: BoxFit.contain),
+                                )),
+                            onTap: () {
                               clearAllDataApp();
                               // _showModalMenu(context);
+                              // Navigator.push(
+                              //     context,
+                              //     MaterialPageRoute(
+                              //         builder: (BuildContext context) =>
+                              //             LoginHomeScreen()));
                             }),
                       ],
                     )),

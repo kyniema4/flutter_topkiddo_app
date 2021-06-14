@@ -59,3 +59,15 @@ final nameBoardHome = TextStyle(
     color: Theme.Colors.orange500,
     fontSize: 13.0,
     fontFamily: 'UTMCooperBlack');
+final profileTile = TextStyle(
+    color: Theme.Colors.orange900,
+    fontSize: 16.0,
+    fontFamily: 'UTMCooperBlack');
+final profileInput = TextStyle(
+    color: Theme.Colors.orange900,
+    fontSize: 19.0,
+    fontFamily: 'UTMCooperBlack');
+final boardTitle = TextStyle(
+    color: Theme.Colors.yellow300,
+    fontSize: 19.0,
+    fontFamily: 'UTMCooperBlack');

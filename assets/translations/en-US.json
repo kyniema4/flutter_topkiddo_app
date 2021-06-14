@@ -56,5 +56,16 @@
     "bedTimeTitle": "Bed Time",
     "miniGame": "Mini Game",
     "writeForKidTitle":"Write for kid",
-    "typeAnything":"Type anything here \n for your kid to read"
+    "typeAnything":"Type anything here \n for your kid to read",
+    "editProfile": "Edit profile",
+    "saveBtn": "assets/images/button/save-button.png",
+    "editBtn": "assets/images/button/edit-button.png",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "viewBtn": "assets/images/profile/viewbutton.png",
+    "gender": "Gender",
+    "male": "Male",
+    "female": "Female"
   } 

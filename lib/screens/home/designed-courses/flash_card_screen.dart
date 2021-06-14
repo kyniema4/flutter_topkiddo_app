@@ -10,12 +10,19 @@ import 'package:video_player/video_player.dart';
 import 'package:topkiddo/Utils/download_data.dart';
 import 'package:topkiddo/Utils/http_service.dart';
 
+import 'dart:async';
+import '../../../theme/style.dart';
+import '../../../theme/theme.dart' as Theme;
 import '../../../components/languages_app.dart';
 import '../../../components/swipe-configuration.dart';
 import '../../../theme/style.dart';
 import '../../../theme/theme.dart' as Theme;
 import '../../home/home_screen.dart';
-import './animation_balloon_screen.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:video_player/video_player.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/rendering.dart';
+// import 'package:swipedetector/swipedetector.dart';
 
 class FlashCardScreen extends StatefulWidget {
   final lessonDetail;
@@ -29,8 +36,8 @@ class _FlashCardScreen extends State<FlashCardScreen>
     with TickerProviderStateMixin {
   String _swipeDirection = "";
   bool isShowTopButton = true;
-  bool isShowQuestion = false;
-  int number = 5;
+  bool isShowQuestion = true;
+  int number = 0;
   int _lastReportedPage = 0;
   int previousPage = 0;
   ScrollController s;
@@ -229,6 +236,9 @@ class _FlashCardScreen extends State<FlashCardScreen>
   }
 
   checkType(int type) {}
+  VideoPlayerController _controllerVideo;
+  Future<void> _initializeVideoPlayerFuture;
+
   void initState() {
     super.initState();
     s = PageController();
@@ -244,6 +254,12 @@ class _FlashCardScreen extends State<FlashCardScreen>
   void didChangeDependencies() {
     super.didChangeDependencies();
     createFlashCard();
+    _controllerVideo = VideoPlayerController.network(
+      'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
+    );
+    _initializeVideoPlayerFuture = _controllerVideo.initialize();
+
+    _controllerVideo.setLooping(true);
   }
 
   _onPageViewChange(int page) {
@@ -253,10 +269,18 @@ class _FlashCardScreen extends State<FlashCardScreen>
     previousPage = page;
     setState(() {
       number = page;
-      if (page > 3) {
-        isShowQuestion = false;
+      // nếu page number = 0 hoặc
+      // kết thúc bài học chuyển sang phần câu hỏi thì mất bảng trắng
+      if (page == 0 || page > 8) {
+        isShowQuestion = true;
       } else {
         isShowQuestion = false;
+      }
+
+      if (page == 7) {
+        _controllerVideo.play();
+      } else {
+        _controllerVideo.pause();
       }
     });
   }
@@ -268,10 +292,16 @@ class _FlashCardScreen extends State<FlashCardScreen>
   }
 
   @override
+  void deactivate() {
+    super.deactivate();
+  }
+
+  @override
   void dispose() {
     _controller.repeat(reverse: false);
     _controller.dispose();
     //flickManager.dispose();
+    _controllerVideo.dispose();
     super.dispose();
   }
 
@@ -356,6 +386,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
     double width = MediaQuery.of(context).size.width;
 
     return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         Container(
           alignment: Alignment.center,
@@ -483,14 +514,485 @@ class _FlashCardScreen extends State<FlashCardScreen>
                               borderRadius: BorderRadius.circular(11.5.w)),
                           child: SwipeDetector(
                             child: PageView(
-                                controller: _pageController,
-                                physics: BouncingScrollPhysics(),
-                                onPageChanged: _onPageViewChange,
-                                children: listFlashCard != null
-                                    ? [...listFlashCard.map((e) => e['widget'])]
-                                    : []
-                                //listFlashCard,
+                              physics: BouncingScrollPhysics(),
+                              onPageChanged: _onPageViewChange,
+                              children: [
+                                //multisensory cho người mới bắt đầu
+                                isShowQuestion
+                                    ? Container(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text('Multisensory',
+                                                style: TextStyle(
+                                                    fontSize: height > 600
+                                                        ? 80.sp
+                                                        : 120.sp,
+                                                    color: Colors.white,
+                                                    fontFamily:
+                                                        'UTMCooperBlack')),
+                                            Stack(
+                                              clipBehavior: Clip.none,
+                                              children: [
+                                                Container(
+                                                  width: 60.w,
+                                                  height: 35.w,
+                                                  child: Image.asset(
+                                                    'assets/images/lesson/hand/swipt-arrow.png',
+                                                    fit: BoxFit.contain,
+                                                  ),
+                                                ),
+                                                Positioned(
+                                                  right: 0,
+                                                  bottom: -16.w,
+                                                  child: Container(
+                                                    height: 35.w,
+                                                    child: Image.asset(
+                                                      'assets/images/lesson/hand/hand-click1.png',
+                                                      fit: BoxFit.contain,
+                                                    ),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              height: 6.w,
+                                            )
+                                          ],
+                                        ),
+                                      )
+                                    : Container(),
+
+                                //trường hợp chữ tiêu đề
+                                Container(
+                                  // color: Colors.red,
+                                  alignment: Alignment.center,
+                                  margin: EdgeInsets.all(8.5.w),
+                                  child: Stack(
+                                    clipBehavior: Clip.none,
+                                    alignment: Alignment.center,
+                                    children: [
+                                      Container(
+                                        child: Text('Common Animals',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                height: 1.2,
+                                                fontSize: height > 600
+                                                    ? 80.sp
+                                                    : 140.sp,
+                                                // fontWeight: FontWeight.w900,
+                                                color: Theme.Colors.orange900,
+                                                fontFamily: 'UTMCooperBlack')),
+                                      ),
+
+                                      //mũi tên phía trái
+                                      Positioned(
+                                        left: 10.w,
+                                        child: Stack(
+                                          clipBehavior: Clip.none,
+                                          children: [
+                                            Container(
+                                              width: 50.w,
+                                              height: 28.w,
+                                              child: RotatedBox(
+                                                quarterTurns: 2,
+                                                child: Image.asset(
+                                                  'assets/images/lesson/hand/swipt-arrow.png',
+                                                  fit: BoxFit.contain,
+                                                ),
+                                              ),
+                                            ),
+                                            Positioned(
+                                              right: 10.w,
+                                              top: 9.w,
+                                              // bottom: -12.w,
+                                              child: Text('Previous',
+                                                  style: TextStyle(
+                                                      fontSize: height > 600
+                                                          ? 21.sp
+                                                          : 25.sp,
+                                                      color: Theme
+                                                          .Colors.yellow300,
+                                                      fontFamily:
+                                                          'UTMCooperBlack')),
+                                            ),
+                                            Positioned(
+                                              left: 0,
+                                              bottom: -12.w,
+                                              child: Container(
+                                                height: 25.w,
+                                                child: Image.asset(
+                                                  'assets/images/lesson/hand/hand-click1.png',
+                                                  fit: BoxFit.contain,
+                                                ),
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+
+                                      //mũi tên ở giữa
+                                      Positioned(
+                                        top: height > 600 ? 30.w : 0.25.sh,
+                                        // bottom: 0,
+                                        // bottom: -30.w,
+                                        // left: 10.w,
+                                        child: Stack(
+                                          clipBehavior: Clip.none,
+                                          children: [
+                                            RotatedBox(
+                                              quarterTurns: -1,
+                                              child: Container(
+                                                width: 40.w,
+                                                height: 28.w,
+                                                child: Image.asset(
+                                                  'assets/images/lesson/hand/swipt-arrow.png',
+                                                  fit: BoxFit.contain,
+                                                ),
+                                              ),
+                                            ),
+                                            Positioned(
+                                              right: 11.w,
+                                              top: 6.w,
+                                              // bottom: -12.w,
+                                              child: RotatedBox(
+                                                quarterTurns: -1,
+                                                child: Text('Repeat',
+                                                    style: TextStyle(
+                                                        fontSize: height > 600
+                                                            ? 21.sp
+                                                            : 25.sp,
+                                                        color: Theme
+                                                            .Colors.yellow300,
+                                                        fontFamily:
+                                                            'UTMCooperBlack')),
+                                              ),
+                                            ),
+                                            Positioned(
+                                                right: -30,
+                                                top: 0,
+                                                child: RotatedBox(
+                                                  quarterTurns: -1,
+                                                  child: Container(
+                                                    height: 25.w,
+                                                    child: Image.asset(
+                                                      'assets/images/lesson/hand/hand-click1.png',
+                                                      fit: BoxFit.contain,
+                                                    ),
+                                                  ),
+                                                ))
+                                          ],
+                                        ),
+                                      ),
+
+                                      //mũi tên phía phải
+                                      Positioned(
+                                        right: 10.w,
+                                        child: Stack(
+                                          clipBehavior: Clip.none,
+                                          children: [
+                                            Container(
+                                              width: 50.w,
+                                              height: 28.w,
+                                              child: Image.asset(
+                                                'assets/images/lesson/hand/swipt-arrow.png',
+                                                fit: BoxFit.contain,
+                                              ),
+                                            ),
+                                            Positioned(
+                                              left: 15.w,
+                                              top: 9.w,
+                                              // bottom: -12.w,
+                                              child: Text('Next',
+                                                  style: TextStyle(
+                                                      fontSize: height > 600
+                                                          ? 21.sp
+                                                          : 25.sp,
+                                                      color: Theme
+                                                          .Colors.yellow300,
+                                                      fontFamily:
+                                                          'UTMCooperBlack')),
+                                            ),
+                                            Positioned(
+                                              right: 0,
+                                              bottom: -12.w,
+                                              child: Container(
+                                                height: 25.w,
+                                                child: Image.asset(
+                                                  'assets/images/lesson/hand/hand-click1.png',
+                                                  fit: BoxFit.contain,
+                                                ),
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
+
+                                //trường hợp ảnh full
+                                Center(
+                                  child: Image.asset(
+                                    'assets/images/flashcard/image1.jpg',
+                                    fit: BoxFit.contain,
+                                  ),
+                                ),
+
+                                //trường hợp chữ ngắn
+                                Container(
+                                  alignment: Alignment.center,
+                                  margin: EdgeInsets.all(8.5.w),
+                                  child: Text('Cat And Dog',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize:
+                                              height > 600 ? 70.sp : 100.sp,
+                                          // fontWeight: FontWeight.w900,
+                                          color: Theme.Colors.orange900,
+                                          fontFamily: 'UTMCooperBlack')),
+                                ),
+
+                                // //trường hợp ảnh full
+                                // //đoạn này comment lại lướt cho nhanh:v
+                                // Center(
+                                //   child: Image.asset(
+                                //       'assets/images/flashcard/image2.jpg',
+                                //       fit: BoxFit.contain),
+                                // ),
+
+                                // //trường hợp click ảnh để nghe
+                                Container(
+                                    margin: EdgeInsets.all(8.5.w),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                            'Click Vào Từng Hình Để Nghe Cách Đọc',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                fontSize: height > 600
+                                                    ? 25.sp
+                                                    : 35.sp,
+                                                // fontWeight: FontWeight.w900,
+                                                color: Theme.Colors.orange900,
+                                                fontFamily: 'UTMCooperBlack')),
+                                        SizedBox(
+                                          height: 20.w,
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Image.asset(
+                                              'assets/images/flashcard/image4.jpg',
+                                              fit: BoxFit.contain,
+                                              height: 70.w,
+                                            ),
+                                            Image.asset(
+                                              'assets/images/flashcard/image6.jpg',
+                                              fit: BoxFit.contain,
+                                              height: 70.w,
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    )),
+
+                                //trường hợp ảnh full
+                                Center(
+                                  child: Image.asset(
+                                      'assets/images/flashcard/image5.jpg',
+                                      fit: BoxFit.contain),
+                                ),
+
+                                // //trường hợp chỉ sử dụng cho text ít chữ
+                                Container(
+                                  alignment: Alignment.center,
+                                  margin: EdgeInsets.all(8.5.w),
+                                  child: ScaleTransition(
+                                    scale: _tween.animate(CurvedAnimation(
+                                        parent: _controller,
+                                        curve: Curves.elasticOut)),
+                                    child: SizedBox(
+                                      child: Text('Cat',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              fontSize:
+                                                  height > 600 ? 35.sp : 75.sp,
+                                              // fontWeight: FontWeight.w900,
+                                              color: Theme.Colors.orange900,
+                                              fontFamily: 'UTMCooperBlack')),
+                                    ),
+                                  ),
+                                ),
+
+                                // // trường hợp video
+                                Container(
+                                  height: 1.sh,
+                                  // width: 1.sw,
+                                  color: Colors.black,
+                                  child: ClipRRect(
+                                    child: Center(
+                                      child: FutureBuilder(
+                                        future: _initializeVideoPlayerFuture,
+                                        builder: (context, snapshot) {
+                                          if (snapshot.connectionState ==
+                                              ConnectionState.done) {
+                                            // If the VideoPlayerController has finished initialization, use
+                                            // the data it provides to limit the aspect ratio of the video.
+                                            return AspectRatio(
+                                              aspectRatio: _controllerVideo
+                                                  .value.aspectRatio,
+                                              // Use the VideoPlayer widget to display the video.
+                                              child:
+                                                  VideoPlayer(_controllerVideo),
+                                            );
+                                          } else {
+                                            // If the VideoPlayerController is still initializing, show a
+                                            // loading spinner.
+                                            return Center(
+                                                child:
+                                                    CircularProgressIndicator());
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ),
+
+                                // // trường hợp ảnh full
+                                // Center(
+                                //   child: Image.asset(
+                                //       'assets/images/flashcard/image7.jpg',
+                                //       fit: BoxFit.contain),
+                                // ),
+
+                                // trường hợp câu có lồng ảnh nhỏ
+                                Container(
+                                  alignment: Alignment.center,
+                                  margin: EdgeInsets.all(8.5.w),
+                                  child: Wrap(
+                                    crossAxisAlignment:
+                                        WrapCrossAlignment.center,
+                                    alignment: WrapAlignment.center,
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text('I',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontSize: height > 600
+                                                      ? 70.sp
+                                                      : 100.sp,
+                                                  color: Theme.Colors.orange900,
+                                                  fontFamily:
+                                                      'UTMCooperBlack')),
+                                        ],
+                                      ),
+                                      SizedBox(width: 5.w),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text('Love',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontSize: height > 600
+                                                      ? 70.sp
+                                                      : 100.sp,
+                                                  color: Theme.Colors.orange900,
+                                                  fontFamily:
+                                                      'UTMCooperBlack')),
+                                        ],
+                                      ),
+
+                                      SizedBox(width: 5.w),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text('My',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontSize: height > 600
+                                                      ? 70.sp
+                                                      : 100.sp,
+                                                  color: Theme.Colors.orange900,
+                                                  fontFamily:
+                                                      'UTMCooperBlack')),
+                                        ],
+                                      ),
+                                      SizedBox(width: 5.w),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text('Little',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontSize: height > 600
+                                                      ? 70.sp
+                                                      : 100.sp,
+                                                  color: Theme.Colors.orange900,
+                                                  fontFamily:
+                                                      'UTMCooperBlack')),
+                                        ],
+                                      ),
+                                      SizedBox(width: 5.w),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Container(
+                                            margin: EdgeInsets.only(top: 3.w),
+                                            child: Image.asset(
+                                              'assets/images/flashcard/image3.jpg',
+                                              height: 17.w,
+                                              fit: BoxFit.contain,
+                                            ),
+                                          ),
+                                          Text('Cat',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontSize: height > 600
+                                                      ? 45.sp
+                                                      : 65.sp,
+                                                  color: Theme.Colors.orange900,
+                                                  fontFamily:
+                                                      'UTMCooperBlack')),
+                                        ],
+                                      ),
+                                      //hết bài học chuyển đến page animation_screen.dart
+                                    ],
+                                  ),
+                                ),
+
+                                //trường hợp câu hỏi chữ và trả lời ảnh
+                                isShowQuestion
+                                    ? Container(
+                                        child: _buildQuestionTypeOne(context),
+                                      )
+                                    : Container(),
+
+                                //trường hợp câu hỏi ảnh và trả lời chữ
+                                (isShowQuestion)
+                                    ? Container(
+                                        // visible: isShowQuestion,
+                                        child: _buildQuestionTypeTwo(context),
+                                      )
+                                    : Container(),
+                                // isShowQuestion
+                                //     ? AnimationBalloonScreen()
+                                //     : Container(),
+                              ],
+                            ),
                             onSwipeUp: () {
                               // setState(() {
                               //   _swipeDirection = "Swipe Up";
