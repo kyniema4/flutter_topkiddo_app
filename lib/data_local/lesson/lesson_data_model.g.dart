@@ -24,13 +24,14 @@ class LessonDataModelAdapter extends TypeAdapter<LessonDataModel> {
       type: fields[4] as int,
       isLimit: fields[5] as int,
       language: fields[6] as int,
+      isDone: fields[7] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, LessonDataModel obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -44,7 +45,9 @@ class LessonDataModelAdapter extends TypeAdapter<LessonDataModel> {
       ..writeByte(5)
       ..write(obj.isLimit)
       ..writeByte(6)
-      ..write(obj.language);
+      ..write(obj.language)
+      ..writeByte(7)
+      ..write(obj.isDone);
   }
 
   @override

@@ -46,10 +46,17 @@ dependencies:
   video_player: ^2.1.1
   audioplayers: ^0.19.0
   carousel_slider: ^3.0.0
-  youtube_player_flutter: ^8.0.0
+
+  mobx: ^2.0.0
+  flutter_mobx: ^2.0.0
+
+  # connectivity: ^3.0.6
+
 dev_dependencies:
   hive_generator: ^1.1.0
+  mobx_codegen: ^2.0.0
   build_runner: ^2.0.3
+
   flutter_test:
     sdk: flutter
 
@@ -83,7 +90,6 @@ flutter:
     - assets/images/balloon/orange_balloon/
     - assets/images/balloon/blue_balloon/
     - assets/images/balloon/red_balloon/
-    - assets/images/profile/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

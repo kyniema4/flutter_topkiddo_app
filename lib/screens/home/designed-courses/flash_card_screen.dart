@@ -4,7 +4,10 @@ import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobx/mobx.dart';
+import 'package:topkiddo/screens/home/designed-courses/flashcard_store.dart';
 import 'package:video_player/video_player.dart';
 
 import 'package:topkiddo/Utils/download_data.dart';
@@ -36,7 +39,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
     with TickerProviderStateMixin {
   String _swipeDirection = "";
   bool isShowTopButton = true;
-  bool isShowQuestion = true;
+  bool isShowQuestion = false;
   int number = 0;
   int _lastReportedPage = 0;
   int previousPage = 0;
@@ -49,54 +52,35 @@ class _FlashCardScreen extends State<FlashCardScreen>
   FlickManager flickManager;
   AudioPlayer audioPlayer = AudioPlayer();
   List listFlashCard = [];
-  List<Widget> listWidget = [];
   HandleDownload download = HandleDownload();
   String idAudio = "";
+  final FlashCardStore store = FlashCardStore();
 //content-audio =>image-audio
 
-  playAudio(sourceAudio) async {
-    print(sourceAudio);
-    print('debugging');
-    String lessonId = widget.lessonDetail['_id'];
-    if (sourceAudio.isNotEmpty) {
-      print(sourceAudio);
-      print('debugging');
-      var typeFile = sourceAudio['localPath']
-          .substring(sourceAudio['localPath'].indexOf('.'));
-      String subPath = "/$lessonId/${sourceAudio['_id']}$typeFile";
-      var path = await download.getFileFromLocal(subPath);
-      print('debugging');
-    } else
-      return;
-    // print(sourceAudio);
-    // try {
-    //   var result = await audioPlayer.play(
-    //       "/data/user/0/com.example.topkiddo/app_flutter/60b7862add38fc1918816a24/60b84655dd38fc1918818b0b.mp3",
-    //       isLocal: true);
-    //   print('debugging');
-    // } catch (e) {
-    //   print(e);
-    // }
-  }
+  checkBeforeCreateFlashCard() async {
+    //mới học lần đầu
+    if (true) {
+      List tempList = [];
+      var flashCard = FlashCard();
+      flashCard.height = MediaQuery.of(context).size.height;
+      Map<String, dynamic> oneFlashCard = {
+        'data': flashCard,
+        'widget': flashCard.cardMultisensory()
+      };
+      tempList.add(oneFlashCard);
+      store.setListFlashCard(tempList);
 
-  getPathImage(sourceImage) async {
-    String lessonId = widget.lessonDetail['_id'];
-    if (sourceImage is Map && sourceImage != null) {
-      var typeFile = sourceImage['localPath']
-          .substring(sourceImage['localPath'].indexOf('.'));
-      String subPath = "/$lessonId/${sourceImage['_id']}$typeFile";
-      var path = await download.getFileFromLocal(subPath);
-      return path;
-    } else
-      return;
+      createFlashCard();
+    }
   }
 
   //check part and add data
   createFlashCard() async {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
+
     Map data = widget.lessonDetail;
-    List tempList = [];
+    List tempList = [...store.listFlashCard];
     if (data.isNotEmpty) {
       List listPart = data['part'];
       if (listPart.length > 0) {
@@ -134,17 +118,15 @@ class _FlashCardScreen extends State<FlashCardScreen>
     } else {
       //fetch data;
     }
-
-    setState(() {
-      listFlashCard = [...tempList];
-    });
-    _pageController.jumpToPage(currentPage);
+    //_pageController.jumpToPage(currentPage);
+    store.setListFlashCard(tempList);
   }
 
   dealerWidget(Map data) async {
     List tempList = [];
     Map<String, dynamic> oneFlashCard;
-    var flashCard = FlashCard.fromJson(Map<String, dynamic>.from(data));
+    var flashCard = FlashCard();
+    flashCard = FlashCard.fromJson(Map<String, dynamic>.from(data));
     flashCard.height = MediaQuery.of(context).size.height;
     List listResource = flashCard.resource;
     List listLetterResource = flashCard.letterResources;
@@ -235,6 +217,43 @@ class _FlashCardScreen extends State<FlashCardScreen>
     }
   }
 
+  playAudio(sourceAudio) async {
+    print(sourceAudio);
+    print('debugging');
+    String lessonId = widget.lessonDetail['_id'];
+    if (sourceAudio.isNotEmpty) {
+      print(sourceAudio);
+      print('debugging');
+      var typeFile = sourceAudio['localPath']
+          .substring(sourceAudio['localPath'].indexOf('.'));
+      String subPath = "/$lessonId/${sourceAudio['_id']}$typeFile";
+      var path = await download.getFileFromLocal(subPath);
+      print('debugging');
+    } else
+      return;
+    // print(sourceAudio);
+    // try {
+    //   var result = await audioPlayer.play(
+    //       "/data/user/0/com.example.topkiddo/app_flutter/60b7862add38fc1918816a24/60b84655dd38fc1918818b0b.mp3",
+    //       isLocal: true);
+    //   print('debugging');
+    // } catch (e) {
+    //   print(e);
+    // }
+  }
+
+  getPathImage(sourceImage) async {
+    String lessonId = widget.lessonDetail['_id'];
+    if (sourceImage is Map && sourceImage != null) {
+      var typeFile = sourceImage['localPath']
+          .substring(sourceImage['localPath'].indexOf('.'));
+      String subPath = "/$lessonId/${sourceImage['_id']}$typeFile";
+      var path = await download.getFileFromLocal(subPath);
+      return path;
+    } else
+      return;
+  }
+
   checkType(int type) {}
   VideoPlayerController _controllerVideo;
   Future<void> _initializeVideoPlayerFuture;
@@ -253,7 +272,8 @@ class _FlashCardScreen extends State<FlashCardScreen>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    createFlashCard();
+    // createFlashCard();
+    checkBeforeCreateFlashCard();
     _controllerVideo = VideoPlayerController.network(
       'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
     );
@@ -263,26 +283,30 @@ class _FlashCardScreen extends State<FlashCardScreen>
   }
 
   _onPageViewChange(int page) {
-    final flashCardCurrent = listFlashCard[page];
-
     print("Current Page: " + page.toString());
     previousPage = page;
-    setState(() {
-      number = page;
-      // nếu page number = 0 hoặc
-      // kết thúc bài học chuyển sang phần câu hỏi thì mất bảng trắng
-      if (page == 0 || page > 8) {
-        isShowQuestion = true;
-      } else {
-        isShowQuestion = false;
-      }
+    store.setPageViewChange(page);
+    store.setSourceAudio();
+    List dataFlashCard = [...store.listFlashCard.map((e) => e['data'])];
+    FlashCard data = dataFlashCard[page];
+    print(data.sourceAudio);
 
-      if (page == 7) {
-        _controllerVideo.play();
-      } else {
-        _controllerVideo.pause();
-      }
-    });
+    // setState(() {
+    //   number = page;
+    //   // nếu page number = 0 hoặc
+    //   // kết thúc bài học chuyển sang phần câu hỏi thì mất bảng trắng
+    //   if (page == 0 || page > 8) {
+    //     isShowQuestion = true;
+    //   } else {
+    //     isShowQuestion = false;
+    //   }
+
+    //   if (page == 7) {
+    //     _controllerVideo.play();
+    //   } else {
+    //     _controllerVideo.pause();
+    //   }
+    // });
   }
 
   _reset() {
@@ -470,9 +494,9 @@ class _FlashCardScreen extends State<FlashCardScreen>
 
   @override
   Widget build(BuildContext context) {
+    print('rebuild');
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
-
     return Container(
       child: Scaffold(
         backgroundColor: Colors.transparent,
@@ -489,530 +513,59 @@ class _FlashCardScreen extends State<FlashCardScreen>
                 decoration: blackBackground,
                 child: Stack(
                   children: <Widget>[
-                    Center(
-                      child: Container(
-                        height: isShowQuestion
-                            ? (height > 600 ? 0.85.sh : null)
-                            : 165.w,
-                        width: isShowQuestion ? 0.9.sw : 321.w,
-                        // khi đến phần câu hỏi thì bỏ bảng trắng
-                        decoration: isShowQuestion
-                            ? BoxDecoration(image: null)
-                            : BoxDecoration(
-                                image: DecorationImage(
-                                  image: AssetImage(
-                                    'assets/images/lesson/ip-full-board-white.png',
-                                  ),
-                                  fit: BoxFit.fill,
-                                ),
-                              ),
+                    Observer(
+                      name: 'flashCard',
+                      builder: (_) => Center(
                         child: Container(
-                          alignment: Alignment.center,
-                          margin: EdgeInsets.all(4.5.w),
-                          clipBehavior: Clip.hardEdge,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(11.5.w)),
-                          child: SwipeDetector(
-                            child: PageView(
-                              physics: BouncingScrollPhysics(),
-                              onPageChanged: _onPageViewChange,
-                              children: [
-                                //multisensory cho người mới bắt đầu
-                                isShowQuestion
-                                    ? Container(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text('Multisensory',
-                                                style: TextStyle(
-                                                    fontSize: height > 600
-                                                        ? 80.sp
-                                                        : 120.sp,
-                                                    color: Colors.white,
-                                                    fontFamily:
-                                                        'UTMCooperBlack')),
-                                            Stack(
-                                              clipBehavior: Clip.none,
-                                              children: [
-                                                Container(
-                                                  width: 60.w,
-                                                  height: 35.w,
-                                                  child: Image.asset(
-                                                    'assets/images/lesson/hand/swipt-arrow.png',
-                                                    fit: BoxFit.contain,
-                                                  ),
-                                                ),
-                                                Positioned(
-                                                  right: 0,
-                                                  bottom: -16.w,
-                                                  child: Container(
-                                                    height: 35.w,
-                                                    child: Image.asset(
-                                                      'assets/images/lesson/hand/hand-click1.png',
-                                                      fit: BoxFit.contain,
-                                                    ),
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                            SizedBox(
-                                              height: 6.w,
-                                            )
-                                          ],
-                                        ),
-                                      )
-                                    : Container(),
-
-                                //trường hợp chữ tiêu đề
-                                Container(
-                                  // color: Colors.red,
-                                  alignment: Alignment.center,
-                                  margin: EdgeInsets.all(8.5.w),
-                                  child: Stack(
-                                    clipBehavior: Clip.none,
-                                    alignment: Alignment.center,
-                                    children: [
-                                      Container(
-                                        child: Text('Common Animals',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                height: 1.2,
-                                                fontSize: height > 600
-                                                    ? 80.sp
-                                                    : 140.sp,
-                                                // fontWeight: FontWeight.w900,
-                                                color: Theme.Colors.orange900,
-                                                fontFamily: 'UTMCooperBlack')),
-                                      ),
-
-                                      //mũi tên phía trái
-                                      Positioned(
-                                        left: 10.w,
-                                        child: Stack(
-                                          clipBehavior: Clip.none,
-                                          children: [
-                                            Container(
-                                              width: 50.w,
-                                              height: 28.w,
-                                              child: RotatedBox(
-                                                quarterTurns: 2,
-                                                child: Image.asset(
-                                                  'assets/images/lesson/hand/swipt-arrow.png',
-                                                  fit: BoxFit.contain,
-                                                ),
-                                              ),
-                                            ),
-                                            Positioned(
-                                              right: 10.w,
-                                              top: 9.w,
-                                              // bottom: -12.w,
-                                              child: Text('Previous',
-                                                  style: TextStyle(
-                                                      fontSize: height > 600
-                                                          ? 21.sp
-                                                          : 25.sp,
-                                                      color: Theme
-                                                          .Colors.yellow300,
-                                                      fontFamily:
-                                                          'UTMCooperBlack')),
-                                            ),
-                                            Positioned(
-                                              left: 0,
-                                              bottom: -12.w,
-                                              child: Container(
-                                                height: 25.w,
-                                                child: Image.asset(
-                                                  'assets/images/lesson/hand/hand-click1.png',
-                                                  fit: BoxFit.contain,
-                                                ),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-
-                                      //mũi tên ở giữa
-                                      Positioned(
-                                        top: height > 600 ? 30.w : 0.25.sh,
-                                        // bottom: 0,
-                                        // bottom: -30.w,
-                                        // left: 10.w,
-                                        child: Stack(
-                                          clipBehavior: Clip.none,
-                                          children: [
-                                            RotatedBox(
-                                              quarterTurns: -1,
-                                              child: Container(
-                                                width: 40.w,
-                                                height: 28.w,
-                                                child: Image.asset(
-                                                  'assets/images/lesson/hand/swipt-arrow.png',
-                                                  fit: BoxFit.contain,
-                                                ),
-                                              ),
-                                            ),
-                                            Positioned(
-                                              right: 11.w,
-                                              top: 6.w,
-                                              // bottom: -12.w,
-                                              child: RotatedBox(
-                                                quarterTurns: -1,
-                                                child: Text('Repeat',
-                                                    style: TextStyle(
-                                                        fontSize: height > 600
-                                                            ? 21.sp
-                                                            : 25.sp,
-                                                        color: Theme
-                                                            .Colors.yellow300,
-                                                        fontFamily:
-                                                            'UTMCooperBlack')),
-                                              ),
-                                            ),
-                                            Positioned(
-                                                right: -30,
-                                                top: 0,
-                                                child: RotatedBox(
-                                                  quarterTurns: -1,
-                                                  child: Container(
-                                                    height: 25.w,
-                                                    child: Image.asset(
-                                                      'assets/images/lesson/hand/hand-click1.png',
-                                                      fit: BoxFit.contain,
-                                                    ),
-                                                  ),
-                                                ))
-                                          ],
-                                        ),
-                                      ),
-
-                                      //mũi tên phía phải
-                                      Positioned(
-                                        right: 10.w,
-                                        child: Stack(
-                                          clipBehavior: Clip.none,
-                                          children: [
-                                            Container(
-                                              width: 50.w,
-                                              height: 28.w,
-                                              child: Image.asset(
-                                                'assets/images/lesson/hand/swipt-arrow.png',
-                                                fit: BoxFit.contain,
-                                              ),
-                                            ),
-                                            Positioned(
-                                              left: 15.w,
-                                              top: 9.w,
-                                              // bottom: -12.w,
-                                              child: Text('Next',
-                                                  style: TextStyle(
-                                                      fontSize: height > 600
-                                                          ? 21.sp
-                                                          : 25.sp,
-                                                      color: Theme
-                                                          .Colors.yellow300,
-                                                      fontFamily:
-                                                          'UTMCooperBlack')),
-                                            ),
-                                            Positioned(
-                                              right: 0,
-                                              bottom: -12.w,
-                                              child: Container(
-                                                height: 25.w,
-                                                child: Image.asset(
-                                                  'assets/images/lesson/hand/hand-click1.png',
-                                                  fit: BoxFit.contain,
-                                                ),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-
-                                //trường hợp ảnh full
-                                Center(
-                                  child: Image.asset(
-                                    'assets/images/flashcard/image1.jpg',
-                                    fit: BoxFit.contain,
-                                  ),
-                                ),
-
-                                //trường hợp chữ ngắn
-                                Container(
-                                  alignment: Alignment.center,
-                                  margin: EdgeInsets.all(8.5.w),
-                                  child: Text('Cat And Dog',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontSize:
-                                              height > 600 ? 70.sp : 100.sp,
-                                          // fontWeight: FontWeight.w900,
-                                          color: Theme.Colors.orange900,
-                                          fontFamily: 'UTMCooperBlack')),
-                                ),
-
-                                // //trường hợp ảnh full
-                                // //đoạn này comment lại lướt cho nhanh:v
-                                // Center(
-                                //   child: Image.asset(
-                                //       'assets/images/flashcard/image2.jpg',
-                                //       fit: BoxFit.contain),
-                                // ),
-
-                                // //trường hợp click ảnh để nghe
-                                Container(
-                                    margin: EdgeInsets.all(8.5.w),
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                            'Click Vào Từng Hình Để Nghe Cách Đọc',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                fontSize: height > 600
-                                                    ? 25.sp
-                                                    : 35.sp,
-                                                // fontWeight: FontWeight.w900,
-                                                color: Theme.Colors.orange900,
-                                                fontFamily: 'UTMCooperBlack')),
-                                        SizedBox(
-                                          height: 20.w,
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceAround,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Image.asset(
-                                              'assets/images/flashcard/image4.jpg',
-                                              fit: BoxFit.contain,
-                                              height: 70.w,
-                                            ),
-                                            Image.asset(
-                                              'assets/images/flashcard/image6.jpg',
-                                              fit: BoxFit.contain,
-                                              height: 70.w,
-                                            ),
-                                          ],
-                                        )
-                                      ],
-                                    )),
-
-                                //trường hợp ảnh full
-                                Center(
-                                  child: Image.asset(
-                                      'assets/images/flashcard/image5.jpg',
-                                      fit: BoxFit.contain),
-                                ),
-
-                                // //trường hợp chỉ sử dụng cho text ít chữ
-                                Container(
-                                  alignment: Alignment.center,
-                                  margin: EdgeInsets.all(8.5.w),
-                                  child: ScaleTransition(
-                                    scale: _tween.animate(CurvedAnimation(
-                                        parent: _controller,
-                                        curve: Curves.elasticOut)),
-                                    child: SizedBox(
-                                      child: Text('Cat',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              fontSize:
-                                                  height > 600 ? 35.sp : 75.sp,
-                                              // fontWeight: FontWeight.w900,
-                                              color: Theme.Colors.orange900,
-                                              fontFamily: 'UTMCooperBlack')),
+                          height: store.isShowQuestion
+                              ? (height > 600 ? 0.85.sh : null)
+                              : 165.w,
+                          width: store.isShowQuestion ? 0.9.sw : 321.w,
+                          // khi đến phần câu hỏi thì bỏ bảng trắng
+                          decoration: store.isShowQuestion
+                              ? BoxDecoration(image: null)
+                              : BoxDecoration(
+                                  image: DecorationImage(
+                                    image: AssetImage(
+                                      'assets/images/lesson/ip-full-board-white.png',
                                     ),
+                                    fit: BoxFit.fill,
                                   ),
                                 ),
-
-                                // // trường hợp video
-                                Container(
-                                  height: 1.sh,
-                                  // width: 1.sw,
-                                  color: Colors.black,
-                                  child: ClipRRect(
-                                    child: Center(
-                                      child: FutureBuilder(
-                                        future: _initializeVideoPlayerFuture,
-                                        builder: (context, snapshot) {
-                                          if (snapshot.connectionState ==
-                                              ConnectionState.done) {
-                                            // If the VideoPlayerController has finished initialization, use
-                                            // the data it provides to limit the aspect ratio of the video.
-                                            return AspectRatio(
-                                              aspectRatio: _controllerVideo
-                                                  .value.aspectRatio,
-                                              // Use the VideoPlayer widget to display the video.
-                                              child:
-                                                  VideoPlayer(_controllerVideo),
-                                            );
-                                          } else {
-                                            // If the VideoPlayerController is still initializing, show a
-                                            // loading spinner.
-                                            return Center(
-                                                child:
-                                                    CircularProgressIndicator());
-                                          }
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ),
-
-                                // // trường hợp ảnh full
-                                // Center(
-                                //   child: Image.asset(
-                                //       'assets/images/flashcard/image7.jpg',
-                                //       fit: BoxFit.contain),
-                                // ),
-
-                                // trường hợp câu có lồng ảnh nhỏ
-                                Container(
-                                  alignment: Alignment.center,
-                                  margin: EdgeInsets.all(8.5.w),
-                                  child: Wrap(
-                                    crossAxisAlignment:
-                                        WrapCrossAlignment.center,
-                                    alignment: WrapAlignment.center,
-                                    children: [
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Text('I',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  fontSize: height > 600
-                                                      ? 70.sp
-                                                      : 100.sp,
-                                                  color: Theme.Colors.orange900,
-                                                  fontFamily:
-                                                      'UTMCooperBlack')),
-                                        ],
-                                      ),
-                                      SizedBox(width: 5.w),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Text('Love',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  fontSize: height > 600
-                                                      ? 70.sp
-                                                      : 100.sp,
-                                                  color: Theme.Colors.orange900,
-                                                  fontFamily:
-                                                      'UTMCooperBlack')),
-                                        ],
-                                      ),
-
-                                      SizedBox(width: 5.w),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Text('My',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  fontSize: height > 600
-                                                      ? 70.sp
-                                                      : 100.sp,
-                                                  color: Theme.Colors.orange900,
-                                                  fontFamily:
-                                                      'UTMCooperBlack')),
-                                        ],
-                                      ),
-                                      SizedBox(width: 5.w),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Text('Little',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  fontSize: height > 600
-                                                      ? 70.sp
-                                                      : 100.sp,
-                                                  color: Theme.Colors.orange900,
-                                                  fontFamily:
-                                                      'UTMCooperBlack')),
-                                        ],
-                                      ),
-                                      SizedBox(width: 5.w),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Container(
-                                            margin: EdgeInsets.only(top: 3.w),
-                                            child: Image.asset(
-                                              'assets/images/flashcard/image3.jpg',
-                                              height: 17.w,
-                                              fit: BoxFit.contain,
-                                            ),
-                                          ),
-                                          Text('Cat',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  fontSize: height > 600
-                                                      ? 45.sp
-                                                      : 65.sp,
-                                                  color: Theme.Colors.orange900,
-                                                  fontFamily:
-                                                      'UTMCooperBlack')),
-                                        ],
-                                      ),
-                                      //hết bài học chuyển đến page animation_screen.dart
-                                    ],
-                                  ),
-                                ),
-
-                                //trường hợp câu hỏi chữ và trả lời ảnh
-                                isShowQuestion
-                                    ? Container(
-                                        child: _buildQuestionTypeOne(context),
-                                      )
-                                    : Container(),
-
-                                //trường hợp câu hỏi ảnh và trả lời chữ
-                                (isShowQuestion)
-                                    ? Container(
-                                        // visible: isShowQuestion,
-                                        child: _buildQuestionTypeTwo(context),
-                                      )
-                                    : Container(),
-                                // isShowQuestion
-                                //     ? AnimationBalloonScreen()
-                                //     : Container(),
-                              ],
+                          child: Container(
+                            alignment: Alignment.center,
+                            margin: EdgeInsets.all(4.5.w),
+                            clipBehavior: Clip.hardEdge,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(11.5.w)),
+                            child: SwipeDetector(
+                              child: PageView(
+                                  physics: BouncingScrollPhysics(),
+                                  onPageChanged: _onPageViewChange,
+                                  children: store.listWidget != null
+                                      ? [...store.listWidget]
+                                      : []),
+                              onSwipeUp: () {
+                                // setState(() {
+                                //   _swipeDirection = "Swipe Up";
+                                //   _reset();
+                                // });
+                                //playAudio();
+                              },
+                              onSwipeDown: () {
+                                // playAudio();
+                                // setState(() {
+                                //   _swipeDirection = "Swipe Down";
+                                // });
+                              },
+                              swipeConfiguration: SwipeConfiguration(
+                                  verticalSwipeMinVelocity: 100.0,
+                                  verticalSwipeMinDisplacement: 50.0,
+                                  verticalSwipeMaxWidthThreshold: 100.0,
+                                  horizontalSwipeMaxHeightThreshold: 50.0,
+                                  horizontalSwipeMinDisplacement: 50.0,
+                                  horizontalSwipeMinVelocity: 200.0),
                             ),
-                            onSwipeUp: () {
-                              // setState(() {
-                              //   _swipeDirection = "Swipe Up";
-                              //   _reset();
-                              // });
-                              //playAudio();
-                            },
-                            onSwipeDown: () {
-                              // playAudio();
-                              // setState(() {
-                              //   _swipeDirection = "Swipe Down";
-                              // });
-                            },
-                            swipeConfiguration: SwipeConfiguration(
-                                verticalSwipeMinVelocity: 100.0,
-                                verticalSwipeMinDisplacement: 50.0,
-                                verticalSwipeMaxWidthThreshold: 100.0,
-                                horizontalSwipeMaxHeightThreshold: 50.0,
-                                horizontalSwipeMinDisplacement: 50.0,
-                                horizontalSwipeMinVelocity: 200.0),
                           ),
                         ),
                       ),
@@ -1181,7 +734,51 @@ class FlashCard {
   //             fontFamily: 'UTMCooperBlack')),
   //   );
   // }
+  //multisensory cho người mới bắt đầu
+  cardMultisensory() {
+    return Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('Multisensory',
+              style: TextStyle(
+                  fontSize: height > 600 ? 80.sp : 120.sp,
+                  color: Colors.white,
+                  fontFamily: 'UTMCooperBlack')),
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                width: 60.w,
+                height: 35.w,
+                child: Image.asset(
+                  'assets/images/lesson/hand/swipt-arrow.png',
+                  fit: BoxFit.contain,
+                ),
+              ),
+              Positioned(
+                right: 0,
+                bottom: -16.w,
+                child: Container(
+                  height: 35.w,
+                  child: Image.asset(
+                    'assets/images/lesson/hand/hand-click1.png',
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              )
+            ],
+          ),
+          SizedBox(
+            height: 6.w,
+          )
+        ],
+      ),
+    );
+  }
 
+  //trường hợp chữ tiêu đề
   cardTitle({pathAudio, pathImg}) {
     return Container(
         alignment: Alignment.center,
@@ -1217,11 +814,11 @@ class FlashCard {
   }
 
   // trường hợp chữ ngắn
-  cardShortText({text: 'Cat and Dog'}) {
+  cardShortText() {
     return Container(
       alignment: Alignment.center,
       margin: EdgeInsets.all(8.5.w),
-      child: Text(content,
+      child: Text(content ?? "",
           textAlign: TextAlign.center,
           style: TextStyle(
               fontSize: height > 600 ? 70.sp : 100.sp,
@@ -1464,4 +1061,6 @@ class FlashCard {
       letterResources: parsedJson['letterResources'] ?? null,
     );
   }
+
+  // String toString() => sourceImage['_id'];
 }

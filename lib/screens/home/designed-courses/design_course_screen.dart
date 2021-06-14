@@ -14,7 +14,6 @@ import '../../new_game/loginhome_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../../components/back.dart';
 import './animation_screen.dart';
-import './courses_model/Lesson_Model.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class DesignCourseScreen extends StatefulWidget {
