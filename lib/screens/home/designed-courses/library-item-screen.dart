@@ -2,15 +2,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:topkiddo/screens/home/designed-courses/courses-two-screen.dart';
-
 import '../../../components/back.dart';
 import '../../../theme/style.dart';
 import '../../../theme/theme.dart' as Theme;
+import '../../home/designed-courses/courses-two-screen.dart';
+import '../../home/modal-limit-lesson.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import './courses-two-screen.dart';
 
 class LibraryItemScreen extends StatefulWidget {
@@ -82,132 +80,6 @@ class _LibraryItemScreen extends State<LibraryItemScreen>
   void dispose() {
     _controller.dispose();
     super.dispose();
-  }
-
-  Future<void> _showMyDialog() async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: true, // có thể click outside để thoát dialog
-      builder: (BuildContext context) {
-        double height = MediaQuery.of(context).size.height;
-        return SimpleDialog(
-            backgroundColor: Colors.transparent,
-            insetPadding: EdgeInsets.zero,
-            titlePadding: EdgeInsets.zero,
-            contentPadding: EdgeInsets.zero,
-            elevation: 0,
-            children: [
-              Container(
-                width: 145.w,
-                height: 140.w,
-                child: Stack(
-                  alignment: Alignment.center,
-                  clipBehavior: Clip.none,
-                  children: [
-                    Container(
-                        child: Image.asset(
-                      'assets/images/lesson/notification-board.png',
-                      fit: BoxFit.fitHeight,
-                      height: double.infinity,
-                    )),
-                    Positioned(
-                      top: 0.5.w,
-                      child: Container(
-                        // color: Colors.red,
-                        height: 15.w,
-                        alignment: Alignment.center,
-                        child: Text(
-                          'notification'.tr().toUpperCase(),
-                          style: TextStyle(
-                              height: 1.4,
-                              color: Theme.Colors.yellow300,
-                              fontSize: height > 600 ? 25.sp : 29.sp,
-                              fontFamily: 'UTMCooperBlack'),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                        top: 26.w,
-                        child: Container(
-                            // color: Colors.red,
-                            width: 80.w,
-                            height: 38.w,
-                            alignment: Alignment.center,
-                            child: Text(
-                              'limitModalContent'.tr(),
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  height: 1.3,
-                                  color: Theme.Colors.orange900,
-                                  fontSize: height > 600 ? 19.sp : 29.sp,
-                                  fontFamily: 'UTMCooperBlack'),
-                            ))),
-                    Positioned(
-                        top: 132.w,
-                        child: Container(
-                            // color: Colors.red,
-                            child: GestureDetector(
-                          onTap: () {},
-                          child: Image.asset(
-                            'buyNow'.tr(),
-                            fit: BoxFit.contain,
-                            height: 19.w,
-                          ),
-                        ))),
-                    Positioned(
-                        top: 10.w,
-                        right: 1.5.w,
-                        child: Container(
-                            // color: Colors.red,
-                            child: GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Image.asset(
-                            'assets/images/button/closeBoard-button.png',
-                            fit: BoxFit.contain,
-                            height: 18.w,
-                          ),
-                        ))),
-                  ],
-                ),
-              ),
-            ]);
-      },
-    );
-  }
-
-  _showSimpleModalDialog(context) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return CupertinoAlertDialog(
-            // shape: RoundedRectangleBorder(
-            //     borderRadius: BorderRadius.circular(20.0)),
-            content: Container(
-              // constraints: BoxConstraints(minHeight: 0.1.sw),
-              width: 50,
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    RichText(
-                      textAlign: TextAlign.justify,
-                      text: TextSpan(
-                          text: "lfugiat quo ",
-                          style: TextStyle(
-                              fontWeight: FontWeight.w400,
-                              fontSize: 14,
-                              color: Colors.black,
-                              wordSpacing: 1)),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        });
   }
 
   @override
@@ -318,9 +190,46 @@ class _LibraryItemScreen extends State<LibraryItemScreen>
                                                                       context) =>
                                                                   CoursesTwoScreen()));
                                                     else
-                                                      _showMyDialog();
-                                                    // _showSimpleModalDialog(
-                                                    // context);
+                                                      ShowModal.showModalLimit(
+                                                          context);
+                                                    // showGeneralDialog(
+                                                    //     barrierColor: Colors
+                                                    //         .black
+                                                    //         .withOpacity(0.5),
+                                                    //     transitionBuilder:
+                                                    //         (context, a1, a2,
+                                                    //             widget) {
+                                                    //       return Transform
+                                                    //           .scale(
+                                                    //         scale: a1.value,
+                                                    //         child: Opacity(
+                                                    //           opacity:
+                                                    //               a1.value,
+                                                    //           child:
+                                                    //               AlertDialog(
+                                                    //             shape: OutlineInputBorder(
+                                                    //                 borderRadius:
+                                                    //                     BorderRadius.circular(
+                                                    //                         16.0)),
+                                                    //             title: Text(
+                                                    //                 'Hello!!'),
+                                                    //             content: Text(
+                                                    //                 'How are you?'),
+                                                    //           ),
+                                                    //         ),
+                                                    //       );
+                                                    //     },
+                                                    //     transitionDuration:
+                                                    //         Duration(
+                                                    //             milliseconds:
+                                                    //                 200),
+                                                    //     barrierDismissible:
+                                                    //         true,
+                                                    //     barrierLabel: '',
+                                                    //     context: context,
+                                                    //     pageBuilder: (context,
+                                                    //         animation1,
+                                                    //         animation2) {});
                                                   }
                                                   // onTap: () async {
                                                   //   await getDataFlashCard(
