@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import '../../theme/style.dart';
-import '../../theme/theme.dart' as Theme;
-import '../../components/back.dart';
+import '../../../theme/style.dart';
+import '../../../theme/theme.dart' as Theme;
+import '../../../components/back.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import './modal_translate.dart';
+import '../modal_translate.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'libray-lesson-screen.dart';
 
 class TopicScreen extends StatefulWidget {
   @override
@@ -16,7 +17,6 @@ class _TopicScreenState extends State<TopicScreen> {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
-    double width = MediaQuery.of(context).size.width;
 
     return Container(
       child: Scaffold(
@@ -43,33 +43,43 @@ class _TopicScreenState extends State<TopicScreen> {
                           items: [
                             //1st Image of Slider
 
-                            Stack(
-                              children: [
-                                Center(
-                                  child: Container(
-                                    height: 145.w,
-                                    child: Image.asset(
-                                      "wordList".tr(),
-                                      fit: BoxFit.cover,
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            LibraryLessonScreen()));
+                              },
+                              child: Stack(
+                                children: [
+                                  Center(
+                                    child: Container(
+                                      height: 145.w,
+                                      child: Image.asset(
+                                        "wordList".tr(),
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                Positioned(
-                                  top: 11.w,
-                                  left: 0,
-                                  right: 0,
-                                  child: Align(
-                                      child: Text(
-                                    'wordListTitle'.tr().toUpperCase(),
-                                    style: TextStyle(
-                                        fontSize: height > 600 ? 24.sp : 35.sp,
-                                        fontFamily: 'UTMCooperBlack',
-                                        fontWeight: FontWeight.w900,
-                                        color: Theme.Colors.yellow300,
-                                        letterSpacing: 0.5),
-                                  )),
-                                ),
-                              ],
+                                  Positioned(
+                                    top: 11.w,
+                                    left: 0,
+                                    right: 0,
+                                    child: Align(
+                                        child: Text(
+                                      'wordListTitle'.tr().toUpperCase(),
+                                      style: TextStyle(
+                                          fontSize:
+                                              height > 600 ? 24.sp : 35.sp,
+                                          fontFamily: 'UTMCooperBlack',
+                                          fontWeight: FontWeight.w900,
+                                          color: Theme.Colors.yellow300,
+                                          letterSpacing: 0.5),
+                                    )),
+                                  ),
+                                ],
+                              ),
                             ),
 
                             //2nd Image of Slider
