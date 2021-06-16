@@ -24,4 +24,5 @@ class Colors {
   static const orange900 = Color(0xFFCF5E41);
   static const orangeDark = Color(0xFFAA7537);
   static const blueDark = Color(0xFF042F4B);
+  static const grey600 = Color(0xFF828282);
 }

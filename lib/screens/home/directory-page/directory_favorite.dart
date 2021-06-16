@@ -3,15 +3,14 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:topkiddo/data_local/favorite_sentence_model.dart';
-import 'package:topkiddo/screens/home/designed-courses/design_course_screen.dart';
-import 'package:topkiddo/theme/style.dart';
-import 'package:topkiddo/theme/theme.dart' as Theme;
+import '../../../theme/style.dart';
+import '../../../theme/theme.dart' as Theme;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../Utils/database_helpers.dart';
 import 'directory_screen.dart';
-import 'directory_screen.dart';
+import '../../../components/back.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class DirectoryFavorite extends StatefulWidget {
   DirectoryFavorite({Key key}) : super(key: key);
@@ -28,7 +27,7 @@ class _DirectoryFavoriteState extends State<DirectoryFavorite> {
   show() async {
     print('run show');
     var box = Hive.box(dataBoxName);
-    
+
     print('debugging');
   }
 
@@ -88,60 +87,18 @@ class _DirectoryFavoriteState extends State<DirectoryFavorite> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
+                  TopButton(),
                   Container(
-                      height: 32.w,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Expanded(
-                            child: Stack(children: [
-                              Positioned(
-                                top: 13.5.w,
-                                left: -40.w,
-                                child: Image.asset(
-                                  'assets/images/button/bar-long.png',
-                                  height: 12.w,
-                                  fit: BoxFit.fill,
-                                ),
-                              ),
-                              Positioned(
-                                  top: 10.w,
-                                  left: 16.w,
-                                  child: Row(
-                                    children: [
-                                      GestureDetector(
-                                          child: Container(
-                                              width: 20.w,
-                                              height: 20.w,
-                                              decoration: BoxDecoration(
-                                                image: DecorationImage(
-                                                    image: AssetImage(
-                                                      'assets/images/button/back-button.png',
-                                                    ),
-                                                    fit: BoxFit.contain),
-                                              )),
-                                          onTap: () {
-                                            Navigator.pop(context);
-                                          }),
-                                    ],
-                                  )),
-                            ]),
-                          ),
-                        ],
-                      )),
-                  Container(
-                      height: height - 37.w,
+                      height: height - 40.w,
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisSize: MainAxisSize.max,
                           children: <Widget>[
                             Container(
-                                width: 300.w,
-                                height: 180.w,
-                                padding: EdgeInsets.only(top: 60),
+                                width: 280.w,
+                                height: 136.w,
+                                padding: EdgeInsets.only(top: 8.w),
                                 alignment: Alignment.topCenter,
                                 decoration: BoxDecoration(
                                   image: DecorationImage(
@@ -151,8 +108,16 @@ class _DirectoryFavoriteState extends State<DirectoryFavorite> {
                                   ),
                                 ),
                                 child: Container(
-                                  height: 118.w,
-                                  width: 250.w,
+                                  height: 122.w,
+                                  width: 245.w,
+                                  clipBehavior: Clip.hardEdge,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.only(
+                                    topLeft: Radius.elliptical(150.w, 7.w),
+                                    topRight: Radius.elliptical(150.w, 7.w),
+                                    bottomLeft: Radius.circular(15.w),
+                                    bottomRight: Radius.circular(15.w),
+                                  )),
                                   child: Column(
                                     children: [
                                       Expanded(
@@ -160,6 +125,8 @@ class _DirectoryFavoriteState extends State<DirectoryFavorite> {
                                             shrinkWrap: true,
                                             physics: BouncingScrollPhysics(),
                                             scrollDirection: Axis.vertical,
+                                            padding: EdgeInsets.only(
+                                                top: 7.w, bottom: 8.w),
                                             itemCount:
                                                 listFavoriteSentences.length,
                                             itemBuilder: (context, index) {
@@ -182,10 +149,6 @@ class _DirectoryFavoriteState extends State<DirectoryFavorite> {
                                                                           color:
                                                                               Colors.grey[300])),
                                                             ),
-                                                            margin: EdgeInsets
-                                                                .symmetric(
-                                                                    vertical:
-                                                                        2.w),
                                                             padding:
                                                                 EdgeInsets.only(
                                                               top: 5.w,
@@ -202,7 +165,7 @@ class _DirectoryFavoriteState extends State<DirectoryFavorite> {
                                                                           .start,
                                                                   crossAxisAlignment:
                                                                       CrossAxisAlignment
-                                                                          .start,
+                                                                          .center,
                                                                   children: [
                                                                     Expanded(
                                                                       child:
@@ -213,7 +176,7 @@ class _DirectoryFavoriteState extends State<DirectoryFavorite> {
                                                                             color: Theme
                                                                                 .Colors.orange500,
                                                                             fontSize: height > 600
-                                                                                ? 20.sp
+                                                                                ? 25.sp
                                                                                 : 30.sp,
                                                                             fontFamily: 'UTMCooperBlack'),
                                                                       ),
@@ -224,18 +187,18 @@ class _DirectoryFavoriteState extends State<DirectoryFavorite> {
                                                                         mainAxisSize:
                                                                             MainAxisSize.max,
                                                                         mainAxisAlignment:
-                                                                            MainAxisAlignment.end,
+                                                                            MainAxisAlignment.center,
                                                                         crossAxisAlignment:
                                                                             CrossAxisAlignment.center,
                                                                         children: [
                                                                           Padding(
                                                                             padding:
-                                                                                const EdgeInsets.only(right: 10, left: 10),
+                                                                                EdgeInsets.only(right: 1.w, left: 5.w),
                                                                             child: GestureDetector(
                                                                                 child: Image.asset(
                                                                                   'assets/images/directory/minus.png',
                                                                                   fit: BoxFit.contain,
-                                                                                  width: 15,
+                                                                                  width: 9.w,
                                                                                 ),
                                                                                 onTap: () async {
                                                                                   await deleteSentenceFromLocal(listFavoriteSentences[index].id);
@@ -255,10 +218,10 @@ class _DirectoryFavoriteState extends State<DirectoryFavorite> {
                                                                             .english,
                                                                         style: TextStyle(
                                                                             color: Theme
-                                                                                .Colors.green200,
+                                                                                .Colors.grey600,
                                                                             fontSize: height > 600
-                                                                                ? 10.sp
-                                                                                : 20.sp,
+                                                                                ? 17.sp
+                                                                                : 22.sp,
                                                                             fontFamily: 'UTMCooperBlack'),
                                                                       ),
                                                                     ),
@@ -293,5 +256,34 @@ class _DirectoryFavoriteState extends State<DirectoryFavorite> {
         ),
       ),
     ));
+  }
+}
+
+class TopButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    return Container(
+        height: 32.w,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Back(buttonImage: 'assets/images/button/back-button.png'),
+            ),
+            Expanded(
+                child: Text(
+              'favoriteList'.tr(),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  height: 1.3,
+                  color: Theme.Colors.yellow50,
+                  fontSize: height > 600 ? 25.sp : 40.sp,
+                  fontFamily: 'UTMCooperBlack'),
+            )),
+            Expanded(child: Container()),
+          ],
+        ));
   }
 }

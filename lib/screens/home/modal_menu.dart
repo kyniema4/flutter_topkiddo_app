@@ -50,7 +50,7 @@ class _ModalMenuState extends State<ModalMenu> {
     Menu(
       icon: 'assets/images/menu/writeforkidbutton.png',
       title: 'writeForKid'.tr(),
-      page: Container(),
+      page: WriteForKidsScreen(),
     ),
     Menu(
       icon: 'assets/images/menu/library.png',
