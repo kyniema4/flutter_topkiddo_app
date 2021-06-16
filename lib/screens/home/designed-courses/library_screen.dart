@@ -228,7 +228,18 @@ class _LibraryScreenState extends State<LibraryScreen> {
           }
           if (content['letterResources'].length > 0) {
             List dataLetterResources = content['letterResources'];
-            dataLetterResources.forEach((e) {
+
+            dataLetterResources.forEach((e) async {
+              print(e);
+              print('debugging');
+              if (e['resources'] == null) {
+                String soundPath = await fetchAudioLetter(e['letter']);
+                if (soundPath != null) {
+                  Map resource = {'_id': e['_id'], 'localPath': soundPath};
+                  e['resources'].add(resource);
+                }
+              }
+              print('debugging');
               data.addAll(e['resources']);
             });
           }

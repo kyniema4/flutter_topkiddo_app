@@ -54,6 +54,21 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
     });
   }
 
+  final _$isShowTopButtonAtom = Atom(name: '_FlashCardStore.isShowTopButton');
+
+  @override
+  bool get isShowTopButton {
+    _$isShowTopButtonAtom.reportRead();
+    return super.isShowTopButton;
+  }
+
+  @override
+  set isShowTopButton(bool value) {
+    _$isShowTopButtonAtom.reportWrite(value, super.isShowTopButton, () {
+      super.isShowTopButton = value;
+    });
+  }
+
   final _$pageCurrentAtom = Atom(name: '_FlashCardStore.pageCurrent');
 
   @override
@@ -126,6 +141,7 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
 listFlashCard: ${listFlashCard},
 listWidget: ${listWidget},
 isShowQuestion: ${isShowQuestion},
+isShowTopButton: ${isShowTopButton},
 pageCurrent: ${pageCurrent},
 pathSoureAudio: ${pathSoureAudio}
     ''';

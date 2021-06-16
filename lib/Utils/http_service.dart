@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 final BaseUrl = "http://backend.topkiddovn.com/";
 String token = '';
 String currentUnit = '';
+String keyId = '3189a84f-0fb0-4676-8869-332b2200ad83';
 
 class ApiList {
   static const signinFacebook = 'users/signin_with_facebook';
@@ -149,4 +150,42 @@ Future<String> getCurrentUnit() async {
   }
   print(currentUnit);
   return currentUnit;
+}
+
+Future fetchAudioLetter(String letter) async {
+  try {
+    var soundUrl = Uri.parse(
+        'https://www.dictionaryapi.com/api/v3/references/collegiate/json/' +
+            letter.toLowerCase() +
+            '?key=' +
+            keyId);
+
+    http.Response response = await http.get(soundUrl);
+    if (response.statusCode == 200) {
+      var res = jsonDecode(response.body);
+      if (res[0] != null && res[0]['hwi'] != null) {
+        if (res[0]['hwi']['prs'] != null && res[0]['hwi']['prs'].length > 0) {
+          var soundFind;
+          for (var i = 0; i < res[0]['hwi']['prs'].length; i++) {
+            if (res[0]['hwi']['prs'][i]['sound'] != null) {
+              soundFind = res[0]['hwi']['prs'][i]['sound'];
+              break;
+            }
+          }
+          var keyLetter = letter[0].toLowerCase();
+          var path = 'https://media.merriam-webster.com/soundc11/' +
+              letter +
+              '/' +
+              soundFind['audio'] +
+              '.wav';
+        } else {
+          return;
+        }
+      } else {
+        return;
+      }
+    }
+  } catch (e) {
+    print(e);
+  }
 }

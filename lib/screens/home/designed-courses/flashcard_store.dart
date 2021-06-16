@@ -16,6 +16,8 @@ abstract class _FlashCardStore with Store {
   @observable
   bool isShowQuestion = true;
   @observable
+  bool isShowTopButton = true;
+  @observable
   int pageCurrent;
   @observable
   String pathSoureAudio;
@@ -31,8 +33,10 @@ abstract class _FlashCardStore with Store {
     pageCurrent = value;
     if (pageCurrent > 0) {
       isShowQuestion = false;
+      isShowTopButton = false;
     } else {
       isShowQuestion = true;
+      isShowTopButton = true;
     }
   }
 
