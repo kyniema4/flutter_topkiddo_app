@@ -44,13 +44,15 @@ class _FlashCardScreen extends State<FlashCardScreen>
   int _lastReportedPage = 0;
   int previousPage = 0;
   ScrollController s;
-  AnimationController _controller;
+  AnimationController animationController;
+  Animation animation;
   PageController _pageController =
       PageController(viewportFraction: 1, keepPage: true);
   int currentPage = 0;
-  Tween<double> _tween = Tween(begin: 1.5, end: 1.8);
+  Tween<double> tween = Tween(begin: 1.5, end: 5);
+  //Tween<double> _tween = Tween(begin: 1.5, end: 5);
   FlickManager flickManager;
-  AudioPlayer audioPlayer = AudioPlayer();
+
   List listFlashCard = [];
   HandleDownload download = HandleDownload();
   String idAudio = "";
@@ -129,6 +131,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
     var flashCard = FlashCard();
     flashCard = FlashCard.fromJson(Map<String, dynamic>.from(data));
     flashCard.height = MediaQuery.of(context).size.height;
+    flashCard.lessonId = widget.lessonDetail['_id'];
     List listResource = flashCard.resource;
     List listLetterResource = flashCard.letterResources;
     //List listOutSideResource=flashCard.letterResources;
@@ -164,7 +167,10 @@ class _FlashCardScreen extends State<FlashCardScreen>
         listResource.length >= 0 &&
         listResource.length < 2) {
       for (var item in listResource) {
-        if (item["type"] == 2) {
+        print(data['content']);
+        bool check = data['content'].contains(' ');
+
+        if (item["type"] == 2 && check) {
           flashCard.sourceAudio = {
             '_id': item['_id'] ?? "",
             'localPath': item['localPath'] ?? ""
@@ -172,6 +178,19 @@ class _FlashCardScreen extends State<FlashCardScreen>
           oneFlashCard = {
             'data': flashCard,
             'widget': flashCard.cardShortText()
+          };
+          tempList.add(oneFlashCard);
+          return tempList;
+        }
+        if (item["type"] == 2 && !check) {
+          flashCard.sourceAudio = {
+            '_id': item['_id'] ?? "",
+            'localPath': item['localPath'] ?? ""
+          };
+          oneFlashCard = {
+            'data': flashCard,
+            'widget': flashCard.cardFewText(
+                animation: animation, controller: animationController)
           };
           tempList.add(oneFlashCard);
           return tempList;
@@ -337,20 +356,32 @@ class _FlashCardScreen extends State<FlashCardScreen>
   //   print('debugging');
   // }
 
-  playAudioTest() async {
-    print('tap here');
-    //https://media.merriam-webster.com/soundc11/i/i0000001.wav
-    String path = "https://media.merriam-webster.com/soundc11/i/i0000001.wav";
-    audioPlayer.play(path);
+  playAudioTest(
+      String lessonId, Map sourceAudio, List timeFrame, String letter) async {
+    // print('tap here');
+    // //https://media.merriam-webster.com/soundc11/i/i0000001.wav
+    // String path = "https://media.merriam-webster.com/soundc11/i/i0000001.wav";
+    // audioPlayer.play(path);
+    // print(timeFrame);
+    // print('debugging');
+    print(timeFrame);
+    AudioPlayer audioPlayer = AudioPlayer();
+    var typeFile = sourceAudio['localPath']
+        .substring(sourceAudio['localPath'].indexOf('.'));
+    String subPath = "/$lessonId/${sourceAudio['_id']}$typeFile";
+
+    var path = await download.getFileFromLocal(subPath);
+    audioPlayer.seek(Duration(milliseconds: 1734));
+    audioPlayer.play(path, isLocal: true);
+    await Future.delayed(Duration(milliseconds: 571), () {
+      audioPlayer.stop();
+    });
   }
 
   playAudio(sourceAudio) async {
-    print(sourceAudio);
-    print('debugging');
     String lessonId = widget.lessonDetail['_id'];
+    print('debugging');
     if (sourceAudio != null) {
-      print(sourceAudio);
-      print('debugging');
       var typeFile = sourceAudio['localPath']
           .substring(sourceAudio['localPath'].indexOf('.'));
       String subPath = "/$lessonId/${sourceAudio['_id']}$typeFile";
@@ -387,12 +418,27 @@ class _FlashCardScreen extends State<FlashCardScreen>
   void initState() {
     super.initState();
     s = PageController();
-    _controller = AnimationController(
-        duration: const Duration(milliseconds: 700), vsync: this);
+    // animationController = AnimationController(
+    //     duration: const Duration(milliseconds: 700), vsync: this);
     // flickManager = FlickManager(
     //   videoPlayerController: VideoPlayerController.network(
     //       "http://www.sample-videos.com/video123/mp4/720/big_buck_bunny_720p_20mb.mp4"),
     // );
+    animationController = AnimationController(
+        duration: const Duration(milliseconds: 700), vsync: this);
+    animation = tween.animate(
+        CurvedAnimation(parent: animationController, curve: Curves.elasticOut));
+  }
+
+  callAnimation() {
+    animationController = AnimationController(
+        duration: const Duration(milliseconds: 700), vsync: this);
+    // animation = tween.animate(
+    //     CurvedAnimation(parent: animationController, curve: Curves.elasticOut))
+    animation = CurvedAnimation(
+      parent: animationController,
+      curve: Curves.fastOutSlowIn,
+    );
   }
 
   @override
@@ -412,9 +458,22 @@ class _FlashCardScreen extends State<FlashCardScreen>
     print("Current Page: " + page.toString());
     previousPage = page;
     store.setPageViewChange(page);
+    print(store.pageCurrent);
     store.setSourceAudio();
     List dataFlashCard = [...store.listFlashCard.map((e) => e['data'])];
+    List dataWidget = [...store.listFlashCard.map((e) => e['widget'])];
     FlashCard data = dataFlashCard[page];
+    Widget widget = dataWidget[page];
+    print('debugging');
+    animationController.forward().then((value) {
+      animationController.reverse();
+    });
+    // tween = Tween(begin: 1.5, end: 1.8);
+    // animationController = AnimationController(
+    //     duration: const Duration(milliseconds: 700), vsync: this);
+    // animation = tween.animate(
+    //     CurvedAnimation(parent: animationController, curve: Curves.elasticOut));
+
     print(data.sourceAudio);
     if (data != null) {
       playAudio(data.sourceAudio);
@@ -437,9 +496,9 @@ class _FlashCardScreen extends State<FlashCardScreen>
     // });
   }
 
-  _reset() {
+  reset() {
     print("Previous page: $number");
-    _controller.repeat();
+    animationController.repeat();
     // _controller.forward();
   }
 
@@ -450,8 +509,8 @@ class _FlashCardScreen extends State<FlashCardScreen>
 
   @override
   void dispose() {
-    _controller.repeat(reverse: false);
-    _controller.dispose();
+    animationController.repeat(reverse: false);
+    animationController.dispose();
     //flickManager.dispose();
     _controllerVideo.dispose();
     super.dispose();
@@ -650,7 +709,8 @@ class _FlashCardScreen extends State<FlashCardScreen>
                               : 165.w,
                           width: store.isShowQuestion ? 0.9.sw : 321.w,
                           // khi đến phần câu hỏi thì bỏ bảng trắng
-                          decoration: store.isShowQuestion
+                          decoration: false
+                              // store.isShowQuestion
                               ? BoxDecoration(image: null)
                               : BoxDecoration(
                                   image: DecorationImage(
@@ -674,11 +734,43 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                   children: store.listWidget != null
                                       ? [...store.listWidget]
                                       : []),
+                              // children: [
+                              //   GestureDetector(
+                              //     child: Container(
+                              //       alignment: Alignment.center,
+                              //       margin: EdgeInsets.all(8.5.w),
+                              //       child: ScaleTransition(
+                              //         scale: animationController,
+                              //         child: SizedBox(
+                              //           child: Text('Cat',
+                              //               textAlign: TextAlign.center,
+                              //               style: TextStyle(
+                              //                   fontSize: height > 600
+                              //                       ? 35.sp
+                              //                       : 75.sp,
+                              //                   // fontWeight: FontWeight.w900,
+                              //                   color:
+                              //                       Theme.Colors.orange900,
+                              //                   fontFamily:
+                              //                       'UTMCooperBlack')),
+                              //         ),
+                              //       ),
+                              //     ),
+                              //     onTap: () {
+
+                              //       animationController
+                              //           .forward()
+                              //           .then((value) {
+                              //         animationController.reverse();
+                              //       });
+                              //     },
+                              //   ),
+                              // ]),
                               onSwipeUp: () {
-                                // setState(() {
-                                //   _swipeDirection = "Swipe Up";
-                                //   _reset();
-                                // });
+                                setState(() {
+                                  _swipeDirection = "Swipe Up";
+                                  reset();
+                                });
                                 //playAudio();
                               },
                               onSwipeDown: () {
@@ -811,6 +903,7 @@ class _TopButtonState extends State<TopButton> {
 }
 
 class FlashCard {
+  final FlashCardStore store = FlashCardStore();
   String id;
   String lessonId;
   String content;
@@ -920,10 +1013,12 @@ class FlashCard {
               style: TextStyle(
                   fontSize: height > 600 ? 80.sp : 140.sp,
                   // fontWeight: FontWeight.w900,
-                  color: Theme.Colors.orange900,
+                  color: colorContent ?? Theme.Colors.orange900,
                   fontFamily: 'UTMCooperBlack')),
           onTap: () async {
-            await _FlashCardScreen().playAudioTest();
+            print(colorContent);
+            // _FlashCardScreen buildFlashCard = _FlashCardScreen();
+            // buildFlashCard.playAudioTest();
           },
         ));
   }
@@ -932,16 +1027,21 @@ class FlashCard {
   cardImageFull({pathImg: ''}) {
     // var newPath = _FlashCardScreen().getPathImage(lessonId, sourceImage);
     // pathImg = newPath;
-    return Center(
-        child: pathImg != null
-            ? Image(
-                image: FileImage(File(pathImg)),
-                fit: BoxFit.contain,
-              )
-            : Image.asset(
-                'assets/images/flashcard/image1.jpg',
-                fit: BoxFit.contain,
-              ));
+    return GestureDetector(
+      child: Center(
+          child: pathImg != null
+              ? Image(
+                  image: FileImage(File(pathImg)),
+                  fit: BoxFit.contain,
+                )
+              : Image.asset(
+                  'assets/images/flashcard/image1.jpg',
+                  fit: BoxFit.contain,
+                )),
+      onTap: () async {
+        print('tap image full');
+      },
+    );
   }
 
   // trường hợp chữ ngắn
@@ -1012,23 +1112,32 @@ class FlashCard {
   }
 
   //trường hợp chỉ sử dụng cho text ít chữ
-  cardFewText({tween, controller, text}) {
-    return Container(
-      alignment: Alignment.center,
-      margin: EdgeInsets.all(8.5.w),
-      child: ScaleTransition(
-        scale: tween.animate(
-            CurvedAnimation(parent: controller, curve: Curves.elasticOut)),
-        child: SizedBox(
-          child: Text('Cat',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: height > 600 ? 35.sp : 75.sp,
-                  // fontWeight: FontWeight.w900,
-                  color: Theme.Colors.orange900,
-                  fontFamily: 'UTMCooperBlack')),
+  cardFewText({Animation animation, AnimationController controller}) {
+    return GestureDetector(
+      child: Container(
+        alignment: Alignment.center,
+        margin: EdgeInsets.all(8.5.w),
+        child: ScaleTransition(
+          // scale: _FlashCardScreen().tween.animate(CurvedAnimation(
+          //     parent: _FlashCardScreen().controller, curve: Curves.elasticOut)),
+          scale: animation,
+          child: SizedBox(
+            child: Text(content ?? '',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: height > 600 ? 35.sp : 75.sp,
+                    // fontWeight: FontWeight.w900,
+                    color: Theme.Colors.orange900,
+                    // Color(int.parse(colorContent.replaceAll('#', '0xff'))) ??
+
+                    fontFamily: 'UTMCooperBlack')),
+          ),
         ),
       ),
+      onTap: () async {
+        print(store.pageCurrent);
+        controller.repeat();
+      },
     );
   }
 
@@ -1079,33 +1188,39 @@ class FlashCard {
 
   cardSubSentence({text: "", pathSound: "", isImage: false, pathImage: ""}) {
     return [
-      Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: isImage
-              ? [
-                  Container(
-                    margin: EdgeInsets.only(top: 3.w),
-                    child: Image(
-                      image: FileImage(File(pathImage)),
-                      fit: BoxFit.contain,
-                      height: 17.w,
+      GestureDetector(
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: isImage
+                ? [
+                    Container(
+                      margin: EdgeInsets.only(top: 3.w),
+                      child: Image(
+                        image: FileImage(File(pathImage)),
+                        fit: BoxFit.contain,
+                        height: 17.w,
+                      ),
                     ),
-                  ),
-                  Text(text,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: height > 600 ? 45.sp : 65.sp,
-                          color: Theme.Colors.orange900,
-                          fontFamily: 'UTMCooperBlack'))
-                ]
-              : [
-                  Text(text,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: height > 600 ? 70.sp : 100.sp,
-                          color: Theme.Colors.orange900,
-                          fontFamily: 'UTMCooperBlack'))
-                ]),
+                    Text(text,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: height > 600 ? 45.sp : 65.sp,
+                            color: Theme.Colors.orange900,
+                            fontFamily: 'UTMCooperBlack'))
+                  ]
+                : [
+                    Text(text,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: height > 600 ? 70.sp : 100.sp,
+                            color: Theme.Colors.orange900,
+                            fontFamily: 'UTMCooperBlack'))
+                  ]),
+        onTap: () async {
+          await _FlashCardScreen()
+              .playAudioTest(lessonId, sourceAudio, timeFrame, text);
+        },
+      ),
       SizedBox(width: 5.w),
     ];
   }
