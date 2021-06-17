@@ -84,5 +84,17 @@
     "studyElectives":"Study Electives",
     "gotAGift":"Got A Gift",
     "unlimitedTime":"Unlimited Time",
-    "favoriteList": "Favorite List"
+    "favoriteList": "Favorite List",
+    "notifications":"Notifications",
+    "joinBtn": "assets/images/button/join.png",
+    "language":"Language",
+    "changeLanguage":"Turn off to display Vietnamese appearance",
+    "autoNext":"It will automatically turn to next scene in the lesson",
+    "flashcards":"Flashcards",
+    "phonics":"Phonics",
+    "teachPhonics":"Teach phonics",
+    "makeFast":"Make it fast",
+    "wordCards":"Word cards",
+    "arrowUnderline":"If display pointer is turned on, an arrow appear underline the word",
+    "practiceReminde":"Practice reminder: When practice reminder is turned on, you will receive notification"
   } 

@@ -9,7 +9,7 @@
   "easy":"DỄ",
   "medium":"TRUNG BÌNH",
   "advanced":"KHÓ",
-  "lesson":"BÀI HỌC",
+  "lesson":"Bài học",
   "youLearning":"Bạn đang học",
   "topic":"chủ đề",
   "translate":"giao tiếp",
@@ -84,6 +84,18 @@
   "studyElectives": "Học bài tự do",
   "gotAGift": "Được tặng quà",
   "unlimitedTime": "Không giới hạn thời gian",
-  "favoriteList": "Danh sách yêu thích"
+  "favoriteList": "Danh sách yêu thích",
+  "notifications": "Thông báo",
+  "joinBtn": "assets/images/button/thamgia.png",
+  "language": "Ngôn ngữ",
+  "changeLanguage": "Tắt để hiển thị Tiếng Việt",
+  "autoNext": "Tự động chuyển sang cảnh tiếp theo trong bài học",
+  "flashcards": "Flashcards",
+  "phonics": "Phát âm",
+  "teachPhonics": "Dạy phát âm",
+  "makeFast": "Nhanh hơn",
+  "wordCards": "Thẻ từ",
+  "arrowUnderline": "Nếu con trỏ hiển thị được bật, một mũi tên xuất hiện bên dưới từ",
+  "practiceReminde": "Nhắc nhở luyện tập: Khi lời nhắc nhở được bật, bạn sẽ nhận được thông báo"
 
 }

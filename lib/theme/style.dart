@@ -71,3 +71,12 @@ final boardTitle = TextStyle(
     color: Theme.Colors.yellow300,
     fontSize: 19.0,
     fontFamily: 'UTMCooperBlack');
+final settingScrollView = BoxDecoration(
+    // color: Colors.blueAccent
+    //     .withOpacity(0.5),
+    borderRadius: BorderRadius.only(
+  topLeft: Radius.elliptical(150.w, 5.w),
+  topRight: Radius.elliptical(150.w, 5.w),
+  bottomLeft: Radius.circular(5.w),
+  bottomRight: Radius.circular(5.w),
+));

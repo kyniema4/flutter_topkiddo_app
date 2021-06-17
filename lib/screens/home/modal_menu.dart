@@ -6,6 +6,9 @@ import '.../../menu/write-for-kids.dart';
 import '.../../profile/profile-father-screen.dart';
 import '.../../profile/profile-kid-screen.dart';
 import '.../../profile/profile-add-child-screen.dart';
+import '.../../menu/notification-screen.dart';
+import '.../../modal-notification.dart';
+import '.../../menu/setting-screen.dart';
 
 class Menu {
   final String icon;
@@ -25,7 +28,8 @@ class _ModalMenuState extends State<ModalMenu> {
     Menu(
       icon: 'assets/images/menu/notificationbutton.png',
       title: 'notification'.tr(),
-      page: WriteForKidsScreen(),
+      page: NotificationScreen(),
+      // page: ModalNotification(),
     ),
     Menu(
       icon: 'assets/images/menu/profilebutton.png',
@@ -45,7 +49,7 @@ class _ModalMenuState extends State<ModalMenu> {
     Menu(
       icon: 'assets/images/menu/settingbutton.png',
       title: 'setting'.tr(),
-      page: Container(),
+      page: SettingScreen(),
     ),
     Menu(
       icon: 'assets/images/menu/writeforkidbutton.png',
