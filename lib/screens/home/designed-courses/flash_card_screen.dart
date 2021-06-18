@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobx/mobx.dart';
+import 'package:provider/provider.dart';
 import 'package:topkiddo/screens/home/designed-courses/flashcard_store.dart';
 import 'package:video_player/video_player.dart';
 
@@ -132,6 +133,8 @@ class _FlashCardScreen extends State<FlashCardScreen>
     flashCard = FlashCard.fromJson(Map<String, dynamic>.from(data));
     flashCard.height = MediaQuery.of(context).size.height;
     flashCard.lessonId = widget.lessonDetail['_id'];
+    flashCard.animation = animation;
+    flashCard.animationController = animationController;
     List listResource = flashCard.resource;
     List listLetterResource = flashCard.letterResources;
     //List listOutSideResource=flashCard.letterResources;
@@ -145,8 +148,10 @@ class _FlashCardScreen extends State<FlashCardScreen>
             }
           : {};
 
-      tempList.add(
-          oneFlashCard = {'data': flashCard, 'widget': flashCard.cardTitle()});
+      tempList.add(oneFlashCard = {
+        'data': flashCard,
+        'widget': flashCard.cardTitle(context)
+      });
       flashCard.sourceImage = data['image'] != null
           ? {
               '_id': data['image']['_id'] ?? "",
@@ -187,11 +192,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
             '_id': item['_id'] ?? "",
             'localPath': item['localPath'] ?? ""
           };
-          oneFlashCard = {
-            'data': flashCard,
-            'widget': flashCard.cardFewText(
-                animation: animation, controller: animationController)
-          };
+          oneFlashCard = {'data': flashCard, 'widget': flashCard.cardFewText()};
           tempList.add(oneFlashCard);
           return tempList;
         }
@@ -412,6 +413,10 @@ class _FlashCardScreen extends State<FlashCardScreen>
       return;
   }
 
+  test() {
+    animationController.repeat();
+  }
+
   VideoPlayerController _controllerVideo;
   Future<void> _initializeVideoPlayerFuture;
 
@@ -459,11 +464,13 @@ class _FlashCardScreen extends State<FlashCardScreen>
     previousPage = page;
     store.setPageViewChange(page);
     print(store.pageCurrent);
+    print('debugging');
     store.setSourceAudio();
     List dataFlashCard = [...store.listFlashCard.map((e) => e['data'])];
     List dataWidget = [...store.listFlashCard.map((e) => e['widget'])];
     FlashCard data = dataFlashCard[page];
-    Widget widget = dataWidget[page];
+    Widget getWidget = dataWidget[page];
+
     print('debugging');
     animationController.forward().then((value) {
       animationController.reverse();
@@ -709,8 +716,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
                               : 165.w,
                           width: store.isShowQuestion ? 0.9.sw : 321.w,
                           // khi đến phần câu hỏi thì bỏ bảng trắng
-                          decoration: false
-                              // store.isShowQuestion
+                          decoration: store.isShowQuestion
                               ? BoxDecoration(image: null)
                               : BoxDecoration(
                                   image: DecorationImage(
@@ -790,7 +796,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
                           ),
                         ),
                       ),
-                      store.isShowTopButton ? TopButton() : Container(),
+                      true ? TopButton() : Container(),
                     ],
                   )),
             ),
@@ -922,8 +928,9 @@ class FlashCard {
   double height;
   Widget widget;
   // double width;
-  // AnimationController controller;
-  // Tween<double> tween;
+  Tween<double> tween;
+  AnimationController animationController;
+  Animation animation;
   // FlickManager flickManager;
 
   FlashCard(
@@ -1003,24 +1010,170 @@ class FlashCard {
   }
 
   //trường hợp chữ tiêu đề
-  cardTitle({pathAudio, pathImg}) {
-    return Container(
-        alignment: Alignment.center,
-        margin: EdgeInsets.all(8.5.w),
-        child: GestureDetector(
-          child: Text(content,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: height > 600 ? 80.sp : 140.sp,
-                  // fontWeight: FontWeight.w900,
-                  color: colorContent ?? Theme.Colors.orange900,
-                  fontFamily: 'UTMCooperBlack')),
-          onTap: () async {
-            print(colorContent);
-            // _FlashCardScreen buildFlashCard = _FlashCardScreen();
-            // buildFlashCard.playAudioTest();
-          },
-        ));
+  Widget cardTitle(BuildContext context,
+      {pathAudio, pathImg, isShowHand: true}) {
+    //final store = Provider.of<FlashCardStore>(context);
+    return Observer(
+        name: 'cardTittle',
+        builder: (_) {
+          return Container(
+            alignment: Alignment.center,
+            margin: EdgeInsets.all(8.5.w),
+            child: Stack(
+              clipBehavior: Clip.none,
+              alignment: Alignment.center,
+              children: [
+                Container(
+                  child: Text(content,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          height: 1.2,
+                          fontSize: height > 600 ? 80.sp : 140.sp,
+                          // fontWeight: FontWeight.w900,
+                          color: Theme.Colors.orange900,
+                          fontFamily: 'UTMCooperBlack')),
+                ),
+
+                //mũi tên phía trái
+                isShowHand
+                    ? Positioned(
+                        left: 10.w,
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            Container(
+                              width: 50.w,
+                              height: 28.w,
+                              child: RotatedBox(
+                                quarterTurns: 2,
+                                child: Image.asset(
+                                  'assets/images/lesson/hand/swipt-arrow.png',
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              right: 10.w,
+                              top: 9.w,
+                              // bottom: -12.w,
+                              child: Text('Previous',
+                                  style: TextStyle(
+                                      fontSize: height > 600 ? 21.sp : 25.sp,
+                                      color: Theme.Colors.yellow300,
+                                      fontFamily: 'UTMCooperBlack')),
+                            ),
+                            Positioned(
+                              left: 0,
+                              bottom: -12.w,
+                              child: Container(
+                                height: 25.w,
+                                child: Image.asset(
+                                  'assets/images/lesson/hand/hand-click1.png',
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      )
+                    : Container(),
+
+                //mũi tên ở giữa
+                isShowHand
+                    ? Positioned(
+                        top: height > 600 ? 30.w : 0.25.sh,
+                        // bottom: 0,
+                        // bottom: -30.w,
+                        // left: 10.w,
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            RotatedBox(
+                              quarterTurns: -1,
+                              child: Container(
+                                width: 40.w,
+                                height: 28.w,
+                                child: Image.asset(
+                                  'assets/images/lesson/hand/swipt-arrow.png',
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              right: 11.w,
+                              top: 6.w,
+                              // bottom: -12.w,
+                              child: RotatedBox(
+                                quarterTurns: -1,
+                                child: Text('Repeat',
+                                    style: TextStyle(
+                                        fontSize: height > 600 ? 21.sp : 25.sp,
+                                        color: Theme.Colors.yellow300,
+                                        fontFamily: 'UTMCooperBlack')),
+                              ),
+                            ),
+                            Positioned(
+                                right: -30,
+                                top: 0,
+                                child: RotatedBox(
+                                  quarterTurns: -1,
+                                  child: Container(
+                                    height: 25.w,
+                                    child: Image.asset(
+                                      'assets/images/lesson/hand/hand-click1.png',
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                ))
+                          ],
+                        ),
+                      )
+                    : Container(),
+
+                //mũi tên phía phải
+                isShowHand
+                    ? Positioned(
+                        right: 10.w,
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            Container(
+                              width: 50.w,
+                              height: 28.w,
+                              child: Image.asset(
+                                'assets/images/lesson/hand/swipt-arrow.png',
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                            Positioned(
+                              left: 15.w,
+                              top: 9.w,
+                              // bottom: -12.w,
+                              child: Text('Next',
+                                  style: TextStyle(
+                                      fontSize: height > 600 ? 21.sp : 25.sp,
+                                      color: Theme.Colors.yellow300,
+                                      fontFamily: 'UTMCooperBlack')),
+                            ),
+                            Positioned(
+                              right: 0,
+                              bottom: -12.w,
+                              child: Container(
+                                height: 25.w,
+                                child: Image.asset(
+                                  'assets/images/lesson/hand/hand-click1.png',
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      )
+                    : Container(),
+              ],
+            ),
+          );
+        });
   }
 
   //trường hợp ảnh full
@@ -1054,7 +1207,8 @@ class FlashCard {
           style: TextStyle(
               fontSize: height > 600 ? 70.sp : 100.sp,
               // fontWeight: FontWeight.w900,
-              color: Theme.Colors.orange900,
+              color: Color(int.parse(colorContent.replaceAll('#', '0xff'))) ??
+                  Theme.Colors.orange900,
               fontFamily: 'UTMCooperBlack')),
     );
   }
@@ -1112,7 +1266,8 @@ class FlashCard {
   }
 
   //trường hợp chỉ sử dụng cho text ít chữ
-  cardFewText({Animation animation, AnimationController controller}) {
+  cardFewText() {
+    //  cardFewText({Animation animation, AnimationController controller}) {
     return GestureDetector(
       child: Container(
         alignment: Alignment.center,
@@ -1127,16 +1282,18 @@ class FlashCard {
                 style: TextStyle(
                     fontSize: height > 600 ? 35.sp : 75.sp,
                     // fontWeight: FontWeight.w900,
-                    color: Theme.Colors.orange900,
-                    // Color(int.parse(colorContent.replaceAll('#', '0xff'))) ??
+                    color: Color(
+                            int.parse(colorContent.replaceAll('#', '0xff'))) ??
+                        Theme.Colors.orange900,
+                    //Theme.Colors.orange900,
 
                     fontFamily: 'UTMCooperBlack')),
           ),
         ),
       ),
       onTap: () async {
-        print(store.pageCurrent);
-        controller.repeat();
+        // animationController.repeat();
+        // _FlashCardScreen().test();
       },
     );
   }
@@ -1205,16 +1362,28 @@ class FlashCard {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             fontSize: height > 600 ? 45.sp : 65.sp,
-                            color: Theme.Colors.orange900,
+                            color: Color(int.parse(
+                                    colorContent.replaceAll('#', '0xff'))) ??
+                                Theme.Colors.orange900,
                             fontFamily: 'UTMCooperBlack'))
                   ]
                 : [
-                    Text(text,
-                        textAlign: TextAlign.center,
+                    AnimatedDefaultTextStyle(
+                        duration: const Duration(milliseconds: 10000),
+                        curve: Curves.bounceInOut,
                         style: TextStyle(
-                            fontSize: height > 600 ? 70.sp : 100.sp,
-                            color: Theme.Colors.orange900,
-                            fontFamily: 'UTMCooperBlack'))
+                          fontSize: height > 600 ? 140.sp : 200.sp,
+                          color: Theme.Colors.red100,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        child: Text(text,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: height > 600 ? 70.sp : 100.sp,
+                                color: Color(int.parse(colorContent.replaceAll(
+                                        '#', '0xff'))) ??
+                                    Theme.Colors.orange900,
+                                fontFamily: 'UTMCooperBlack'))),
                   ]),
         onTap: () async {
           await _FlashCardScreen()

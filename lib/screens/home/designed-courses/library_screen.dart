@@ -218,7 +218,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
     List listPart = dataLesson['part'];
     if (listPart.length > 0) {
       //lấy 2 part
-      for (var i = 0; i <= 2; i++) {
+      for (var i = 0; i < listPart.length; i++) {
         List listContent = listPart[i]['content'];
 
         Future.forEach(listContent, (content) {

@@ -21,7 +21,14 @@ abstract class _FlashCardStore with Store {
   int pageCurrent;
   @observable
   String pathSoureAudio;
+  @observable
+  String text;
   //get List Data FlashCard
+  @action
+  void setText(value) {
+    text = value;
+  }
+
   @action
   void setListFlashCard(List value) {
     listFlashCard = value;
