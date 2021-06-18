@@ -96,5 +96,10 @@
     "makeFast":"Make it fast",
     "wordCards":"Word cards",
     "arrowUnderline":"If display pointer is turned on, an arrow appear underline the word",
-    "practiceReminde":"Practice reminder: When practice reminder is turned on, you will receive notification"
+    "practiceReminde":"Practice reminder: When practice reminder is turned on, you will receive notification",
+    "enterCodeContent": "IF you have a license key, please enter below",
+    "enterCodeTitle": "FOR UNLIMITED ACCESS",
+    "enterKey": "Enter license key",
+    "forgotKey": "Forgot license key?",
+    "buyKey": "Buy a license key?"
   } 

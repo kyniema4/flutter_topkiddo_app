@@ -21,7 +21,7 @@ class _SubcribeScreenState extends State<SubcribeScreen> {
   }
 
   _showHomeItem(BuildContext context, imageBg, String title, String content,
-      int pressId, bool isPress) {
+      int pressId, bool isPress, String price) {
     double height = MediaQuery.of(context).size.height;
 
     return Container(
@@ -100,7 +100,22 @@ class _SubcribeScreenState extends State<SubcribeScreen> {
                     child: Container(
                         // color: Colors.blue,
                         height: 16.w,
-                        child: Image.asset('buyNow'.tr(), fit: BoxFit.contain)),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage(
+                                'assets/images/lesson/empty-button.png'),
+                            fit: BoxFit.fitHeight,
+                          ),
+                        ),
+                        child: Text(
+                          price + ' VND',
+                          style: TextStyle(
+                              height: 1,
+                              color: Theme.Colors.orange900,
+                              fontSize: height > 600 ? 27.sp : 35.sp,
+                              fontFamily: 'UTMCooperBlack'),
+                        )),
                     onTap: () {})))
       ]),
     );
@@ -140,21 +155,24 @@ class _SubcribeScreenState extends State<SubcribeScreen> {
                               '6' + ' ' + 'months'.tr().toUpperCase(),
                               'designedCourses'.tr(),
                               1,
-                              _pressed),
+                              _pressed,
+                              '199.000'),
                           _showHomeItem(
                               context,
                               'assets/images/lesson/12thang.png',
                               '12' + ' ' + 'months'.tr().toUpperCase(),
                               'flexibleLearning'.tr(),
                               2,
-                              _pressed2),
+                              _pressed2,
+                              '299.000'),
                           _showHomeItem(
                               context,
                               'assets/images/lesson/trondoi.png',
                               'lifelong'.tr().toUpperCase(),
                               'expressionsPhrases'.tr(),
                               3,
-                              _pressed3),
+                              _pressed3,
+                              '599.000'),
                         ],
                       ),
                     )

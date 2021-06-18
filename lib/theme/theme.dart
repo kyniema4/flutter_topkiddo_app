@@ -19,6 +19,7 @@ class Colors {
   static const orange500 = Color.fromRGBO(207, 94, 65, 1);
   static const green200 = Color(0xFF5CA366);
   static const green400 = Color(0xFF2A8850);
+  static const green500 = Color(0xFF35BA6A);
   static const green700 = Color(0xFF104333);
   static const red100 = Color(0xFFA74127);
   static const orange900 = Color(0xFFCF5E41);

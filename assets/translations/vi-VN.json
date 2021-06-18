@@ -96,6 +96,11 @@
   "makeFast": "Nhanh hơn",
   "wordCards": "Thẻ từ",
   "arrowUnderline": "Nếu con trỏ hiển thị được bật, một mũi tên xuất hiện bên dưới từ",
-  "practiceReminde": "Nhắc nhở luyện tập: Khi lời nhắc nhở được bật, bạn sẽ nhận được thông báo"
+  "practiceReminde": "Nhắc nhở luyện tập: Khi lời nhắc nhở được bật, bạn sẽ nhận được thông báo",
+  "enterCodeContent": "NẾU bạn có khóa cấp phép, vui lòng nhập vào bên dưới",
+  "enterCodeTitle": "CHO TRUY CẬP KHÔNG GIỚI HẠN",
+  "enterKey": "Nhập khóa cấp phép",
+  "forgotKey": "Quên khóa cấp phép?",
+  "buyKey": "Mua khóa cấp phép?"
 
 }

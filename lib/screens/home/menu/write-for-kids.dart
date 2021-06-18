@@ -40,6 +40,7 @@ class _WriteForKidsScreen extends State<WriteForKidsScreen> {
                         children: [
                           Container(
                               height: 150.w,
+                              margin: EdgeInsets.only(top: 10.w),
                               child: Stack(
                                 alignment: Alignment.center,
                                 children: [
