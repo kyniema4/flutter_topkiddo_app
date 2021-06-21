@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobx/mobx.dart';
+import 'package:provider/provider.dart';
 import 'package:topkiddo/screens/home/designed-courses/flashcard_store.dart';
 import 'package:video_player/video_player.dart';
 
@@ -44,17 +45,22 @@ class _FlashCardScreen extends State<FlashCardScreen>
   int _lastReportedPage = 0;
   int previousPage = 0;
   ScrollController s;
-  AnimationController _controller;
+  AnimationController animationController;
+  Animation animation;
+  Animation animationColor;
   PageController _pageController =
       PageController(viewportFraction: 1, keepPage: true);
   int currentPage = 0;
-  Tween<double> _tween = Tween(begin: 1.5, end: 1.8);
+  Tween<double> tween = Tween(begin: 1.5, end: 5);
+  ColorTween tweenColor = ColorTween(begin: Colors.blue, end: Colors.orange);
+  //Tween<double> _tween = Tween(begin: 1.5, end: 5);
   FlickManager flickManager;
-  AudioPlayer audioPlayer = AudioPlayer();
+
   List listFlashCard = [];
   HandleDownload download = HandleDownload();
   String idAudio = "";
   final FlashCardStore store = FlashCardStore();
+  bool isReload = false;
 
   checkBeforeCreateFlashCard() async {
     //mới học lần đầu
@@ -80,7 +86,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
 
     Map data = widget.lessonDetail;
     List tempList = [...store.listFlashCard];
-    if (data.isNotEmpty) {
+    if (data != null) {
       List listPart = data['part'];
       if (listPart.length > 0) {
         await Future.forEach(listPart, (part) async {
@@ -97,36 +103,41 @@ class _FlashCardScreen extends State<FlashCardScreen>
           }
           // lấy content trong topic
           if (listContent.length > 0) {
-            try {
-              await Future.forEach(listContent, (content) async {
+            await Future.forEach(listContent, (content) async {
+              try {
                 var result = await dealerWidget(content);
                 if (result != null) {
                   tempList.addAll(result);
                 }
-              });
-              // for (var i = 0; i < 2; i++) {
-              //   var result = await dealerWidget(listContent[i]);
-              //   tempList.addAll(result);
-              // }
-            } catch (e) {
-              print(e);
-            }
+              } catch (e) {
+                print(e);
+                return;
+              }
+            });
+            // for (var i = 0; i < 2; i++) {
+            //   var result = await dealerWidget(listContent[i]);
+            //   tempList.addAll(result);
+            // }
+
           }
         });
       }
     } else {
       //fetch data;
     }
-    _pageController.jumpToPage(currentPage);
+    //_pageController.jumpToPage(currentPage);
     store.setListFlashCard(tempList);
   }
 
-  dealerWidget(Map data) async {
+  Future dealerWidget(Map data) async {
     List tempList = [];
     Map<String, dynamic> oneFlashCard;
     var flashCard = FlashCard();
     flashCard = FlashCard.fromJson(Map<String, dynamic>.from(data));
     flashCard.height = MediaQuery.of(context).size.height;
+    flashCard.lessonId = widget.lessonDetail['_id'];
+    flashCard.animation = animation;
+    flashCard.animationController = animationController;
     List listResource = flashCard.resource;
     List listLetterResource = flashCard.letterResources;
     //List listOutSideResource=flashCard.letterResources;
@@ -140,15 +151,17 @@ class _FlashCardScreen extends State<FlashCardScreen>
             }
           : {};
 
-      tempList.add(
-          oneFlashCard = {'data': flashCard, 'widget': flashCard.cardTitle()});
+      tempList.add(oneFlashCard = {
+        'data': flashCard,
+        'widget': flashCard.cardTitle(context)
+      });
       flashCard.sourceImage = data['image'] != null
           ? {
               '_id': data['image']['_id'] ?? "",
               'localPath': data['image']['localPath'] ?? ""
             }
           : {};
-      data['image'].isNotEmpty
+      data['image'] != null
           ? tempList.add(oneFlashCard = {
               'data': flashCard,
               'widget': flashCard.cardImageFull(
@@ -162,7 +175,10 @@ class _FlashCardScreen extends State<FlashCardScreen>
         listResource.length >= 0 &&
         listResource.length < 2) {
       for (var item in listResource) {
-        if (item["type"] == 2) {
+        print(data['content']);
+        bool check = data['content'].contains(' ');
+
+        if (item["type"] == 2 && check) {
           flashCard.sourceAudio = {
             '_id': item['_id'] ?? "",
             'localPath': item['localPath'] ?? ""
@@ -174,12 +190,22 @@ class _FlashCardScreen extends State<FlashCardScreen>
           tempList.add(oneFlashCard);
           return tempList;
         }
+        if (item["type"] == 2 && !check) {
+          flashCard.sourceAudio = {
+            '_id': item['_id'] ?? "",
+            'localPath': item['localPath'] ?? ""
+          };
+          oneFlashCard = {'data': flashCard, 'widget': flashCard.cardFewText()};
+          tempList.add(oneFlashCard);
+          return tempList;
+        }
       }
     }
     // trường hợp click vào từng hình để nghe
     if (data['type'] == 3 && listLetterResource.length > 0) {
       List listPathImage = [];
       List listPathAudio = [];
+
       for (var i in listLetterResource) {
         var type = i['resources'][0]['type'];
         if (type == 1) {
@@ -228,8 +254,6 @@ class _FlashCardScreen extends State<FlashCardScreen>
           };
         }
       }
-      print(flashCard);
-      print('debugging');
       oneFlashCard = {
         'data': flashCard,
         'widget': flashCard.cardImageFull(
@@ -246,20 +270,127 @@ class _FlashCardScreen extends State<FlashCardScreen>
       tempList.add(oneFlashCard);
       return tempList;
     }
+    //trường hợp câu lồng ảnh nhỏ
+    if (data['type'] == 2 &&
+        listResource.length > 0 &&
+        listLetterResource.length > 0) {
+      //flashcard image và audio
+      if (data['timeFrame'] != null) {
+        flashCard.timeFrame = jsonDecode(data['timeFrame']);
+      }
+      for (var item in listResource) {
+        if (item["type"] == 1) {
+          flashCard.sourceImage = {
+            '_id': item['_id'] ?? "",
+            'localPath': item['localPath'] ?? ""
+          };
+        }
+        if (item["type"] == 2) {
+          flashCard.sourceAudio = {
+            '_id': item['_id'] ?? "",
+            'localPath': item['localPath'] ?? ""
+          };
+        }
+      }
+      oneFlashCard = {
+        'data': flashCard,
+        'widget': flashCard.cardImageFull(
+            pathImg: await getPathImage(flashCard.sourceImage))
+      };
+      tempList.add(oneFlashCard);
+      //thêm chữ
+
+      List<Widget> listSubSentence = [];
+
+      for (var item in listLetterResource) {
+        if (item['resources'].length == 1) {
+          Map letterAudio = {
+            '_id': item['resources'][0]['_id'] ?? "",
+            'localPath': item['resources'][0]['localPath'] ?? ""
+          };
+          var subSentence = flashCard.cardSubSentence(
+              text: item['letter'], pathSound: letterAudio);
+          listSubSentence.addAll(subSentence);
+        }
+        if (item['resources'].length < 1) {
+          print('debugging');
+          // checkAudioLetter(item['letter']);
+          // Map letterAudio = {
+          //   '_id': item['_id'] ?? "",
+          //   'localPath': item['resources'][0]['localPath'] ?? ""
+          // };
+          var subSentence = flashCard.cardSubSentence(text: item['letter']);
+          listSubSentence.addAll(subSentence);
+        }
+        if (item['resources'].length >= 2) {
+          var sourceImage = item['resources'].where((e) => e['type'] == 1);
+          var sourceAudio = item['resources'].where((e) => e['type'] == 2);
+          Map letterImage = {
+            '_id': sourceImage.single['_id'] ?? "",
+            'localPath': sourceImage.single['localPath'] ?? ""
+          };
+          Map letterAudio = {
+            '_id': sourceAudio.single['_id'] ?? "",
+            'localPath': sourceAudio.single['localPath'] ?? "",
+          };
+          var subSentence = flashCard.cardSubSentence(
+            text: item['letter'],
+            isImage: true,
+            pathSound: letterAudio,
+            pathImage: await getPathImage(letterImage),
+          );
+          listSubSentence.addAll(subSentence);
+        }
+      }
+      print(listSubSentence);
+      oneFlashCard = {
+        'data': flashCard,
+        'widget': flashCard.cardSentence(listSubSentence)
+      };
+      print(flashCard.timeFrame);
+      print('debugging');
+      tempList.add(oneFlashCard);
+      return tempList;
+    }
+  }
+
+  // checkAudioLetter(String letter) async {
+  //   //let sound = await fetch('https://www.dictionaryapi.com/api/v3/references/collegiate/json/' + letter.letter.toLowerCase() + '?key=' + this.keyId).then(json => {
+  //   String soundPath = await fetchAudioLetter(letter);
+  //   print('debugging');
+  // }
+
+  playAudioTest(
+      String lessonId, Map sourceAudio, List timeFrame, String letter) async {
+    // print('tap here');
+    // //https://media.merriam-webster.com/soundc11/i/i0000001.wav
+    // String path = "https://media.merriam-webster.com/soundc11/i/i0000001.wav";
+    // audioPlayer.play(path);
+    // print(timeFrame);
+    // print('debugging');
+    print(timeFrame);
+    AudioPlayer audioPlayer = AudioPlayer();
+    var typeFile = sourceAudio['localPath']
+        .substring(sourceAudio['localPath'].indexOf('.'));
+    String subPath = "/$lessonId/${sourceAudio['_id']}$typeFile";
+
+    var path = await download.getFileFromLocal(subPath);
+    audioPlayer.seek(Duration(milliseconds: 1734));
+    audioPlayer.play(path, isLocal: true);
+    await Future.delayed(Duration(milliseconds: 571), () {
+      audioPlayer.stop();
+    });
   }
 
   playAudio(sourceAudio) async {
-    print(sourceAudio);
-    print('debugging');
     String lessonId = widget.lessonDetail['_id'];
-    if (sourceAudio.isNotEmpty) {
-      print(sourceAudio);
-      print('debugging');
+    print('debugging');
+    if (sourceAudio != null) {
       var typeFile = sourceAudio['localPath']
           .substring(sourceAudio['localPath'].indexOf('.'));
       String subPath = "/$lessonId/${sourceAudio['_id']}$typeFile";
       var path = await download.getFileFromLocal(subPath);
-      var result = await audioPlayer.play(path, isLocal: true);
+      //var result = await audioPlayer.play(path, isLocal: true);
     } else
       return;
     // print(sourceAudio);
@@ -285,18 +416,38 @@ class _FlashCardScreen extends State<FlashCardScreen>
       return;
   }
 
+  test() {
+    animationController.repeat();
+  }
+
   VideoPlayerController _controllerVideo;
   Future<void> _initializeVideoPlayerFuture;
 
   void initState() {
     super.initState();
     s = PageController();
-    _controller = AnimationController(
-        duration: const Duration(milliseconds: 700), vsync: this);
+    // animationController = AnimationController(
+    //     duration: const Duration(milliseconds: 700), vsync: this);
     // flickManager = FlickManager(
     //   videoPlayerController: VideoPlayerController.network(
     //       "http://www.sample-videos.com/video123/mp4/720/big_buck_bunny_720p_20mb.mp4"),
     // );
+    animationController = AnimationController(
+        duration: const Duration(milliseconds: 700), vsync: this);
+    animation = tween.animate(
+        CurvedAnimation(parent: animationController, curve: Curves.elasticOut));
+    animationColor = tweenColor.animate(animationController);
+  }
+
+  callAnimation() {
+    animationController = AnimationController(
+        duration: const Duration(milliseconds: 700), vsync: this);
+    // animation = tween.animate(
+    //     CurvedAnimation(parent: animationController, curve: Curves.elasticOut))
+    animation = CurvedAnimation(
+      parent: animationController,
+      curve: Curves.fastOutSlowIn,
+    );
   }
 
   @override
@@ -316,12 +467,33 @@ class _FlashCardScreen extends State<FlashCardScreen>
     print("Current Page: " + page.toString());
     previousPage = page;
     store.setPageViewChange(page);
+    print(store.pageCurrent);
+    print('debugging');
     store.setSourceAudio();
     List dataFlashCard = [...store.listFlashCard.map((e) => e['data'])];
+    List dataWidget = [...store.listFlashCard.map((e) => e['widget'])];
     FlashCard data = dataFlashCard[page];
+    Widget getWidget = dataWidget[page];
+
+    print('debugging');
+    animationController.forward().then((value) {
+      animationController.reverse();
+    });
+    // tween = Tween(begin: 1.5, end: 1.8);
+    // animationController = AnimationController(
+    //     duration: const Duration(milliseconds: 700), vsync: this);
+    // animation = tween.animate(
+    //     CurvedAnimation(parent: animationController, curve: Curves.elasticOut));
+
     print(data.sourceAudio);
     if (data != null) {
       playAudio(data.sourceAudio);
+    }
+    if (page == 11) {
+      print('here');
+      setState(() {
+        isReload = true;
+      });
     }
     // setState(() {
     //   number = page;
@@ -341,9 +513,9 @@ class _FlashCardScreen extends State<FlashCardScreen>
     // });
   }
 
-  _reset() {
+  reset() {
     print("Previous page: $number");
-    _controller.repeat();
+    animationController.repeat();
     // _controller.forward();
   }
 
@@ -354,8 +526,8 @@ class _FlashCardScreen extends State<FlashCardScreen>
 
   @override
   void dispose() {
-    _controller.repeat(reverse: false);
-    _controller.dispose();
+    animationController.repeat(reverse: false);
+    animationController.dispose();
     //flickManager.dispose();
     _controllerVideo.dispose();
     super.dispose();
@@ -526,7 +698,6 @@ class _FlashCardScreen extends State<FlashCardScreen>
 
   @override
   Widget build(BuildContext context) {
-    print('rebuild');
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     return Container(
@@ -572,52 +743,49 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                 borderRadius: BorderRadius.circular(11.5.w)),
                             child: SwipeDetector(
                               child: PageView(
-                                controller: _pageController,
-                                physics: BouncingScrollPhysics(),
-                                onPageChanged: _onPageViewChange,
-                                // children: store.listWidget != null
-                                //     ? [...store.listWidget]
-                                //     : []
-                                children: [
-                                  Container(
-                                    height: 1.sh,
-                                    // width: 1.sw,
-                                    color: Colors.black,
-                                    child: ClipRRect(
-                                      child: Center(
-                                        child: FutureBuilder(
-                                          future: _initializeVideoPlayerFuture,
-                                          builder: (context, snapshot) {
-                                            if (snapshot.connectionState ==
-                                                ConnectionState.done) {
-                                              // If the VideoPlayerController has finished initialization, use
-                                              // the data it provides to limit the aspect ratio of the video.
-                                              return AspectRatio(
-                                                aspectRatio: _controllerVideo
-                                                    .value.aspectRatio,
-                                                // Use the VideoPlayer widget to display the video.
-                                                child: VideoPlayer(
-                                                    _controllerVideo),
-                                              );
-                                            } else {
-                                              // If the VideoPlayerController is still initializing, show a
-                                              // loading spinner.
-                                              return Center(
-                                                  child:
-                                                      CircularProgressIndicator());
-                                            }
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                  controller: _pageController,
+                                  physics: BouncingScrollPhysics(),
+                                  onPageChanged: _onPageViewChange,
+                                  children: store.listWidget != null
+                                      ? [...store.listWidget]
+                                      : []),
+                              // children: [
+                              //   GestureDetector(
+                              //     child: Container(
+                              //       alignment: Alignment.center,
+                              //       margin: EdgeInsets.all(8.5.w),
+                              //       child: ScaleTransition(
+                              //         scale: animationController,
+                              //         child: SizedBox(
+                              //           child: Text('Cat',
+                              //               textAlign: TextAlign.center,
+                              //               style: TextStyle(
+                              //                   fontSize: height > 600
+                              //                       ? 35.sp
+                              //                       : 75.sp,
+                              //                   // fontWeight: FontWeight.w900,
+                              //                   color:
+                              //                       Theme.Colors.orange900,
+                              //                   fontFamily:
+                              //                       'UTMCooperBlack')),
+                              //         ),
+                              //       ),
+                              //     ),
+                              //     onTap: () {
+
+                              //       animationController
+                              //           .forward()
+                              //           .then((value) {
+                              //         animationController.reverse();
+                              //       });
+                              //     },
+                              //   ),
+                              // ]),
                               onSwipeUp: () {
-                                // setState(() {
-                                //   _swipeDirection = "Swipe Up";
-                                //   _reset();
-                                // });
+                                setState(() {
+                                  _swipeDirection = "Swipe Up";
+                                  reset();
+                                });
                                 //playAudio();
                               },
                               onSwipeDown: () {
@@ -750,6 +918,7 @@ class _TopButtonState extends State<TopButton> {
 }
 
 class FlashCard {
+  final FlashCardStore store = FlashCardStore();
   String id;
   String lessonId;
   String content;
@@ -759,6 +928,7 @@ class FlashCard {
   String colorContent;
   int animationContent;
   String highlightColor;
+  List timeFrame;
   Map sourceAudio;
   Map sourceImage;
   int type;
@@ -767,8 +937,9 @@ class FlashCard {
   double height;
   Widget widget;
   // double width;
-  // AnimationController controller;
-  // Tween<double> tween;
+  Tween<double> tween;
+  AnimationController animationController;
+  Animation animation;
   // FlickManager flickManager;
 
   FlashCard(
@@ -781,6 +952,7 @@ class FlashCard {
       this.colorContent,
       this.animationContent,
       this.highlightColor,
+      this.timeFrame,
       this.type,
       this.resource,
       this.letterResources,
@@ -847,38 +1019,186 @@ class FlashCard {
   }
 
   //trường hợp chữ tiêu đề
-  cardTitle({pathAudio, pathImg}) {
+  Widget cardTitle(BuildContext context,
+      {pathAudio, pathImg, isShowHand: true}) {
     return Container(
+      alignment: Alignment.center,
+      margin: EdgeInsets.all(8.5.w),
+      child: Stack(
+        clipBehavior: Clip.none,
         alignment: Alignment.center,
-        margin: EdgeInsets.all(8.5.w),
-        child: GestureDetector(
-          child: Text(content,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: height > 600 ? 80.sp : 140.sp,
-                  // fontWeight: FontWeight.w900,
-                  color: Theme.Colors.orange900,
-                  fontFamily: 'UTMCooperBlack')),
-          onTap: () async {
-            //await  _FlashCardScreen().playAudio(sourceAudio);
-          },
-        ));
+        children: [
+          Container(
+            child: Text(content,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    height: 1.2,
+                    fontSize: height > 600 ? 80.sp : 140.sp,
+                    // fontWeight: FontWeight.w900,
+                    color: Theme.Colors.orange900,
+                    fontFamily: 'UTMCooperBlack')),
+          ),
+
+          //mũi tên phía trái
+          isShowHand
+              ? Positioned(
+                  left: 10.w,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Container(
+                        width: 50.w,
+                        height: 28.w,
+                        child: RotatedBox(
+                          quarterTurns: 2,
+                          child: Image.asset(
+                            'assets/images/lesson/hand/swipt-arrow.png',
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        right: 10.w,
+                        top: 9.w,
+                        // bottom: -12.w,
+                        child: Text('Previous',
+                            style: TextStyle(
+                                fontSize: height > 600 ? 21.sp : 25.sp,
+                                color: Theme.Colors.yellow300,
+                                fontFamily: 'UTMCooperBlack')),
+                      ),
+                      Positioned(
+                        left: 0,
+                        bottom: -12.w,
+                        child: Container(
+                          height: 25.w,
+                          child: Image.asset(
+                            'assets/images/lesson/hand/hand-click1.png',
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                )
+              : Container(),
+
+          //mũi tên ở giữa
+          isShowHand
+              ? Positioned(
+                  top: height > 600 ? 30.w : 0.25.sh,
+                  // bottom: 0,
+                  // bottom: -30.w,
+                  // left: 10.w,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      RotatedBox(
+                        quarterTurns: -1,
+                        child: Container(
+                          width: 40.w,
+                          height: 28.w,
+                          child: Image.asset(
+                            'assets/images/lesson/hand/swipt-arrow.png',
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        right: 11.w,
+                        top: 6.w,
+                        // bottom: -12.w,
+                        child: RotatedBox(
+                          quarterTurns: -1,
+                          child: Text('Repeat',
+                              style: TextStyle(
+                                  fontSize: height > 600 ? 21.sp : 25.sp,
+                                  color: Theme.Colors.yellow300,
+                                  fontFamily: 'UTMCooperBlack')),
+                        ),
+                      ),
+                      Positioned(
+                          right: -30,
+                          top: 0,
+                          child: RotatedBox(
+                            quarterTurns: -1,
+                            child: Container(
+                              height: 25.w,
+                              child: Image.asset(
+                                'assets/images/lesson/hand/hand-click1.png',
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          ))
+                    ],
+                  ),
+                )
+              : Container(),
+
+          //mũi tên phía phải
+          isShowHand
+              ? Positioned(
+                  right: 10.w,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Container(
+                        width: 50.w,
+                        height: 28.w,
+                        child: Image.asset(
+                          'assets/images/lesson/hand/swipt-arrow.png',
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                      Positioned(
+                        left: 15.w,
+                        top: 9.w,
+                        // bottom: -12.w,
+                        child: Text('Next',
+                            style: TextStyle(
+                                fontSize: height > 600 ? 21.sp : 25.sp,
+                                color: Theme.Colors.yellow300,
+                                fontFamily: 'UTMCooperBlack')),
+                      ),
+                      Positioned(
+                        right: 0,
+                        bottom: -12.w,
+                        child: Container(
+                          height: 25.w,
+                          child: Image.asset(
+                            'assets/images/lesson/hand/hand-click1.png',
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                )
+              : Container(),
+        ],
+      ),
+    );
   }
 
   //trường hợp ảnh full
   cardImageFull({pathImg: ''}) {
     // var newPath = _FlashCardScreen().getPathImage(lessonId, sourceImage);
     // pathImg = newPath;
-    return Center(
-        child: pathImg != null
-            ? Image(
-                image: FileImage(File(pathImg)),
-                fit: BoxFit.contain,
-              )
-            : Image.asset(
-                'assets/images/flashcard/image1.jpg',
-                fit: BoxFit.contain,
-              ));
+    return GestureDetector(
+      child: Center(
+          child: pathImg != null
+              ? Image(
+                  image: FileImage(File(pathImg)),
+                  fit: BoxFit.contain,
+                )
+              : Image.asset(
+                  'assets/images/flashcard/image1.jpg',
+                  fit: BoxFit.contain,
+                )),
+      onTap: () async {
+        print('tap image full');
+      },
+    );
   }
 
   // trường hợp chữ ngắn
@@ -891,7 +1211,8 @@ class FlashCard {
           style: TextStyle(
               fontSize: height > 600 ? 70.sp : 100.sp,
               // fontWeight: FontWeight.w900,
-              color: Theme.Colors.orange900,
+              color: Color(int.parse(colorContent.replaceAll('#', '0xff'))) ??
+                  Theme.Colors.orange900,
               fontFamily: 'UTMCooperBlack')),
     );
   }
@@ -949,28 +1270,40 @@ class FlashCard {
   }
 
   //trường hợp chỉ sử dụng cho text ít chữ
-  cardFewText({tween, controller, text}) {
-    return Container(
-      alignment: Alignment.center,
-      margin: EdgeInsets.all(8.5.w),
-      child: ScaleTransition(
-        scale: tween.animate(
-            CurvedAnimation(parent: controller, curve: Curves.elasticOut)),
-        child: SizedBox(
-          child: Text('Cat',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: height > 600 ? 35.sp : 75.sp,
-                  // fontWeight: FontWeight.w900,
-                  color: Theme.Colors.orange900,
-                  fontFamily: 'UTMCooperBlack')),
+  cardFewText() {
+    //  cardFewText({Animation animation, AnimationController controller}) {
+    return GestureDetector(
+      child: Container(
+        alignment: Alignment.center,
+        margin: EdgeInsets.all(8.5.w),
+        child: ScaleTransition(
+          // scale: _FlashCardScreen().tween.animate(CurvedAnimation(
+          //     parent: _FlashCardScreen().controller, curve: Curves.elasticOut)),
+          scale: animation,
+          child: SizedBox(
+            child: Text(content ?? '',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: height > 600 ? 35.sp : 75.sp,
+                    // fontWeight: FontWeight.w900,
+                    color: Color(
+                            int.parse(colorContent.replaceAll('#', '0xff'))) ??
+                        Theme.Colors.orange900,
+                    //Theme.Colors.orange900,
+
+                    fontFamily: 'UTMCooperBlack')),
+          ),
         ),
       ),
+      onTap: () async {
+        // animationController.repeat();
+        // _FlashCardScreen().test();
+      },
     );
   }
 
   //trường hợp video
-  cardVideo({flickManager}) {
+  cardVideo() {
     return Container(
       height: 1.sh,
       // width: 1.sw,
@@ -1003,120 +1336,60 @@ class FlashCard {
 
   //trường hợp câu có ảnh nhỏ
 
-  cardSentence() {
+  cardSentence(List listSubsentence) {
     return Container(
       alignment: Alignment.center,
       margin: EdgeInsets.all(8.5.w),
       child: Wrap(
           crossAxisAlignment: WrapCrossAlignment.center,
           alignment: WrapAlignment.center,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text('I',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: height > 600 ? 70.sp : 100.sp,
-                        color: Theme.Colors.orange900,
-                        fontFamily: 'UTMCooperBlack')),
-              ],
-            ),
-            SizedBox(width: 5.w),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text('Love',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: height > 600 ? 70.sp : 100.sp,
-                        color: Theme.Colors.orange900,
-                        fontFamily: 'UTMCooperBlack')),
-              ],
-            ),
-            SizedBox(width: 5.w),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text('My',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: height > 600 ? 70.sp : 100.sp,
-                        color: Theme.Colors.orange900,
-                        fontFamily: 'UTMCooperBlack')),
-              ],
-            ),
-            SizedBox(width: 5.w),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text('Little',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: height > 600 ? 70.sp : 100.sp,
-                        color: Theme.Colors.orange900,
-                        fontFamily: 'UTMCooperBlack')),
-              ],
-            ),
-            SizedBox(width: 5.w),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  margin: EdgeInsets.only(top: 3.w),
-                  child: Image.asset(
-                    'assets/images/flashcard/image3.jpg',
-                    height: 17.w,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-                Text('Cat',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: height > 600 ? 45.sp : 65.sp,
-                        color: Theme.Colors.orange900,
-                        fontFamily: 'UTMCooperBlack')),
-              ],
-            ),
-          ]),
+          children: listSubsentence ?? []),
     );
   }
 
-  cardSubSentence({text}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text('I',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontSize: height > 600 ? 70.sp : 100.sp,
-                color: Theme.Colors.orange900,
-                fontFamily: 'UTMCooperBlack')),
-      ],
-    );
+  cardSubSentence({text: "", pathSound: "", isImage: false, pathImage: ""}) {
+    print('build subsentence');
+    return [
+      GestureDetector(
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: isImage
+                ? [
+                    Container(
+                      margin: EdgeInsets.only(top: 3.w),
+                      child: Image(
+                        image: FileImage(File(pathImage)),
+                        fit: BoxFit.contain,
+                        height: 17.w,
+                      ),
+                    ),
+                    Text(text,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: height > 600 ? 45.sp : 65.sp,
+                            color: Theme.Colors.orange900,
+                            fontFamily: 'UTMCooperBlack'))
+                  ]
+                : [
+                    AnimatedDefaultTextStyle(
+                        duration: Duration(milliseconds: 400),
+                        style: TextStyle(fontSize: 100),
+                        child: Text(text,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: height > 600 ? 70.sp : 100.sp,
+                                color: Theme.Colors.orange900,
+                                fontFamily: 'UTMCooperBlack')))
+                  ]),
+        onTap: () async {
+          await _FlashCardScreen()
+              .playAudioTest(lessonId, sourceAudio, timeFrame, text);
+        },
+      ),
+      SizedBox(width: 5.w),
+    ];
   }
 
-  cardSubSentenceWithImage({pathImg, text}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          margin: EdgeInsets.only(top: 3.w),
-          child: Image.asset(
-            'assets/images/flashcard/image3.jpg',
-            height: 17.w,
-            fit: BoxFit.contain,
-          ),
-        ),
-        Text('Cat',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontSize: height > 600 ? 45.sp : 65.sp,
-                color: Theme.Colors.orange900,
-                fontFamily: 'UTMCooperBlack')),
-      ],
-    );
-  }
   // hết trường hợp có lồng ảnh nhỏ
 
   factory FlashCard.fromJson(Map<String, dynamic> parsedJson) {
@@ -1130,6 +1403,20 @@ class FlashCard {
       animationContent: parsedJson['animationContent'] ?? null,
       highlightColor: parsedJson['highlightColor'] ?? null,
       type: parsedJson['type'] ?? null,
+      // sourceImage: {
+      //   '_id': parsedJson['image']['_id'] ?? "",
+      //   'localPath': parsedJson['image']['localPath'] ?? ""
+      // },
+      // sourceAudio: {
+      //   '_id': parsedJson['audio']['_id'] ?? "",
+      //   'localPath': parsedJson['audio']['localPath'] ?? ""
+      // },
+      // sourceImage: parsedJson['resources']['type'] == '1'
+      //     ? {
+      //         '_id': parsedJson['resources']['_id'],
+      //         'localPath': parsedJson['resources']['localPath']
+      //       }
+      //     : null
       resource: parsedJson['resources'] ?? null,
       letterResources: parsedJson['letterResources'] ?? null,
     );

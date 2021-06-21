@@ -99,8 +99,60 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
     });
   }
 
+  final _$isReloadAtom = Atom(name: '_FlashCardStore.isReload');
+
+  @override
+  bool get isReload {
+    _$isReloadAtom.reportRead();
+    return super.isReload;
+  }
+
+  @override
+  set isReload(bool value) {
+    _$isReloadAtom.reportWrite(value, super.isReload, () {
+      super.isReload = value;
+    });
+  }
+
+  final _$textAtom = Atom(name: '_FlashCardStore.text');
+
+  @override
+  String get text {
+    _$textAtom.reportRead();
+    return super.text;
+  }
+
+  @override
+  set text(String value) {
+    _$textAtom.reportWrite(value, super.text, () {
+      super.text = value;
+    });
+  }
+
   final _$_FlashCardStoreActionController =
       ActionController(name: '_FlashCardStore');
+
+  @override
+  void setText(String value) {
+    final _$actionInfo = _$_FlashCardStoreActionController.startAction(
+        name: '_FlashCardStore.setText');
+    try {
+      return super.setText(value);
+    } finally {
+      _$_FlashCardStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setIsReload() {
+    final _$actionInfo = _$_FlashCardStoreActionController.startAction(
+        name: '_FlashCardStore.setIsReload');
+    try {
+      return super.setIsReload();
+    } finally {
+      _$_FlashCardStoreActionController.endAction(_$actionInfo);
+    }
+  }
 
   @override
   void setListFlashCard(List<dynamic> value) {
@@ -143,7 +195,9 @@ listWidget: ${listWidget},
 isShowQuestion: ${isShowQuestion},
 isShowTopButton: ${isShowTopButton},
 pageCurrent: ${pageCurrent},
-pathSoureAudio: ${pathSoureAudio}
+pathSoureAudio: ${pathSoureAudio},
+isReload: ${isReload},
+text: ${text}
     ''';
   }
 }

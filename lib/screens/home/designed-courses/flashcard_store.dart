@@ -21,12 +21,20 @@ abstract class _FlashCardStore with Store {
   int pageCurrent;
   @observable
   String pathSoureAudio;
-  @observable
-  String text;
   //get List Data FlashCard
+  @observable
+  bool isReload = false;
+  @observable
+  String text = "Here";
+  
   @action
-  void setText(value) {
-    text = value;
+  void setText(String value) {
+    text=value;
+  }
+
+  @action
+  void setIsReload() {
+    isReload = !isReload;
   }
 
   @action
