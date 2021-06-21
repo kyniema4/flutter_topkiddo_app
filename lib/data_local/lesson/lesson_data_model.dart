@@ -5,7 +5,7 @@ import 'package:hive/hive.dart';
 part 'lesson_data_model.g.dart';
 
 @HiveType(typeId: 3)
-class LessonDataModel extends HiveObject {
+class LessonDataModel extends HiveObject {  
   @HiveField(0)
   String id;
   @HiveField(1)
