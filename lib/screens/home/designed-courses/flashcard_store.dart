@@ -14,6 +14,8 @@ abstract class _FlashCardStore with Store {
   @observable
   List<Widget> listWidget = [];
   @observable
+  List<Widget> listDataFlashCard = [];
+  @observable
   bool isShowQuestion = true;
   @observable
   bool isShowTopButton = true;
@@ -21,15 +23,16 @@ abstract class _FlashCardStore with Store {
   int pageCurrent;
   @observable
   String pathSoureAudio;
-  //get List Data FlashCard
   @observable
   bool isReload = false;
   @observable
-  String text = "Here";
-  
+  bool isChangePage = true;
+  @observable
+  String animationId;
+
   @action
-  void setText(String value) {
-    text=value;
+  void setAnimationId(String value) {
+    animationId = value;
   }
 
   @action
@@ -56,7 +59,22 @@ abstract class _FlashCardStore with Store {
   }
 
   @action
+  void setShowTopButton(bool value) {
+    isShowTopButton = value;
+  }
+
+  @action
+  void setChangePage(bool value) {
+    isChangePage = value;
+  }
+
+  @action
   void setSourceAudio() {
     print(listFlashCard[pageCurrent]['data']);
   }
+
+  //  @computed
+  // bool get hasAnimation {
+  //    print()
+  // }
 }

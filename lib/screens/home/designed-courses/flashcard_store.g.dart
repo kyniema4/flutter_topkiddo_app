@@ -39,6 +39,22 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
     });
   }
 
+  final _$listDataFlashCardAtom =
+      Atom(name: '_FlashCardStore.listDataFlashCard');
+
+  @override
+  List<Widget> get listDataFlashCard {
+    _$listDataFlashCardAtom.reportRead();
+    return super.listDataFlashCard;
+  }
+
+  @override
+  set listDataFlashCard(List<Widget> value) {
+    _$listDataFlashCardAtom.reportWrite(value, super.listDataFlashCard, () {
+      super.listDataFlashCard = value;
+    });
+  }
+
   final _$isShowQuestionAtom = Atom(name: '_FlashCardStore.isShowQuestion');
 
   @override
@@ -114,18 +130,33 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
     });
   }
 
-  final _$textAtom = Atom(name: '_FlashCardStore.text');
+  final _$isChangePageAtom = Atom(name: '_FlashCardStore.isChangePage');
 
   @override
-  String get text {
-    _$textAtom.reportRead();
-    return super.text;
+  bool get isChangePage {
+    _$isChangePageAtom.reportRead();
+    return super.isChangePage;
   }
 
   @override
-  set text(String value) {
-    _$textAtom.reportWrite(value, super.text, () {
-      super.text = value;
+  set isChangePage(bool value) {
+    _$isChangePageAtom.reportWrite(value, super.isChangePage, () {
+      super.isChangePage = value;
+    });
+  }
+
+  final _$animationIdAtom = Atom(name: '_FlashCardStore.animationId');
+
+  @override
+  String get animationId {
+    _$animationIdAtom.reportRead();
+    return super.animationId;
+  }
+
+  @override
+  set animationId(String value) {
+    _$animationIdAtom.reportWrite(value, super.animationId, () {
+      super.animationId = value;
     });
   }
 
@@ -133,11 +164,11 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
       ActionController(name: '_FlashCardStore');
 
   @override
-  void setText(String value) {
+  void setAnimationId(String value) {
     final _$actionInfo = _$_FlashCardStoreActionController.startAction(
-        name: '_FlashCardStore.setText');
+        name: '_FlashCardStore.setAnimationId');
     try {
-      return super.setText(value);
+      return super.setAnimationId(value);
     } finally {
       _$_FlashCardStoreActionController.endAction(_$actionInfo);
     }
@@ -177,6 +208,28 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
   }
 
   @override
+  void setShowTopButton(bool value) {
+    final _$actionInfo = _$_FlashCardStoreActionController.startAction(
+        name: '_FlashCardStore.setShowTopButton');
+    try {
+      return super.setShowTopButton(value);
+    } finally {
+      _$_FlashCardStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setChangePage(bool value) {
+    final _$actionInfo = _$_FlashCardStoreActionController.startAction(
+        name: '_FlashCardStore.setChangePage');
+    try {
+      return super.setChangePage(value);
+    } finally {
+      _$_FlashCardStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setSourceAudio() {
     final _$actionInfo = _$_FlashCardStoreActionController.startAction(
         name: '_FlashCardStore.setSourceAudio');
@@ -192,12 +245,14 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
     return '''
 listFlashCard: ${listFlashCard},
 listWidget: ${listWidget},
+listDataFlashCard: ${listDataFlashCard},
 isShowQuestion: ${isShowQuestion},
 isShowTopButton: ${isShowTopButton},
 pageCurrent: ${pageCurrent},
 pathSoureAudio: ${pathSoureAudio},
 isReload: ${isReload},
-text: ${text}
+isChangePage: ${isChangePage},
+animationId: ${animationId}
     ''';
   }
 }
