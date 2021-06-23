@@ -14,6 +14,7 @@ import 'package:topkiddo/theme/theme.dart' as Theme;
 import 'package:topkiddo/data_local/favorite_sentence_model.dart';
 import '../../../Utils/database_helpers.dart';
 import '../../../components/back.dart';
+import '../modal_language.dart';
 
 class DirectoryScreen extends StatefulWidget {
   DirectoryScreen({Key key}) : super(key: key);
@@ -209,16 +210,16 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                           children: <Widget>[
                             TopButton(),
                             Container(
-                              height: height - 37.w,
+                              height: height - 40.w,
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisSize: MainAxisSize.max,
                                 children: <Widget>[
                                   Container(
-                                    width: 300.w,
-                                    height: 180.w,
-                                    padding: EdgeInsets.only(top: 60),
+                                    width: 280.w,
+                                    height: 136.w,
+                                    padding: EdgeInsets.only(top: 18.w),
                                     alignment: Alignment.topCenter,
                                     decoration: BoxDecoration(
                                       image: DecorationImage(
@@ -228,8 +229,14 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                       ),
                                     ),
                                     child: Container(
-                                      height: 118.w,
-                                      width: 250.w,
+                                      height: 111.5.w,
+                                      width: 243.w,
+                                      clipBehavior: Clip.hardEdge,
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.only(
+                                        bottomLeft: Radius.circular(7.w),
+                                        bottomRight: Radius.circular(7.w),
+                                      )),
                                       child: Column(children: [
                                         Container(
                                             decoration: BoxDecoration(
@@ -248,13 +255,12 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                     CrossAxisAlignment.center,
                                                 children: <Widget>[
                                                   Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              left: 30),
+                                                      padding: EdgeInsets.only(
+                                                          left: 14.w),
                                                       child: Image.asset(
                                                         'assets/images/directory/search.png',
                                                         fit: BoxFit.contain,
-                                                        width: 20,
+                                                        width: 10.w,
                                                       )),
                                                   Expanded(
                                                     child: TextFormField(
@@ -264,8 +270,8 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                       autofocus: false,
                                                       style: TextStyle(
                                                           fontSize: height > 600
-                                                              ? 18.sp
-                                                              : 28.sp,
+                                                              ? 25.sp
+                                                              : 30.sp,
                                                           color: Theme
                                                               .Colors.orange500,
                                                           fontFamily:
@@ -290,8 +296,8 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                           hintStyle: TextStyle(
                                                               fontSize:
                                                                   height > 600
-                                                                      ? 18.sp
-                                                                      : 28.sp,
+                                                                      ? 25.sp
+                                                                      : 30.sp,
                                                               color: Theme
                                                                   .Colors
                                                                   .orange500,
@@ -303,16 +309,15 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                           viewInsets > 0
                                                       ? Padding(
                                                           padding:
-                                                              const EdgeInsets
-                                                                      .only(
-                                                                  right: 30),
+                                                              EdgeInsets.only(
+                                                                  right: 14.w),
                                                           child:
                                                               GestureDetector(
                                                             child: Image.asset(
                                                               'assets/images/directory/del.png',
                                                               fit: BoxFit
                                                                   .contain,
-                                                              width: 15,
+                                                              width: 8.w,
                                                             ),
                                                             onTap: () {
                                                               setState(() {
@@ -330,6 +335,8 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                               shrinkWrap: true,
                                               physics: BouncingScrollPhysics(),
                                               scrollDirection: Axis.vertical,
+                                              padding:
+                                                  EdgeInsets.only(top: 3.w),
                                               itemCount: listSentences.length,
                                               itemBuilder: (context, index) {
                                                 return Container(
@@ -352,10 +359,6 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                                             color:
                                                                                 Colors.grey[300])),
                                                               ),
-                                                              margin: EdgeInsets
-                                                                  .symmetric(
-                                                                      vertical:
-                                                                          2.w),
                                                               padding:
                                                                   EdgeInsets
                                                                       .only(
@@ -373,7 +376,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                                             .start,
                                                                     crossAxisAlignment:
                                                                         CrossAxisAlignment
-                                                                            .start,
+                                                                            .center,
                                                                     children: [
                                                                       Expanded(
                                                                         child:
@@ -382,7 +385,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                                               .vietnameseNorth,
                                                                           style: TextStyle(
                                                                               color: Theme.Colors.orange500,
-                                                                              fontSize: height > 600 ? 20.sp : 30.sp,
+                                                                              fontSize: height > 600 ? 25.sp : 30.sp,
                                                                               fontFamily: 'UTMCooperBlack'),
                                                                         ),
                                                                       ),
@@ -390,48 +393,48 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                                         child:
                                                                             Row(
                                                                           children: [
-                                                                            Padding(
-                                                                              padding: const EdgeInsets.only(right: 10),
-                                                                              child: GestureDetector(
-                                                                                  child: Image.asset(
-                                                                                    'assets/images/directory/add.png',
-                                                                                    fit: BoxFit.contain,
-                                                                                    width: 15,
-                                                                                  ),
-                                                                                  onTap: () async {
-                                                                                    await insertSetenceToFavorite(listSentences[index]);
-                                                                                  }),
-                                                                            ),
-                                                                            Padding(
-                                                                              padding: const EdgeInsets.only(right: 0),
-                                                                              child: GestureDetector(
+                                                                            GestureDetector(
                                                                                 child: Image.asset(
-                                                                                  'assets/images/directory/volume.png',
+                                                                                  'assets/images/directory/add.png',
                                                                                   fit: BoxFit.contain,
-                                                                                  width: 20,
+                                                                                  width: 9.w,
                                                                                 ),
                                                                                 onTap: () async {
-                                                                                  await box.clear();
-                                                                                  print('success');
-                                                                                  // final allRows = await dbHelper.queryAllRows();
-                                                                                  // print('query all rows:');
-                                                                                  // allRows.forEach(print);
-
-                                                                                  // await dbHelper.deleteAll();
-                                                                                  // print('success');
-                                                                                },
+                                                                                  await insertSetenceToFavorite(listSentences[index]);
+                                                                                }),
+                                                                            SizedBox(width: 8.w),
+                                                                            GestureDetector(
+                                                                              child: Image.asset(
+                                                                                'assets/images/directory/volume.png',
+                                                                                fit: BoxFit.contain,
+                                                                                width: 10.w,
                                                                               ),
-                                                                            )
+                                                                              onTap: () async {
+                                                                                await box.clear();
+                                                                                print('success');
+                                                                                // final allRows = await dbHelper.queryAllRows();
+                                                                                // print('query all rows:');
+                                                                                // allRows.forEach(print);
+
+                                                                                // await dbHelper.deleteAll();
+                                                                                // print('success');
+                                                                              },
+                                                                            ),
                                                                           ],
                                                                         ),
                                                                       ),
                                                                     ],
                                                                   ),
                                                                   Row(
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .center,
                                                                     children: [
                                                                       Padding(
-                                                                        padding:
-                                                                            const EdgeInsets.only(right: 10),
+                                                                        padding: EdgeInsets.only(
+                                                                            right:
+                                                                                5.w,
+                                                                            top: 1.w),
                                                                         child:
                                                                             GestureDetector(
                                                                           child:
@@ -440,7 +443,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                                             fit:
                                                                                 BoxFit.contain,
                                                                             width:
-                                                                                15,
+                                                                                7.w,
                                                                           ),
                                                                         ),
                                                                       ),
@@ -451,7 +454,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                                               .english,
                                                                           style: TextStyle(
                                                                               color: Theme.Colors.green200,
-                                                                              fontSize: height > 600 ? 10.sp : 20.sp,
+                                                                              fontSize: height > 600 ? 17.sp : 22.sp,
                                                                               fontFamily: 'UTMCooperBlack'),
                                                                         ),
                                                                       ),
@@ -491,6 +494,16 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
 }
 
 class TopButton extends StatelessWidget {
+  _showModalTranslate(context) {
+    showDialog(
+        context: context,
+        useSafeArea: false,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return ModalLanguage();
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -498,7 +511,7 @@ class TopButton extends StatelessWidget {
         height: 32.w,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
           children: [
             Expanded(
@@ -555,6 +568,48 @@ class TopButton extends StatelessWidget {
                       ],
                     )),
               ]),
+            ),
+            Container(
+              padding: EdgeInsets.only(top: 7.w),
+              height: 27.w,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Việt',
+                      style: TextStyle(
+                          height: 1.3,
+                          color: Theme.Colors.yellow50,
+                          fontSize: height > 600 ? 25.sp : 40.sp,
+                          fontFamily: 'UTMCooperBlack')),
+                  SizedBox(width: 6.w),
+                  GestureDetector(
+                    onTap: () {
+                      _showModalTranslate(context);
+                    },
+                    child: Image.asset('assets/images/menu/dropdown.png',
+                        fit: BoxFit.contain, height: 14.w),
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 8.w),
+                    child: Image.asset('assets/images/directory/c12.png',
+                        fit: BoxFit.contain, height: 9.w),
+                  ),
+                  Text('Anh',
+                      style: TextStyle(
+                          height: 1.3,
+                          color: Theme.Colors.yellow50,
+                          fontSize: height > 600 ? 25.sp : 40.sp,
+                          fontFamily: 'UTMCooperBlack')),
+                  SizedBox(width: 6.w),
+                  GestureDetector(
+                    onTap: () {
+                      _showModalTranslate(context);
+                    },
+                    child: Image.asset('assets/images/menu/dropdown.png',
+                        fit: BoxFit.contain, height: 14.w),
+                  )
+                ],
+              ),
             ),
             Expanded(
               child: Stack(

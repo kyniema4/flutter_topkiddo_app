@@ -35,113 +35,108 @@ class _WriteForKidsScreen extends State<WriteForKidsScreen> {
                     decoration: blackBackground,
                     child: Stack(children: <Widget>[
                       Center(
-                          child: Container(
-                              // color: Colors.red,
-                              height: 170.w,
+                          child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Container(
+                              height: 150.w,
+                              margin: EdgeInsets.only(top: 10.w),
                               child: Stack(
+                                alignment: Alignment.center,
                                 children: [
-                                  Center(
-                                    child: Container(
-                                        height: 150.w,
-                                        child: Stack(
-                                          children: [
-                                            Image.asset(
-                                              "assets/images/menu/board-for-kid.png",
-                                              fit: BoxFit.cover,
-                                            ),
-                                            Positioned(
-                                                top: 0,
-                                                bottom: 0,
-                                                left: 0,
-                                                right: 0,
-                                                child: Align(
-                                                    child: Container(
-                                                  margin: new EdgeInsets.only(
-                                                      left: 28.w,
-                                                      right: 28.w,
-                                                      top: 7.w),
-                                                  // color: Colors.blueAccent
-                                                  //     .withOpacity(0.5),
-                                                  height: 90.w,
-                                                  child: TextFormField(
-                                                    maxLines: null,
-                                                    minLines: 5,
-                                                    textInputAction:
-                                                        TextInputAction.newline,
-                                                    textAlign: TextAlign.center,
-                                                    textAlignVertical:
-                                                        TextAlignVertical
-                                                            .center,
-                                                    autofocus: true,
-                                                    style: TextStyle(
-                                                      fontSize: height > 600
-                                                          ? 24.sp
-                                                          : 60.sp,
-                                                      fontFamily:
-                                                          'UTMCooperBlack',
-                                                      fontWeight:
-                                                          FontWeight.w900,
-                                                      color:
-                                                          Theme.Colors.red100,
-                                                      letterSpacing: 0.5,
-                                                    ),
-                                                    decoration:
-                                                        new InputDecoration(
-                                                      contentPadding:
-                                                          const EdgeInsets
-                                                                  .symmetric(
-                                                              vertical: 10.0,
-                                                              horizontal: 0.0),
-                                                      hintText:
-                                                          'typeAnything'.tr(),
-                                                      hintMaxLines: 3,
-                                                      hintStyle: TextStyle(
-                                                        fontSize: height > 600
-                                                            ? 24.sp
-                                                            : 60.sp,
-                                                        fontFamily:
-                                                            'UTMCooperBlack',
-                                                        fontWeight:
-                                                            FontWeight.w900,
-                                                        color: Theme
-                                                            .Colors.red100
-                                                            .withOpacity(0.2),
-                                                        letterSpacing: 0.5,
-                                                      ),
-                                                      border: InputBorder.none,
-                                                      // fillColor: Colors
-                                                      //     .amberAccent
-                                                      //     .withOpacity(0.4),
-                                                      // filled: true,
-                                                    ),
-                                                    onEditingComplete: () {
-                                                      FocusScope.of(context)
-                                                          .nextFocus();
-                                                    },
-                                                  ),
-                                                )))
-                                          ],
-                                        )),
+                                  Image.asset(
+                                    "assets/images/menu/board-for-kid.png",
+                                    fit: BoxFit.contain,
+                                    height: double.infinity,
                                   ),
-                                  // Positioned(
-                                  //   top: height > 600 ? 11.w : 13.w,
-                                  //   left: 0,
-                                  //   right: 0,
-                                  //   child: Align(
-                                  //       child: Text(
-                                  //     'writeForKidTitle'.tr(),
-                                  //     style: TextStyle(
-                                  //         fontSize:
-                                  //             height > 600 ? 24.sp : 35.sp,
-                                  //         fontFamily: 'UTMCooperBlack',
-                                  //         fontWeight: FontWeight.w900,
-                                  //         color: Theme.Colors.yellow300,
-                                  //         letterSpacing: 0.5),
-                                  //   )),
-                                  // ),
+                                  Positioned(
+                                    top: 0.5.w,
+                                    child: Container(
+                                        height: 20.w,
+                                        alignment: Alignment.center,
+                                        child: Text('writeForKidTitle'.tr(),
+                                            style: TextStyle(
+                                                height: 1.2,
+                                                color: Theme.Colors.yellow300,
+                                                fontSize: height > 600
+                                                    ? 28.sp
+                                                    : 42.sp,
+                                                fontFamily: 'UTMCooperBlack'),
+                                            textAlign: TextAlign.center)),
+                                  ),
+                                  Positioned(
+                                      top: 0,
+                                      bottom: 0,
+                                      left: 0,
+                                      right: 0,
+                                      child: Align(
+                                          child: Container(
+                                        margin: new EdgeInsets.only(
+                                            left: 25.w, right: 25.w, top: 14.w),
+                                        // color:
+                                        //     Colors.blueAccent.withOpacity(0.5),
+                                        height: 94.w,
+                                        child: TextFormField(
+                                          maxLines: null,
+                                          minLines: 5,
+                                          textInputAction:
+                                              TextInputAction.newline,
+                                          textAlign: TextAlign.center,
+                                          textAlignVertical:
+                                              TextAlignVertical.center,
+                                          autofocus: true,
+                                          style: TextStyle(
+                                            fontSize:
+                                                height > 600 ? 45.sp : 60.sp,
+                                            fontFamily: 'UTMCooperBlack',
+                                            fontWeight: FontWeight.w900,
+                                            color: Theme.Colors.red100,
+                                            letterSpacing: 0.5,
+                                          ),
+                                          decoration: new InputDecoration(
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                    vertical: 10.0,
+                                                    horizontal: 0.0),
+                                            hintText: 'typeAnything'.tr(),
+                                            hintMaxLines: 3,
+                                            hintStyle: TextStyle(
+                                              fontSize:
+                                                  height > 600 ? 45.sp : 60.sp,
+                                              fontFamily: 'UTMCooperBlack',
+                                              fontWeight: FontWeight.w900,
+                                              color: Theme.Colors.red100
+                                                  .withOpacity(0.2),
+                                              letterSpacing: 0.5,
+                                            ),
+                                            border: InputBorder.none,
+                                          ),
+                                          onEditingComplete: () {
+                                            FocusScope.of(context).nextFocus();
+                                          },
+                                        ),
+                                      )))
                                 ],
-                              ))),
-                      // TopButton(),
+                              )),
+                          // Positioned(
+                          //   top: height > 600 ? 11.w : 13.w,
+                          //   left: 0,
+                          //   right: 0,
+                          //   child: Align(
+                          //       child: Text(
+                          //     'writeForKidTitle'.tr(),
+                          //     style: TextStyle(
+                          //         fontSize:
+                          //             height > 600 ? 24.sp : 35.sp,
+                          //         fontFamily: 'UTMCooperBlack',
+                          //         fontWeight: FontWeight.w900,
+                          //         color: Theme.Colors.yellow300,
+                          //         letterSpacing: 0.5),
+                          //   )),
+                          // ),
+                        ],
+                      )),
+                      TopButton(),
                     ])),
               ],
             ),

@@ -12,13 +12,21 @@ class Colors {
 
   static const transparent = Color(0x00ffffff);
   static const yellow200 = Color.fromRGBO(252, 251, 221, 1);
+  static const yellow50 = Color(0xFFFFF8EE);
   static const yellow100 = Color(0xFFF7FCF8);
   static const yellow300 = Color(0xFFFCFBDD);
   static const orange100 = Color(0xFFD9E3E0);
   static const orange500 = Color.fromRGBO(207, 94, 65, 1);
   static const green200 = Color(0xFF5CA366);
   static const green400 = Color(0xFF2A8850);
+  static const green500 = Color(0xFF35BA6A);
   static const green700 = Color(0xFF104333);
   static const red100 = Color(0xFFA74127);
   static const orange900 = Color(0xFFCF5E41);
+  static const orangeDark = Color(0xFFAA7537);
+  static const blueDark = Color(0xFF042F4B);
+  static const grey600 = Color(0xFF828282);
+  static const grey100 = Color(0xFFD7D1C9);
+  static const orangeLight = Color(0xFFFBC99D);
+  static const blue500 = Color(0xFF404F99);
 }

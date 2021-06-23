@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:topkiddo/screens/home/directory-page/directory_screen.dart';
-import 'package:topkiddo/theme/style.dart';
-import 'package:topkiddo/theme/theme.dart' as Theme;
+import './directory_screen.dart';
+import '../../../theme/style.dart';
+import '../../../theme/theme.dart' as Theme;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../Utils/database_helpers.dart';
@@ -50,16 +50,19 @@ class ShowDetailSentence extends StatelessWidget {
                 children: [
                   TopButton(),
                   Container(
-                      height: height - 37.w,
+                      alignment: Alignment.center,
+                      height: height - 40.w,
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisSize: MainAxisSize.max,
                           children: <Widget>[
                             Container(
-                              width: 300.w,
-                              height: 180.w,
-                              padding: EdgeInsets.only(top: 60),
+                              // width: 300.w,
+                              // height: 180.w,
+                              width: 280.w,
+                              height: 136.w,
+                              padding: EdgeInsets.only(top: 18.w),
                               alignment: Alignment.topCenter,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
@@ -69,8 +72,16 @@ class ShowDetailSentence extends StatelessWidget {
                                 ),
                               ),
                               child: Container(
-                                  height: 118.w,
-                                  width: 250.w,
+                                  // height: 118.w,
+                                  // width: 250.w,
+                                  height: 111.5.w,
+                                  width: 243.w,
+                                  decoration: BoxDecoration(
+                                      // color: Colors.red,
+                                      borderRadius: BorderRadius.only(
+                                    bottomLeft: Radius.circular(7.w),
+                                    bottomRight: Radius.circular(7.w),
+                                  )),
                                   child: Column(children: [
                                     Container(
                                         alignment: Alignment.centerLeft,
@@ -109,8 +120,8 @@ class ShowDetailSentence extends StatelessWidget {
                                     Container(
                                         margin: EdgeInsets.only(top: 3.w),
                                         padding: EdgeInsets.only(
-                                            left: 10.w, top: 5.w, right: 10.w),
-                                        height: 85.w,
+                                            left: 15.w, top: 8.w, right: 15.w),
+                                        height: 77.w,
                                         decoration: BoxDecoration(
                                           image: DecorationImage(
                                             image: AssetImage(
@@ -119,8 +130,6 @@ class ShowDetailSentence extends StatelessWidget {
                                           ),
                                         ),
                                         child: Row(
-                                          // mainAxisAlignment:
-                                          //     MainAxisAlignment.spaceBetween,
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           mainAxisSize: MainAxisSize.max,
@@ -129,6 +138,7 @@ class ShowDetailSentence extends StatelessWidget {
                                                 flex: 1,
                                                 child: Text(sentences.english,
                                                     style: TextStyle(
+                                                        height: 1.3,
                                                         color: Theme
                                                             .Colors.orange500,
                                                         fontSize: height > 600
@@ -137,35 +147,28 @@ class ShowDetailSentence extends StatelessWidget {
                                                         fontFamily:
                                                             'UTMCooperBlack'))),
                                             Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
                                               children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          right: 10),
-                                                  child: GestureDetector(
-                                                    child: Image.asset(
-                                                      'assets/images/directory/add.png',
-                                                      fit: BoxFit.contain,
-                                                      width: 15,
-                                                    ),
-                                                    onTap: () async {
-                                                      await insertSetenceToFavorite();
-                                                    },
+                                                GestureDetector(
+                                                  child: Image.asset(
+                                                    'assets/images/directory/add.png',
+                                                    fit: BoxFit.contain,
+                                                    width: 9.w,
                                                   ),
+                                                  onTap: () async {
+                                                    await insertSetenceToFavorite();
+                                                  },
                                                 ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          right: 0),
-                                                  child: GestureDetector(
-                                                    child: Image.asset(
-                                                      'assets/images/directory/volume.png',
-                                                      fit: BoxFit.contain,
-                                                      width: 20,
-                                                    ),
-                                                    onTap: () {},
+                                                SizedBox(width: 8.w),
+                                                GestureDetector(
+                                                  child: Image.asset(
+                                                    'assets/images/directory/volume.png',
+                                                    fit: BoxFit.contain,
+                                                    width: 10.w,
                                                   ),
-                                                )
+                                                  onTap: () {},
+                                                ),
                                               ],
                                             ),
                                           ],

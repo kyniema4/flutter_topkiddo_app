@@ -15,6 +15,7 @@ import 'package:easy_localization/easy_localization.dart';
 import '../../../components/back.dart';
 import './animation_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import './library-item-screen.dart';
 
 class DesignCourseScreen extends StatefulWidget {
   final lesson;
@@ -275,18 +276,27 @@ class TopButton extends StatelessWidget {
               child: Back(buttonImage: 'assets/images/button/back-button.png'),
             ),
             Expanded(
-              child: Stack(
-                children: [
-                  Positioned(
-                    top: 10.w,
-                    right: 16.w,
-                    child: Image.asset(
-                      'assets/images/button/library-button.png',
-                      height: 19.w,
-                      fit: BoxFit.contain,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              LibraryItemScreen()));
+                },
+                child: Stack(
+                  children: [
+                    Positioned(
+                      top: 10.w,
+                      right: 16.w,
+                      child: Image.asset(
+                        'assets/images/button/library-button.png',
+                        height: 19.w,
+                        fit: BoxFit.contain,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ],
