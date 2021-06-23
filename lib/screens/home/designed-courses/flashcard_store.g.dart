@@ -130,18 +130,18 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
     });
   }
 
-  final _$isChangePageAtom = Atom(name: '_FlashCardStore.isChangePage');
+  final _$isPreventSwipeAtom = Atom(name: '_FlashCardStore.isPreventSwipe');
 
   @override
-  bool get isChangePage {
-    _$isChangePageAtom.reportRead();
-    return super.isChangePage;
+  bool get isPreventSwipe {
+    _$isPreventSwipeAtom.reportRead();
+    return super.isPreventSwipe;
   }
 
   @override
-  set isChangePage(bool value) {
-    _$isChangePageAtom.reportWrite(value, super.isChangePage, () {
-      super.isChangePage = value;
+  set isPreventSwipe(bool value) {
+    _$isPreventSwipeAtom.reportWrite(value, super.isPreventSwipe, () {
+      super.isPreventSwipe = value;
     });
   }
 
@@ -219,11 +219,11 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
   }
 
   @override
-  void setChangePage(bool value) {
+  void setPreventSwipe(bool value) {
     final _$actionInfo = _$_FlashCardStoreActionController.startAction(
-        name: '_FlashCardStore.setChangePage');
+        name: '_FlashCardStore.setPreventSwipe');
     try {
-      return super.setChangePage(value);
+      return super.setPreventSwipe(value);
     } finally {
       _$_FlashCardStoreActionController.endAction(_$actionInfo);
     }
@@ -251,7 +251,7 @@ isShowTopButton: ${isShowTopButton},
 pageCurrent: ${pageCurrent},
 pathSoureAudio: ${pathSoureAudio},
 isReload: ${isReload},
-isChangePage: ${isChangePage},
+isPreventSwipe: ${isPreventSwipe},
 animationId: ${animationId}
     ''';
   }

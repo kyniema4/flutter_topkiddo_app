@@ -26,7 +26,7 @@ abstract class _FlashCardStore with Store {
   @observable
   bool isReload = false;
   @observable
-  bool isChangePage = true;
+  bool isPreventSwipe = true;
   @observable
   String animationId;
 
@@ -64,8 +64,8 @@ abstract class _FlashCardStore with Store {
   }
 
   @action
-  void setChangePage(bool value) {
-    isChangePage = value;
+  void setPreventSwipe(bool value) {
+    isPreventSwipe = value;
   }
 
   @action
