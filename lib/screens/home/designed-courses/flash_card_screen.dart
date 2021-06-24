@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:async/async.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:better_player/better_player.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -58,8 +60,8 @@ class _FlashCardScreen extends State<FlashCardScreen>
   VideoPlayerController _controllerVideo;
   ChewieController _chewieController;
   Future<void> _initializeVideoPlayerFuture;
-  bool looping;
-  bool autoplay;
+  BetterPlayerController _betterPlayerController;
+  CancelableOperation cancellableOperation;
 
   @override
   void initState() {
@@ -70,6 +72,13 @@ class _FlashCardScreen extends State<FlashCardScreen>
         duration: const Duration(milliseconds: 700), vsync: this);
     animation = tween.animate(
         CurvedAnimation(parent: animationController, curve: Curves.elasticOut));
+
+    // BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
+    //       BetterPlayerDataSourceType.network,
+    //      widget.videoUrl);
+    //   _betterPlayerController = BetterPlayerController(
+    //       BetterPlayerConfiguration(),
+    //       betterPlayerDataSource: betterPlayerDataSource);
   }
 
   @override
@@ -82,6 +91,8 @@ class _FlashCardScreen extends State<FlashCardScreen>
     // );
     // _initializeVideoPlayerFuture = _controllerVideo.initialize();
     // _controllerVideo.setLooping(true);
+    // _betterPlayerController =
+    //     BetterPlayerController(BetterPlayerConfiguration());
   }
 
   checkBeforeCreateFlashCard() async {
@@ -104,9 +115,12 @@ class _FlashCardScreen extends State<FlashCardScreen>
   //check part and add data
   createFlashCard() async {
     Map data = widget.lessonDetail;
+    print('debugging');
     List tempList = [...store.listFlashCard];
     if (data != null) {
-      List listPart = data['part'];
+      List listPart = data['part'].sublist(0, 1);
+
+      print('debugging');
       if (listPart.length > 0) {
         await Future.forEach(listPart, (part) async {
           List listContent = part['content'];
@@ -289,15 +303,15 @@ class _FlashCardScreen extends State<FlashCardScreen>
       String videoUrl = BaseUrl +
           "resources/get_resource_from_local" +
           '?token=${(await getToken())}&resourceId=${resourecId}&time=${DateTime.now().toString()}';
+      print('debugging');
       oneFlashCard = {
         'data': flashCard,
         'widget': CardVideo(
           // videoPlayerController: VideoPlayerController.network(videoUrl),
           videoUrl: videoUrl,
-          looping: true,
-          autoplay: true,
         )
       };
+      //oneFlashCard = {'data': flashCard, 'widget': cardVideo()};
       tempList.add(oneFlashCard);
       return tempList;
     }
@@ -482,17 +496,17 @@ class _FlashCardScreen extends State<FlashCardScreen>
   _onPageViewChange(int page) async {
     await audioPlayer.stop();
     print("Current Page: " + page.toString());
-    previousPage = page;
+
     store.setPageViewChange(page);
     List dataFlashCard = [...store.listFlashCard.map((e) => e['data'])];
     //List dataFlashCard = store.listDataFlashCard;
     FlashCard data = dataFlashCard[page];
-    if (data.isVideo) {
-      //_controllerVideo.play();
-    }
+    print('debugging');
+    if (data.isVideo) {}
 
     if (data.timeFrame != null && data.isAnimation == true) {
-      animationLetter(data.timeFrame, data.letterResources);
+      animationLetter(
+          timeFrame: data.timeFrame, letterResources: data.letterResources);
     }
 
     print('debugging');
@@ -523,24 +537,24 @@ class _FlashCardScreen extends State<FlashCardScreen>
     // });
   }
 
-  animationLetter(List timeFrame, List letterResources) async {
-    store.setPreventSwipe(false);
-    for (var i = 0; i < letterResources.length; i++) {
-      int time = (timeFrame[i]['time'] * 1000).round();
-      if (i != letterResources.length - 1) {
+  Future<dynamic> animationLetter(
+      {List timeFrame, List letterResources}) async {
+    //store.setPreventSwipe(false);
+    if (timeFrame != null && letterResources != null) {
+      for (var i = 0; i < letterResources.length; i++) {
+        int time = (timeFrame[i]['time'] * 1000).round();
         await Future.delayed(Duration(milliseconds: time), () {
           store.setAnimationId(letterResources[i]['_id']);
-        });
-      } else {
-        await Future.delayed(Duration(milliseconds: time), () {
-          store.setAnimationId(letterResources[i]['_id']);
-        });
-        await Future.delayed(Duration(milliseconds: 1000), () {
-          store.setAnimationId("");
         });
       }
-    }
-    store.setPreventSwipe(true);
+      await Future.delayed(Duration(milliseconds: 1000), () {
+        store.setAnimationId("");
+      });
+      return true;
+    } else
+      return false;
+
+    // store.setPreventSwipe(true);
   }
 
   reset() {
@@ -1156,7 +1170,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
     );
   }
 
-  // //trường hợp video
+  //trường hợp video
   //  cardVideo() {
   //   return Container(
   //     height: 1.sh,
@@ -1186,6 +1200,49 @@ class _FlashCardScreen extends State<FlashCardScreen>
   //     ),
   //   );
   // }
+
+  // cardVideo(String videoUrl) {
+  //   return Container(
+  //     height: 1.sh,
+  //     // width: 1.sw,
+  //     color: Colors.black,
+  //     child: ClipRRect(
+  //       child: Center(
+  //         child: AspectRatio(
+  //           aspectRatio: 16 / 9,
+  //           child: BetterPlayer.network(
+  //             videoUrl,
+  //             betterPlayerConfiguration: BetterPlayerConfiguration(
+  //                 autoPlay: true,
+  //                 looping: true,
+  //                 //fullScreenByDefault: true,
+  //                 autoDispose: false,
+  //                 controlsConfiguration: BetterPlayerControlsConfiguration(
+  //                   showControls: false,
+
+  //                 )),
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
+  @override
+  Widget cardVideo() {
+    BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
+        BetterPlayerDataSourceType.network,
+        "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4");
+
+    return AspectRatio(
+      aspectRatio: 16 / 9,
+      child: BetterPlayer(
+        controller: BetterPlayerController(
+            BetterPlayerConfiguration(
+                autoPlay: true, autoDispose: true, looping: true),
+            betterPlayerDataSource: betterPlayerDataSource),
+      ),
+    );
+  }
 
 //trường hợp câu có ảnh nhỏ
   Widget cardSentence(List listSubsentence) {
@@ -1264,9 +1321,11 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                         fontFamily: 'UTMCooperBlack'))),
                           ]),
                 onTap: () async {
-                  // await _FlashCardScreen()
+                  print(data);
+                  print(pathSound);
+                  print('debugging');
+                  // await
                   //     .playAudioTest(lessonId, sourceAudio, timeFrame, text);
-                  print(id);
                 },
               ),
               // SizedBox(width: 5.w),
@@ -1494,100 +1553,70 @@ class FlashCard {
 }
 
 class CardVideo extends StatefulWidget {
-  final VideoPlayerController videoPlayerController;
   final String videoUrl;
-  final bool looping;
-  final bool autoplay;
-  CardVideo({
-    this.videoPlayerController,
-    this.videoUrl,
-    this.looping,
-    this.autoplay,
-    Key key,
-  }) : super(key: key);
+
+  CardVideo({this.videoUrl});
 
   @override
   _CardVideoState createState() => _CardVideoState();
 }
 
 class _CardVideoState extends State<CardVideo> {
-  ChewieController _chewieController;
   VideoPlayerController _controllerVideo;
-  Future<void> _initializeVideoPlayerFuture;
+  VoidCallback listener;
+
+  //bool initialized = false;
+  //bool _isPlaying = false;
+  // Duration _duration;
+  // Duration _position;
+  // bool _isEnd = false;
+
   @override
   void initState() {
     super.initState();
-    // _chewieController = ChewieController(
-    //   videoPlayerController: widget.videoPlayerController,
-    //   aspectRatio: 16 / 9,
-    //   autoInitialize: true,
-    //   autoPlay: true,
-    //   looping: widget.looping,
-    //   errorBuilder: (context, errorMessage) {
-    //     return Center(
-    //       child: Text(
-    //         errorMessage,
-    //         style: TextStyle(color: Colors.white),
-    //       ),
-    //     );
-    //   },
-    // );
-    _controllerVideo =VideoPlayerController.network(widget.videoUrl);
-    _initializeVideoPlayerFuture = _controllerVideo.initialize();
-
-    _controllerVideo.setLooping(true);
+    _controllerVideo = VideoPlayerController.network(
+      widget.videoUrl,
+    )
+      ..addListener(() {
+        if (!_controllerVideo.value.isPlaying &&
+            _controllerVideo.value.position.inSeconds >=
+                _controllerVideo.value.duration.inSeconds) {
+          _controllerVideo = null;
+          print('videoPlayer completion');
+        }
+      })
+      ..setVolume(1.0)
+      ..initialize().then((_) {
+        setState(() {
+          _controllerVideo.play();
+          _controllerVideo.setLooping(false);
+          _controllerVideo.seekTo(Duration.zero);
+        });
+      });
   }
 
   @override
   void dispose() {
+    if (_controllerVideo.value.isPlaying) _controllerVideo.pause();
+    _controllerVideo = null;
     super.dispose();
-   // _chewieController.dispose();
-    _controllerVideo.dispose();
   }
 
-  @override
-  // Widget build(BuildContext context) {
-  //   return Container(
-  //     height: 1.sh,
-  //     // width: 1.sw,
-  //     color: Colors.black,
-  //     child: ClipRRect(
-  //       child: Center(
-  //         child: Chewie(
-  //           controller: _chewieController,
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
   Widget build(BuildContext context) {
-    print('rebuild Video');
-    _controllerVideo.play();
+    // print('rebuild Video');
+
     return Container(
       height: 1.sh,
       // width: 1.sw,
       color: Colors.black,
       child: ClipRRect(
         child: Center(
-          child: FutureBuilder(
-            future: _initializeVideoPlayerFuture,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                // If the VideoPlayerController has finished initialization, use
-                // the data it provides to limit the aspect ratio of the video.
-                return AspectRatio(
-                  aspectRatio: _controllerVideo.value.aspectRatio,
-                  // Use the VideoPlayer widget to display the video.
-                  child: VideoPlayer(_controllerVideo),
-                );
-              } else {
-                // If the VideoPlayerController is still initializing, show a
-                // loading spinner.
-                return Center(child: CircularProgressIndicator());
-              }
-            },
-          ),
-        ),
+            child: _controllerVideo.value.isInitialized
+                ? AspectRatio(
+                    aspectRatio: _controllerVideo.value.aspectRatio,
+                    child: VideoPlayer(_controllerVideo),
+                  )
+                : Center(child: CircularProgressIndicator())),
       ),
     );
   }
