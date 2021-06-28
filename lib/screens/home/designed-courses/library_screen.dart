@@ -176,15 +176,15 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   getListLesson(String id) async {
     Dialogs.showLoadingDialog(context);
-    var listLesson = await hiveService.getBoxesWithId(id, boxLesson);
+    var listLesson = await hiveService.getBoxesWithKey(id, boxLesson);
 
     if (listLesson != null) {
       //fetch data lesson and save to local
-      var futures = <Future>[];
-      for (var lesson in listLesson) {
-        futures.add(downloadDataLesson(lesson.id));
-      }
-      await Future.wait(futures);
+      // var futures = <Future>[];
+      // for (var lesson in listLesson) {
+      //   futures.add(downloadDataLesson(lesson.id));
+      // }
+      // await Future.wait(futures);
 
       Navigator.of(context, rootNavigator: true).pop();
       Navigator.push(

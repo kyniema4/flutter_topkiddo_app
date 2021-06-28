@@ -29,10 +29,19 @@ abstract class _FlashCardStore with Store {
   bool isPreventSwipe = true;
   @observable
   String animationId;
+  @observable
+  bool isAnimation;
+  @observable
+  String currentPartId;
 
   @action
   void setAnimationId(String value) {
     animationId = value;
+  }
+
+  @action
+  void setAnimation(bool value) {
+    isAnimation = value;
   }
 
   @action
@@ -45,6 +54,12 @@ abstract class _FlashCardStore with Store {
     listFlashCard = value;
     listWidget = [...listFlashCard.map((e) => e['widget'])];
   }
+
+  @action
+  void setCurrentPartId(String value) {
+      currentPartId=value;
+  }
+
 
   @action
   void setPageViewChange(int value) {

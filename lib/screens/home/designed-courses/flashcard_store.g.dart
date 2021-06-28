@@ -160,6 +160,36 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
     });
   }
 
+  final _$isAnimationAtom = Atom(name: '_FlashCardStore.isAnimation');
+
+  @override
+  bool get isAnimation {
+    _$isAnimationAtom.reportRead();
+    return super.isAnimation;
+  }
+
+  @override
+  set isAnimation(bool value) {
+    _$isAnimationAtom.reportWrite(value, super.isAnimation, () {
+      super.isAnimation = value;
+    });
+  }
+
+  final _$currentPartIdAtom = Atom(name: '_FlashCardStore.currentPartId');
+
+  @override
+  String get currentPartId {
+    _$currentPartIdAtom.reportRead();
+    return super.currentPartId;
+  }
+
+  @override
+  set currentPartId(String value) {
+    _$currentPartIdAtom.reportWrite(value, super.currentPartId, () {
+      super.currentPartId = value;
+    });
+  }
+
   final _$_FlashCardStoreActionController =
       ActionController(name: '_FlashCardStore');
 
@@ -169,6 +199,17 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
         name: '_FlashCardStore.setAnimationId');
     try {
       return super.setAnimationId(value);
+    } finally {
+      _$_FlashCardStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setAnimation(bool value) {
+    final _$actionInfo = _$_FlashCardStoreActionController.startAction(
+        name: '_FlashCardStore.setAnimation');
+    try {
+      return super.setAnimation(value);
     } finally {
       _$_FlashCardStoreActionController.endAction(_$actionInfo);
     }
@@ -191,6 +232,17 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
         name: '_FlashCardStore.setListFlashCard');
     try {
       return super.setListFlashCard(value);
+    } finally {
+      _$_FlashCardStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setCurrentPartId(String value) {
+    final _$actionInfo = _$_FlashCardStoreActionController.startAction(
+        name: '_FlashCardStore.setCurrentPartId');
+    try {
+      return super.setCurrentPartId(value);
     } finally {
       _$_FlashCardStoreActionController.endAction(_$actionInfo);
     }
@@ -252,7 +304,9 @@ pageCurrent: ${pageCurrent},
 pathSoureAudio: ${pathSoureAudio},
 isReload: ${isReload},
 isPreventSwipe: ${isPreventSwipe},
-animationId: ${animationId}
+animationId: ${animationId},
+isAnimation: ${isAnimation},
+currentPartId: ${currentPartId}
     ''';
   }
 }

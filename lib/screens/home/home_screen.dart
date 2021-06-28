@@ -166,13 +166,13 @@ class _HomeScreenState extends State<HomeScreen> {
       if (currentUnit.isNotEmpty && currentUnit.length > 0) {
         print('debugging');
         //lấy lesson Part đang học
-        //*check currentLesssonPart
+        //*check currentLesssonParton
         String currentLessonPart = '';
         if (currentLessonPart.isNotEmpty && currentLessonPart.length > 0) {
           bool checkListLesson = await hiveService.isExists(boxName: boxLesson);
           if (checkListLesson) {
             var listLesson =
-                await hiveService.getBoxesWithId(currentUnit, boxLesson);
+                await hiveService.getBoxesWithKey(currentUnit, boxLesson);
             print('debugging');
           }
         } else {
@@ -277,7 +277,7 @@ class _HomeScreenState extends State<HomeScreen> {
           listLesson.add(lesson);
         });
 
-        await hiveService.putBoxesWithId(unitId, listLesson, boxLesson);
+        await hiveService.putBoxesWithKey(unitId, listLesson, boxLesson);
         print('save data lesson success');
         return resultListLesson;
       }
