@@ -69,6 +69,7 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
     });
     try {
       List data = await hiveService.getBoxes(boxContent);
+      print('debugging');
       Dialogs.showLoadingDialog(context);
 
       if (data.length > 0 && data.isNotEmpty) {

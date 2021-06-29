@@ -55,13 +55,10 @@ class _FlashCardScreen extends State<FlashCardScreen>
   Tween<double> tween = Tween(begin: 1.5, end: 5);
   List listFlashCard = [];
   HandleDownload download = HandleDownload();
-  String idAudio = "";
   final FlashCardStore store = FlashCardStore();
   AudioPlayer audioPlayer = AudioPlayer();
-  //lưu part và page hiện tại
   final HiveService hiveService = HiveService();
   String boxFlashCard = "flashCard";
-  Map flashCardCurrent;
   int pageInPart = 0;
   String key = "currentData";
   // VideoPlayerController _controllerVideo;
@@ -79,35 +76,20 @@ class _FlashCardScreen extends State<FlashCardScreen>
         duration: const Duration(milliseconds: 700), vsync: this);
     animation = tween.animate(
         CurvedAnimation(parent: animationController, curve: Curves.elasticOut));
-
-    // BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
-    //       BetterPlayerDataSourceType.network,
-    //      widget.videoUrl);
-    //   _betterPlayerController = BetterPlayerController(
-    //       BetterPlayerConfiguration(),
-    //       betterPlayerDataSource: betterPlayerDataSource);
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // createFlashCard();
+
     checkBeforeCreateFlashCard();
-    // _controllerVideo = VideoPlayerController.network(
-    //   'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
-    // );
-    // _initializeVideoPlayerFuture = _controllerVideo.initialize();
-    // _controllerVideo.setLooping(true);
-    // _betterPlayerController =
-    //     BetterPlayerController(BetterPlayerConfiguration());
   }
 
   checkBeforeCreateFlashCard() async {
-    Map getFlashCardLeaning =
+    Map fashCardIsLeaning =
         await hiveService.getBoxesWithKey(key, boxFlashCard);
-
     //mới học lần đầu
-    if (getFlashCardLeaning != null) {
+    if (fashCardIsLeaning == null) {
       List tempList = [];
       var flashCard = FlashCard();
       flashCard.height = MediaQuery.of(context).size.height;
@@ -117,23 +99,17 @@ class _FlashCardScreen extends State<FlashCardScreen>
       };
       tempList.add(oneFlashCard);
       store.setListFlashCard(tempList);
-      createFlashCard(partCurrent: 0, numberGetPath: 1);
+      createFlashCard();
     } else {
       List listData = widget.lessonDetail['part'];
-      var partId = await hiveService.getBoxesWithKey(key, boxFlashCard);
-      var index = listData.indexWhere((e) => e["_id"] == partId);
-
-      // var data = Map<String, dynamic>.from(listData[index]);
-      // print(data['content']);
-
-      print('debugging');
+      String flashCardId = fashCardIsLeaning['flashCardId'];
+      createFlashCard(idPageLearning: flashCardId);
     }
   }
 
   //check part and add data
-  createFlashCard({int partCurrent, int numberGetPath}) async {
+  createFlashCard({idPageLearning: ""}) async {
     Map data = widget.lessonDetail;
-    print('debugging');
     List tempList = [...store.listFlashCard];
     if (data != null) {
       List listPart = data['part'];
@@ -145,7 +121,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
           //lấy content của topic
           if (listPart[i]['topic'] != null) {
             try {
-              var result = await dealerWidget(listPart[i]);
+              var result = await dealerWidget(listPart[i], listPart[i]['_id']);
               print('debugging');
               tempList.addAll(result);
             } catch (e) {
@@ -156,7 +132,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
           if (listContent.length > 0) {
             await Future.forEach(listContent, (content) async {
               try {
-                var result = await dealerWidget(content);
+                var result = await dealerWidget(content, listPart[i]['_id']);
                 if (result != null) {
                   tempList.addAll(result);
                 }
@@ -198,23 +174,24 @@ class _FlashCardScreen extends State<FlashCardScreen>
     } else {
       //fetch data;
     }
-    //_pageController.jumpToPage(currentPage);
-    // s.jumpTo(page);
+    //tới flashcard đã học
+    var pageNumber = tempList.indexWhere((e) => e["data"].id == idPageLearning);
+    _pageController.jumpToPage(pageNumber >= 0 ? pageNumber : 0);
     store.setListFlashCard(tempList);
   }
 
   //chia flashcard
-  Future dealerWidget(Map data) async {
+  Future dealerWidget(Map data, String partId) async {
     List tempList = [];
     Map<String, dynamic> oneFlashCard;
     var flashCard = FlashCard();
     flashCard = FlashCard.fromJson(Map<String, dynamic>.from(data));
     flashCard.height = MediaQuery.of(context).size.height;
+    flashCard.partId = partId;
     flashCard.lessonId = widget.lessonDetail['_id'];
-    flashCard.partId = data['_id'];
+    flashCard.unitId = widget.lessonDetail['unit'];
     List listResource = flashCard.resource;
     List listLetterResource = flashCard.letterResources;
-    print('debugging');
     //trường hợp title có hoặc k có ảnh, âm thanh
     if (data['topic'] != null) {
       flashCard.sourceAudio = data['audio'] != null
@@ -248,7 +225,6 @@ class _FlashCardScreen extends State<FlashCardScreen>
         listResource.length >= 0 &&
         listResource.length < 2) {
       for (var item in listResource) {
-        print(data['content']);
         bool check = data['content'].contains(' ');
 
         if (item["type"] == 2 && check) {
@@ -343,7 +319,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
       String videoUrl = BaseUrl +
           "resources/get_resource_from_local" +
           '?token=${(await getToken())}&resourceId=${resourecId}&time=${DateTime.now().toString()}';
-      print('debugging');
+
       oneFlashCard = {
         'data': flashCard,
         'widget': CardVideo(
@@ -398,7 +374,6 @@ class _FlashCardScreen extends State<FlashCardScreen>
           listSubSentence.add(subSentence);
         }
         if (item['resources'].length < 1) {
-          print('debugging');
           // checkAudioLetter(item['letter']);
           // Map letterAudio = {
           //   '_id': item['_id'] ?? "",
@@ -436,8 +411,6 @@ class _FlashCardScreen extends State<FlashCardScreen>
         'data': newFlashCard,
         'widget': cardSentence(listSubSentence)
       };
-
-      // print('debugging');
       tempList.add(oneFlashCard);
       return tempList;
     }
@@ -468,7 +441,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
         String sourceUrl = BaseUrl +
             "resources/get_resource_from_local" +
             '?token=${(await getToken())}&resourceId=${sourceImage['_id']}&time=${DateTime.now().toString()}';
-        print('debugging');
+
         return {"type": 2, "path": sourceUrl};
       }
     } else
@@ -505,8 +478,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
 
   playAudio(sourceAudio) async {
     String lessonId = widget.lessonDetail['_id'];
-    print(sourceAudio);
-    print('debugging');
+
     try {
       if (sourceAudio != null) {
         var typeFile = sourceAudio['localPath']
@@ -563,76 +535,42 @@ class _FlashCardScreen extends State<FlashCardScreen>
   //   }
 
   _onPageViewChange(int page) async {
-    await audioPlayer.stop();
     print("Current Page: " + page.toString());
     print(store.listFlashCard.length);
-    // if ((page + 5) == store.listFlashCard.length) {
-    //   print('debgging');
-    //   createFlashCard(1, 5);
-    // }
-    store.setPageViewChange(page);
+    await audioPlayer.stop();
+    store.setChangePage(page);
     store.setAnimation(false);
-
-    List dataFlashCard = [...store.listFlashCard.map((e) => e['data'])];
-    //List dataFlashCard = store.listDataFlashCard;
+    List dataFlashCard = store.listDataFlashCard;
     FlashCard data = dataFlashCard[page];
-    if (store.currentPartId != data.id && data.id != null) {
-      store.setCurrentPartId(data.id);
-      print('debugging');
-    }
-    // if (data.id != dataFlashCard[page]['id']) {
-    //   print('debugging');
-    // }
-    print('debugging');
-    if (data.isVideo) {}
 
+    if (data.isVideo) {}
+    //animation cho câu
     if (data.timeFrame != null && data.isAnimation == true) {
       store.setAnimation(true);
       animationLetter(
           timeFrame: data.timeFrame, letterResources: data.letterResources);
     }
-
-    print('debugging');
+    //animation chữ
     animationController.forward().then((value) {
       animationController.reverse();
     });
-
-    print(data.sourceAudio);
+    //play audio
     if (data != null) {
       playAudio(data.sourceAudio);
     }
-
-    await setCurrentData(data.partId, page);
-
-    // setState(() {
-    //   number = page;
-    //   // nếu page number = 0 hoặc
-    //   // kết thúc bài học chuyển sang phần câu hỏi thì mất bảng trắng
-    //   if (page == 0 || page > 8) {
-    //     isShowQuestion = true;
-    //   } else {
-    //     isShowQuestion = false;
-    //   }
-
-    //   if (page == 7) {
-    //     _controllerVideo.play();
-    //   } else {
-    //     _controllerVideo.pause();
-    //   }
-    // });
+    //lưu vị trí
+    await savePositionFlashCard(data);
   }
 
-  setCurrentData(String partId, int numPage) async {
-    Map data = {
-      "partId": partId ?? "",
-      "numPageInPart": numPage ?? 0,
+  savePositionFlashCard(FlashCard data) async {
+    Map items = {
+      "flashCardId": data.id ?? null,
+      "partId": data.partId ?? null,
+      "lessonId": data.lessonId ?? null,
+      "unitId": data.unitId ?? null,
+      "ordinalNumber": 0
     };
-    print(store.listFlashCard);
-    print('debugging');
-    // await hiveService.putBoxesWithKey(key, data, boxFlashCard);
-    // print("save flashcard success");
-    // var result = await hiveService.getBoxesWithKey(key, boxFlashCard);
-    // print('debugging');
+    await hiveService.putBoxesWithKey(key, items, boxFlashCard);
   }
 
   animationLetter({List timeFrame, List letterResources}) async {
@@ -909,6 +847,13 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                 // });
                                 store.setShowTopButton(true);
                               },
+                              onSwipeLeft: () {
+                                print('left');
+                                print('debugging');
+                              },
+                              onSwipeRight: () {
+                                print('right');
+                              },
                               swipeConfiguration: SwipeConfiguration(
                                   verticalSwipeMinVelocity: 100.0,
                                   verticalSwipeMinDisplacement: 50.0,
@@ -1143,14 +1088,14 @@ class _FlashCardScreen extends State<FlashCardScreen>
 
   //trường hợp ảnh full
   Widget cardImageFull({Map pathImage}) {
-    if (pathImage['type'] == 2) {
-      print(pathImage);
-      print('debugging');
-    }
     return GestureDetector(
       child: pathImage['type'] == 2
           ? Image.network(
               pathImage['path'],
+              errorBuilder: (BuildContext context, Object exception,
+                  StackTrace stackTrace) {
+                return Text('');
+              },
               fit: BoxFit.contain,
             )
           : pathImage['type'] == 1
@@ -1195,8 +1140,6 @@ class _FlashCardScreen extends State<FlashCardScreen>
 //trường hợp click từng hình để nghe
   Widget cardClickEachImage(
       {pathImg1: '', pathImg2: '', pathSound1: '', pathSound2: ''}) {
-    print(pathImg1);
-    print('debugging');
     double height = MediaQuery.of(context).size.height;
     return Container(
         margin: EdgeInsets.all(8.5.w),
@@ -1570,8 +1513,9 @@ class _TopButtonState extends State<TopButton> {
 
 class FlashCard {
   String id;
-  String lessonId;
   String partId;
+  String lessonId;
+  String unitId;
   String content;
   int language;
   int sizeContent;
@@ -1592,8 +1536,9 @@ class FlashCard {
 
   FlashCard({
     this.id,
-    this.lessonId,
     this.partId,
+    this.lessonId,
+    this.unitId,
     this.content,
     this.language,
     this.sizeContent,

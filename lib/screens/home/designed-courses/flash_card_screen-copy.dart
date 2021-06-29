@@ -471,7 +471,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
     await audioPlayer.stop();
     print("Current Page: " + page.toString());
     previousPage = page;
-    store.setPageViewChange(page);
+    store.setChangePage(page);
     List dataFlashCard = [...store.listFlashCard.map((e) => e['data'])];
     //List dataFlashCard = store.listDataFlashCard;
     FlashCard data = dataFlashCard[page];

@@ -36,6 +36,7 @@ class Dialogs {
           );
         });
   }
+
   // static Future<void> showLoadingDialog(
   //   BuildContext context, GlobalKey key) async {
   //     return showDialog<void>(
@@ -61,4 +62,5 @@ class Dialogs {
   //           );
   //         });
   // }
+  
 }

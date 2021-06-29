@@ -7,8 +7,11 @@ import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:topkiddo/Utils/hive_service.dart';
 import 'package:topkiddo/Utils/download_data.dart';
+import 'package:topkiddo/components/Loading_dialog.dart';
+import 'package:topkiddo/components/navigator_screen_dialog.dart';
 import 'package:topkiddo/data_local/lesson/lesson_data_model.dart';
 import 'package:topkiddo/screens/animation_auto_screen.dart';
+import 'package:topkiddo/screens/home/designed-courses/flash_card_screen.dart';
 import 'package:topkiddo/screens/home/directory-page/directory_screen.dart';
 import '../../Utils/http_service.dart';
 import '../../Utils/http_service.dart';
@@ -23,7 +26,6 @@ import 'designed-courses/library_screen.dart';
 import 'package:topkiddo/data_local/lesson/unit_data_model.dart';
 //import 'topic.dart';
 import 'package:path_provider/path_provider.dart';
-
 
 import 'topic/topic.dart';
 import '../../components/languages_app.dart';
@@ -44,6 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String boxUnit = "unit";
   String boxLesson = "lesson";
   String boxContent = "content";
+  String boxFlashCard = "flashCard";
   final HiveService hiveService = HiveService();
   final HandleDownload download = HandleDownload();
   DateTime now = DateTime.now();
@@ -159,21 +162,45 @@ class _HomeScreenState extends State<HomeScreen> {
     bool checkListContent = await hiveService.isExists(boxName: boxContent);
     print('checkListContent: ' + checkListContent.toString());
     //check đã save content?
-    if (!checkListContent) {
+    if (checkListContent) {
       //String currentUnit = await getCurrentUnit();
-      String currentUnit = '';
+      var isLearning =
+          await hiveService.getBoxesWithKey("currentData", boxFlashCard);
       //đã từng học
-      if (currentUnit.isNotEmpty && currentUnit.length > 0) {
-        print('debugging');
+
+      // if (currentUnit.isNotEmpty && currentUnit.length > 0) {
+      if (isLearning != null && isLearning.length > 0) {
         //lấy lesson Part đang học
-        //*check currentLesssonParton
-        String currentLessonPart = '';
+        String currentUnit = isLearning['unitId'];
+        String currentLessonPart = isLearning['partId'];
         if (currentLessonPart.isNotEmpty && currentLessonPart.length > 0) {
-          bool checkListLesson = await hiveService.isExists(boxName: boxLesson);
-          if (checkListLesson) {
-            var listLesson =
-                await hiveService.getBoxesWithKey(currentUnit, boxLesson);
-            print('debugging');
+          //bool checkListLesson = await hiveService.isExists(boxName: boxLesson);
+          // List listLesson =
+          //     await hiveService.getBoxesWithKey(currentUnit, boxLesson);
+          List listLesson = await hiveService.getBoxes(boxContent);
+          print(listLesson.length);
+          print('debugging');
+          if (listLesson.length > 0 && listLesson.isNotEmpty) {
+            bool check =
+                await NavigatorScreenDialog.ShowPopNaviagation(context);
+            if (check) {
+              var index = listLesson
+                  .indexWhere((e) => e['_id'] == isLearning['lessonId']);
+              // Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //         builder: (BuildContext context) => FlashCardScreen(
+              //               lessonDetail: listLesson[index],
+              //             )));
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => FlashCardScreen(
+                            lessonDetail: listLesson[index],
+                          )),
+                (Route<dynamic> route) => false,
+              );
+            }
+            return;
           }
         } else {
           //chưa học part lesson nào
@@ -226,7 +253,6 @@ class _HomeScreenState extends State<HomeScreen> {
             "filter": {"language": unitLanguage ?? 2}
           },
         );
-
         if (resultListUnit['success'] &&
             resultListUnit['data']['docs'].length > 0) {
           //handle save Unit
@@ -460,6 +486,8 @@ class TopButton extends StatelessWidget {
     await hiveService.clearBoxes(boxUnit);
     await hiveService.clearBoxes(boxLesson);
     await hiveService.clearBoxes(boxContent);
+    await hiveService.clearBoxes("flashCard");
+
     await download.deleteAll();
   }
 

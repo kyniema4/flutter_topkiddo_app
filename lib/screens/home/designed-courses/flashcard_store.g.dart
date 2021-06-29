@@ -43,13 +43,13 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
       Atom(name: '_FlashCardStore.listDataFlashCard');
 
   @override
-  List<Widget> get listDataFlashCard {
+  List<dynamic> get listDataFlashCard {
     _$listDataFlashCardAtom.reportRead();
     return super.listDataFlashCard;
   }
 
   @override
-  set listDataFlashCard(List<Widget> value) {
+  set listDataFlashCard(List<dynamic> value) {
     _$listDataFlashCardAtom.reportWrite(value, super.listDataFlashCard, () {
       super.listDataFlashCard = value;
     });
@@ -82,21 +82,6 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
   set isShowTopButton(bool value) {
     _$isShowTopButtonAtom.reportWrite(value, super.isShowTopButton, () {
       super.isShowTopButton = value;
-    });
-  }
-
-  final _$pageCurrentAtom = Atom(name: '_FlashCardStore.pageCurrent');
-
-  @override
-  int get pageCurrent {
-    _$pageCurrentAtom.reportRead();
-    return super.pageCurrent;
-  }
-
-  @override
-  set pageCurrent(int value) {
-    _$pageCurrentAtom.reportWrite(value, super.pageCurrent, () {
-      super.pageCurrent = value;
     });
   }
 
@@ -190,6 +175,36 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
     });
   }
 
+  final _$pageCurrentAtom = Atom(name: '_FlashCardStore.pageCurrent');
+
+  @override
+  int get pageCurrent {
+    _$pageCurrentAtom.reportRead();
+    return super.pageCurrent;
+  }
+
+  @override
+  set pageCurrent(int value) {
+    _$pageCurrentAtom.reportWrite(value, super.pageCurrent, () {
+      super.pageCurrent = value;
+    });
+  }
+
+  final _$pageInPartAtom = Atom(name: '_FlashCardStore.pageInPart');
+
+  @override
+  int get pageInPart {
+    _$pageInPartAtom.reportRead();
+    return super.pageInPart;
+  }
+
+  @override
+  set pageInPart(int value) {
+    _$pageInPartAtom.reportWrite(value, super.pageInPart, () {
+      super.pageInPart = value;
+    });
+  }
+
   final _$_FlashCardStoreActionController =
       ActionController(name: '_FlashCardStore');
 
@@ -249,11 +264,22 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
   }
 
   @override
-  void setPageViewChange(int value) {
+  void setPageInPart(int value) {
     final _$actionInfo = _$_FlashCardStoreActionController.startAction(
-        name: '_FlashCardStore.setPageViewChange');
+        name: '_FlashCardStore.setPageInPart');
     try {
-      return super.setPageViewChange(value);
+      return super.setPageInPart(value);
+    } finally {
+      _$_FlashCardStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setChangePage(int value) {
+    final _$actionInfo = _$_FlashCardStoreActionController.startAction(
+        name: '_FlashCardStore.setChangePage');
+    try {
+      return super.setChangePage(value);
     } finally {
       _$_FlashCardStoreActionController.endAction(_$actionInfo);
     }
@@ -300,13 +326,14 @@ listWidget: ${listWidget},
 listDataFlashCard: ${listDataFlashCard},
 isShowQuestion: ${isShowQuestion},
 isShowTopButton: ${isShowTopButton},
-pageCurrent: ${pageCurrent},
 pathSoureAudio: ${pathSoureAudio},
 isReload: ${isReload},
 isPreventSwipe: ${isPreventSwipe},
 animationId: ${animationId},
 isAnimation: ${isAnimation},
-currentPartId: ${currentPartId}
+currentPartId: ${currentPartId},
+pageCurrent: ${pageCurrent},
+pageInPart: ${pageInPart}
     ''';
   }
 }

@@ -14,13 +14,11 @@ abstract class _FlashCardStore with Store {
   @observable
   List<Widget> listWidget = [];
   @observable
-  List<Widget> listDataFlashCard = [];
+  List listDataFlashCard = [];
   @observable
-  bool isShowQuestion = true;
+  bool isShowQuestion = false;
   @observable
   bool isShowTopButton = true;
-  @observable
-  int pageCurrent;
   @observable
   String pathSoureAudio;
   @observable
@@ -33,6 +31,10 @@ abstract class _FlashCardStore with Store {
   bool isAnimation;
   @observable
   String currentPartId;
+  @observable
+  int pageCurrent = 0;
+  @observable
+  int pageInPart = 0;
 
   @action
   void setAnimationId(String value) {
@@ -52,17 +54,35 @@ abstract class _FlashCardStore with Store {
   @action
   void setListFlashCard(List value) {
     listFlashCard = value;
-    listWidget = [...listFlashCard.map((e) => e['widget'])];
+    List tempListWidget = [];
+    List tempListDataFlashCard = [];
+    for (var item in value) {
+      if (item['widget'] != null) {
+        tempListWidget.add(item['widget']);
+      }
+      if (item['data'] != null) {
+        tempListDataFlashCard.add(item['data']);
+      }
+    }
+    // listWidget = [...value.map((e) => e['widget'])];
+    // listDataFlashCard = [...value.map((e) => e['data'])];
+    listWidget = [...tempListWidget];
+    listDataFlashCard = [...tempListDataFlashCard];
   }
 
   @action
   void setCurrentPartId(String value) {
-      currentPartId=value;
+    currentPartId = value;
   }
 
+  @action
+  void setPageInPart(int value) {
+    pageInPart = value;
+  }
 
   @action
-  void setPageViewChange(int value) {
+  void setChangePage(int value) {
+    value > pageCurrent ? pageInPart++ : pageInPart--;
     pageCurrent = value;
     if (pageCurrent > 0) {
       isShowQuestion = false;
