@@ -10,6 +10,8 @@ class FlashCardStore = _FlashCardStore with _$FlashCardStore;
 // The store-class
 abstract class _FlashCardStore with Store {
   @observable
+  bool checkData = true;
+  @observable
   List listFlashCard = [];
   @observable
   List<Widget> listWidget = [];
@@ -35,6 +37,11 @@ abstract class _FlashCardStore with Store {
   int pageCurrent = 0;
   @observable
   int pageInPart = 0;
+
+  @action
+  void setCheckData(bool value) {
+    checkData = value;
+  }
 
   @action
   void setAnimationId(String value) {
@@ -82,7 +89,7 @@ abstract class _FlashCardStore with Store {
 
   @action
   void setChangePage(int value) {
-    value > pageCurrent ? pageInPart++ : pageInPart--;
+    // value > pageCurrent ? pageInPart++ : pageInPart--;
     pageCurrent = value;
     if (pageCurrent > 0) {
       isShowQuestion = false;
@@ -108,8 +115,11 @@ abstract class _FlashCardStore with Store {
     print(listFlashCard[pageCurrent]['data']);
   }
 
-  //  @computed
-  // bool get hasAnimation {
-  //    print()
+  // @computed
+  // bool get unitId {
+  //   if (listFlashCard != null) {
+  //     print(listFlashCard[1]['data'].unitId);
+  //   }
   // }
+ 
 }

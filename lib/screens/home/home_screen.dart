@@ -4,6 +4,7 @@ import 'dart:isolate';
 
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:topkiddo/Utils/hive_service.dart';
 import 'package:topkiddo/Utils/download_data.dart';
@@ -22,6 +23,7 @@ import '../../theme/theme.dart' as Theme;
 import '../new_game/loginhome_screen.dart';
 import './modal_translate.dart';
 import './modal_menu.dart';
+import 'designed-courses/flashcard_store.dart';
 import 'designed-courses/library_screen.dart';
 import 'package:topkiddo/data_local/lesson/unit_data_model.dart';
 //import 'topic.dart';
@@ -50,6 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final HiveService hiveService = HiveService();
   final HandleDownload download = HandleDownload();
   DateTime now = DateTime.now();
+  FlashCardStore flashCardStore = FlashCardStore();
   @override
   void initState() {
     super.initState();
@@ -159,21 +162,24 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   getDataLesson() async {
+    var flashCardStore = Provider.of<FlashCardStore>(context, listen: false);
     bool checkListContent = await hiveService.isExists(boxName: boxContent);
     print('checkListContent: ' + checkListContent.toString());
-    //check đã save content?
+
+    //đã có content
     if (checkListContent) {
-      //String currentUnit = await getCurrentUnit();
       var isLearning =
           await hiveService.getBoxesWithKey("currentData", boxFlashCard);
-      //đã từng học
-
-      // if (currentUnit.isNotEmpty && currentUnit.length > 0) {
-      if (isLearning != null && isLearning.length > 0) {
+    
+      //đã từng học & hiện thông báo vào bài
+      if (isLearning != null &&
+          isLearning.length > 0 &&
+          flashCardStore.checkData) {
         //lấy lesson Part đang học
         String currentUnit = isLearning['unitId'];
         String currentLessonPart = isLearning['partId'];
-        if (currentLessonPart.isNotEmpty && currentLessonPart.length > 0) {
+        print('debugging');
+        if (currentLessonPart != null && currentLessonPart.length > 0) {
           //bool checkListLesson = await hiveService.isExists(boxName: boxLesson);
           // List listLesson =
           //     await hiveService.getBoxesWithKey(currentUnit, boxLesson);
@@ -186,57 +192,26 @@ class _HomeScreenState extends State<HomeScreen> {
             if (check) {
               var index = listLesson
                   .indexWhere((e) => e['_id'] == isLearning['lessonId']);
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (BuildContext context) => FlashCardScreen(
-              //               lessonDetail: listLesson[index],
-              //             )));
+
               Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (context) => FlashCardScreen(
-                            lessonDetail: listLesson[index],
-                          )),
+                MaterialPageRoute(
+                    builder: (context) => FlashCardScreen(
+                          lessonDetail: listLesson[index],
+                        )),
                 (Route<dynamic> route) => false,
               );
             }
             return;
           }
-        } else {
-          //chưa học part lesson nào
-          var resultListLesson = await fetchListLesson(currentUnit);
-          if (resultListLesson['success'] &&
-              resultListLesson['data']['docs'].length > 0) {
-            print('debugging');
-            List listSaveContent = resultListLesson['data']['docs'].length < 10
-                ? resultListLesson['data']['docs']
-                : resultListLesson['data']['docs'].sublist(0, 10);
-            for (var i = 0; i < listSaveContent.length; i++) {
-              await downloadListContent(listSaveContent[i]);
-            }
-            await hiveService.addBoxes(listSaveContent, boxContent);
-          }
         }
       } else {
-        //học lần đầu
-        print('học lần đầu');
-        await fetchListUnit();
+        print('Đã có content nhưng chưa học');
+        return;
       }
     } else {
-      print('Đã có content');
-      // await fetchListUnit();
-
-      // List listUnit = [];
-      // data.forEach((e) {
-      //   UnitDataModel unit = UnitDataModel.fromJson(e);
-      //   fetchListLesson(unit.id);
-      //   //getListLesson(unit.id);
-      //   listUnit.add(unit);
-      // });
-
-      // await hiveService.addBoxes(listUnit, boxUnit);
-
-      //print('debugging');
+      print('học lần đầu');
+      await fetchListUnit();
     }
   }
 
@@ -393,6 +368,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // var flashCardStore = Provider.of<FlashCardStore>(context,listen: false);
+
+    // print('checkData: ' + flashCardStore.checkData.toString());
+
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
 

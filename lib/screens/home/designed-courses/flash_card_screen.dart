@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:async/async.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:better_player/better_player.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,10 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobx/mobx.dart';
+import 'package:provider/provider.dart';
 import 'package:topkiddo/Utils/hive_service.dart';
+import 'package:topkiddo/components/Loading_dialog.dart';
+import 'package:topkiddo/screens/home/designed-courses/design_course_screen.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_player/video_player.dart';
 
@@ -88,8 +92,10 @@ class _FlashCardScreen extends State<FlashCardScreen>
   checkBeforeCreateFlashCard() async {
     Map fashCardIsLeaning =
         await hiveService.getBoxesWithKey(key, boxFlashCard);
+    print('debugging');
     //mới học lần đầu
-    if (fashCardIsLeaning == null) {
+    if (fashCardIsLeaning.isNotEmpty &&
+        fashCardIsLeaning['flashCardId'] == null) {
       List tempList = [];
       var flashCard = FlashCard();
       flashCard.height = MediaQuery.of(context).size.height;
@@ -103,6 +109,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
     } else {
       List listData = widget.lessonDetail['part'];
       String flashCardId = fashCardIsLeaning['flashCardId'];
+      print('debugging');
       createFlashCard(idPageLearning: flashCardId);
     }
   }
@@ -176,7 +183,8 @@ class _FlashCardScreen extends State<FlashCardScreen>
     }
     //tới flashcard đã học
     var pageNumber = tempList.indexWhere((e) => e["data"].id == idPageLearning);
-    _pageController.jumpToPage(pageNumber >= 0 ? pageNumber : 0);
+    // _pageController.jumpToPage(pageNumber >= 0 ? pageNumber : 0);
+    _pageController.jumpToPage(0);
     store.setListFlashCard(tempList);
   }
 
@@ -535,6 +543,9 @@ class _FlashCardScreen extends State<FlashCardScreen>
   //   }
 
   _onPageViewChange(int page) async {
+    print('checkData ' + store.checkData.toString());
+    store.setCheckData(false);
+
     print("Current Page: " + page.toString());
     print(store.listFlashCard.length);
     await audioPlayer.stop();
@@ -560,17 +571,30 @@ class _FlashCardScreen extends State<FlashCardScreen>
     }
     //lưu vị trí
     await savePositionFlashCard(data);
+    if ((page - 1) == 0) {
+      checkRemoveGuideFlashCard(page);
+    }
   }
 
-  savePositionFlashCard(FlashCard data) async {
+  savePositionFlashCard(FlashCard value) async {
+    var data = null;
     Map items = {
-      "flashCardId": data.id ?? null,
-      "partId": data.partId ?? null,
-      "lessonId": data.lessonId ?? null,
-      "unitId": data.unitId ?? null,
+      "flashCardId": data?.id ?? null,
+      "partId": data?.partId ?? null,
+      "lessonId": data?.lessonId ?? null,
+      "unitId": data?.unitId ?? null,
       "ordinalNumber": 0
     };
     await hiveService.putBoxesWithKey(key, items, boxFlashCard);
+  }
+
+  checkRemoveGuideFlashCard(int page) {
+    List tempList = [...store.listDataFlashCard];
+    if (tempList[0].id == null) {
+      tempList.removeAt(0);
+    }
+    print(tempList);
+    print('debugging');
   }
 
   animationLetter({List timeFrame, List letterResources}) async {
@@ -777,7 +801,9 @@ class _FlashCardScreen extends State<FlashCardScreen>
 
   @override
   Widget build(BuildContext context) {
-    print('rebuil parent');
+    var flashCardStore = Provider.of<FlashCardStore>(context);
+    flashCardStore.setCheckData(false);
+    print('checkData in Widget: ' + flashCardStore.checkData.toString());
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     return Container(
@@ -865,7 +891,11 @@ class _FlashCardScreen extends State<FlashCardScreen>
                           ),
                         ),
                       ),
-                      store.isShowTopButton ? TopButton() : Container(),
+                      store.isShowTopButton
+                          ? TopButton(
+                              unitId: widget.lessonDetail['unit'],
+                            )
+                          : Container(),
                     ],
                   )),
             ),
@@ -1090,12 +1120,19 @@ class _FlashCardScreen extends State<FlashCardScreen>
   Widget cardImageFull({Map pathImage}) {
     return GestureDetector(
       child: pathImage['type'] == 2
-          ? Image.network(
-              pathImage['path'],
-              errorBuilder: (BuildContext context, Object exception,
-                  StackTrace stackTrace) {
-                return Text('');
-              },
+          ?
+          // Image.network(
+          //     pathImage['path'],
+          //     errorBuilder: (BuildContext context, Object exception,
+          //         StackTrace stackTrace) {
+          //       return Text('');
+          //     },
+          //     fit: BoxFit.contain,
+          //   )
+          CachedNetworkImage(
+              imageUrl: pathImage['path'],
+              // placeholder: (context, url) => CircularProgressIndicator(),
+              errorWidget: (context, url, error) => Icon(Icons.error),
               fit: BoxFit.contain,
             )
           : pathImage['type'] == 1
@@ -1167,8 +1204,18 @@ class _FlashCardScreen extends State<FlashCardScreen>
                           height: 70.w,
                         )
                       : pathImg1['type'] == 2
-                          ? Image.network(pathImg1['path'],
-                              fit: BoxFit.contain, height: 70.w)
+                          ?
+                          // Image.network(pathImg1['path'],
+                          //     fit: BoxFit.contain, height: 70.w)
+                          CachedNetworkImage(
+                              imageUrl: pathImg1['path'],
+                              //placeholder: (context, url) =>
+                              //    CircularProgressIndicator(),
+                              errorWidget: (context, url, error) =>
+                                  Icon(Icons.error),
+                              fit: BoxFit.contain,
+                              height: 70.w,
+                            )
                           : Container(),
                   onTap: () async {
                     playAudio(pathSound1);
@@ -1182,8 +1229,17 @@ class _FlashCardScreen extends State<FlashCardScreen>
                           height: 70.w,
                         )
                       : pathImg2['type'] == 2
-                          ? Image.network(pathImg2['path'],
-                              fit: BoxFit.contain, height: 70.w)
+                          ?
+                          //      Image.network(pathImg2['path'],
+                          //         fit: BoxFit.contain, height: 70.w)
+                          CachedNetworkImage(
+                              imageUrl: pathImg2['path'],
+                              //placeholder: (context, url) =>
+                              //    CircularProgressIndicator(),
+                              errorWidget: (context, url, error) =>
+                                  Icon(Icons.error),
+                              fit: BoxFit.contain,
+                              height: 70.w)
                           : Container(),
                   onTap: () async {
                     playAudio(pathSound2);
@@ -1287,22 +1343,23 @@ class _FlashCardScreen extends State<FlashCardScreen>
   //     ),
   //   );
   // }
-  @override
-  Widget cardVideo() {
-    BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
-        BetterPlayerDataSourceType.network,
-        "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4");
 
-    return AspectRatio(
-      aspectRatio: 16 / 9,
-      child: BetterPlayer(
-        controller: BetterPlayerController(
-            BetterPlayerConfiguration(
-                autoPlay: true, autoDispose: true, looping: true),
-            betterPlayerDataSource: betterPlayerDataSource),
-      ),
-    );
-  }
+  // @override
+  // Widget cardVideo() {
+  //   BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
+  //       BetterPlayerDataSourceType.network,
+  //       "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4");
+
+  //   return AspectRatio(
+  //     aspectRatio: 16 / 9,
+  //     child: BetterPlayer(
+  //       controller: BetterPlayerController(
+  //           BetterPlayerConfiguration(
+  //               autoPlay: true, autoDispose: true, looping: true),
+  //           betterPlayerDataSource: betterPlayerDataSource),
+  //     ),
+  //   );
+  // }
 
 //trường hợp câu có ảnh nhỏ
   Widget cardSentence(List listSubsentence) {
@@ -1341,11 +1398,24 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                 : pathImage['type'] == 2
                                     ? Container(
                                         margin: EdgeInsets.only(top: 3.w),
-                                        child: Image.network(
-                                          pathImage["path"],
-                                          fit: BoxFit.contain,
-                                          height: 17.w,
-                                        )
+                                        // child: Image.network(
+                                        //   pathImage["path"],
+                                        //   fit: BoxFit.contain,
+                                        //   height: 17.w,
+
+                                        // )
+                                        child: CachedNetworkImage(
+                                            imageUrl: pathImage['path'],
+                                            placeholder: (context, url) =>
+                                                CircularProgressIndicator(
+                                                  strokeWidth: 0,
+                                                ),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    Icon(Icons.error),
+                                            fit: BoxFit.contain,
+                                            height: 17.w)
+
                                         // child: Image(
                                         //   image: FileImage(
                                         //       File(pathImage["path"])),
@@ -1411,11 +1481,39 @@ class _FlashCardScreen extends State<FlashCardScreen>
 }
 
 class TopButton extends StatefulWidget {
+  final unitId;
+
+  const TopButton({Key key, this.unitId}) : super(key: key);
   @override
   _TopButtonState createState() => _TopButtonState();
 }
 
 class _TopButtonState extends State<TopButton> {
+  final HiveService hiveService = HiveService();
+  String boxLesson = "lesson";
+  String boxFlashCard = "flashCard";
+  String key = "currentData";
+
+  getListLesson() async {
+    Dialogs.showLoadingDialog(context);
+    var currentUnitId = widget.unitId;
+    if (currentUnitId != null && currentUnitId.length > 0) {
+      var listLesson =
+          await hiveService.getBoxesWithKey(currentUnitId, boxLesson);
+
+      if (listLesson != null && listLesson.length > 0) {
+        Navigator.of(context, rootNavigator: true).pop();
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => DesignCourseScreen(lesson: listLesson)),
+            (route) => false);
+      } else {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -1458,7 +1556,7 @@ class _TopButtonState extends State<TopButton> {
                                         fit: BoxFit.contain),
                                   )),
                               onTap: () {
-                                Navigator.pop(context);
+                                getListLesson();
                               }),
                           SizedBox(
                             width: 8.w,

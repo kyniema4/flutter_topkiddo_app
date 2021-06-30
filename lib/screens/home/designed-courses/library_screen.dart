@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:topkiddo/Utils/download_data.dart';
 import 'package:topkiddo/Utils/hive_service.dart';
 import 'package:topkiddo/components/Loading_dialog.dart';
+import 'package:topkiddo/screens/home/home_screen.dart';
 
 import '../../../Utils/http_service.dart';
 import '../../../components/back.dart';
@@ -130,6 +131,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                                 ),
                               ),
                               onTap: () {
+                                //print(data[index].id);
                                 getListLesson(data[index].id);
                                 // Navigator.push(
                                 //     context,
@@ -387,8 +389,49 @@ class TopButton extends StatelessWidget {
           mainAxisSize: MainAxisSize.max,
           children: [
             Expanded(
-              child: Back(buttonImage: 'assets/images/button/close-button.png'),
-            ),
+                // child: Back(buttonImage: 'assets/images/button/close-button.png'),
+                child: Container(
+              padding: new EdgeInsets.only(top: 9.w),
+              height: MediaQuery.of(context).size.height,
+              child: Stack(
+                children: <Widget>[
+                  Positioned(
+                    top: 4.5.w,
+                    left: -69.w,
+                    // right: 0,
+                    child: Align(
+                      child: Image.asset(
+                        'assets/images/button/bar-long.png',
+                        height: 12.w,
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: 1.w,
+                    left: 15.w,
+                    child: GestureDetector(
+                        child: Container(
+                            width: 20.w,
+                            height: 20.w,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  image: AssetImage(
+                                    'assets/images/button/back-button.png',
+                                  ),
+                                  fit: BoxFit.contain),
+                            )),
+                        onTap: () {
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => HomeScreen()),
+                              (route) => false);
+                        }),
+                  )
+                ],
+              ),
+            )),
             Container(
                 width: 180.w,
                 height: 27.w,

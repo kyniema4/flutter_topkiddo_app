@@ -9,6 +9,21 @@ part of 'flashcard_store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
 mixin _$FlashCardStore on _FlashCardStore, Store {
+  final _$checkDataAtom = Atom(name: '_FlashCardStore.checkData');
+
+  @override
+  bool get checkData {
+    _$checkDataAtom.reportRead();
+    return super.checkData;
+  }
+
+  @override
+  set checkData(bool value) {
+    _$checkDataAtom.reportWrite(value, super.checkData, () {
+      super.checkData = value;
+    });
+  }
+
   final _$listFlashCardAtom = Atom(name: '_FlashCardStore.listFlashCard');
 
   @override
@@ -209,6 +224,17 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
       ActionController(name: '_FlashCardStore');
 
   @override
+  void setCheckData(bool value) {
+    final _$actionInfo = _$_FlashCardStoreActionController.startAction(
+        name: '_FlashCardStore.setCheckData');
+    try {
+      return super.setCheckData(value);
+    } finally {
+      _$_FlashCardStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setAnimationId(String value) {
     final _$actionInfo = _$_FlashCardStoreActionController.startAction(
         name: '_FlashCardStore.setAnimationId');
@@ -321,6 +347,7 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
   @override
   String toString() {
     return '''
+checkData: ${checkData},
 listFlashCard: ${listFlashCard},
 listWidget: ${listWidget},
 listDataFlashCard: ${listDataFlashCard},
