@@ -301,11 +301,11 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
   }
 
   @override
-  void setChangePage(int value) {
+  void setShowQuestion(bool value) {
     final _$actionInfo = _$_FlashCardStoreActionController.startAction(
-        name: '_FlashCardStore.setChangePage');
+        name: '_FlashCardStore.setShowQuestion');
     try {
-      return super.setChangePage(value);
+      return super.setShowQuestion(value);
     } finally {
       _$_FlashCardStoreActionController.endAction(_$actionInfo);
     }

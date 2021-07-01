@@ -159,7 +159,7 @@ Future fetchAudioLetter(String letter) async {
             letter.toLowerCase() +
             '?key=' +
             keyId);
-
+    print('debugging');
     http.Response response = await http.get(soundUrl);
     if (response.statusCode == 200) {
       var res = jsonDecode(response.body);
@@ -178,6 +178,7 @@ Future fetchAudioLetter(String letter) async {
               '/' +
               soundFind['audio'] +
               '.wav';
+          return path;
         } else {
           return;
         }

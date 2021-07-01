@@ -471,12 +471,11 @@ class _FlashCardScreen extends State<FlashCardScreen>
     await audioPlayer.stop();
     print("Current Page: " + page.toString());
     previousPage = page;
-    store.setChangePage(page);
     List dataFlashCard = [...store.listFlashCard.map((e) => e['data'])];
     //List dataFlashCard = store.listDataFlashCard;
     FlashCard data = dataFlashCard[page];
     if (data.isVideo) {
-     // _controllerVideo.dispose();
+      // _controllerVideo.dispose();
       // _controllerVideo = VideoPlayerController.network(
       //     "http://backend.topkiddovn.com/resources/get_resource_from_local?token=eyJhbGciOiJIUzI1NiJ9.NjBkMmI1NjBkZDM4ZmMxOTE4ODE5M2U2.nrGptgdv6p8LywAB50zqJvBkvviuUEBBUPdT57VQM4I&resourceId=60bb5b25dd38fc1918818da6&time=1624421753969");
 

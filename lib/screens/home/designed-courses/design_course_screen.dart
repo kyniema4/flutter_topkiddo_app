@@ -315,7 +315,7 @@ class TopButton extends StatelessWidget {
                               (route) => false);
                         }),
                   )
-                ],
+                ]
               ),
             )),
             Expanded(

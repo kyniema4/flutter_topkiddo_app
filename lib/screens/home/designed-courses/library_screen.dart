@@ -236,6 +236,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
               print('debugging');
               if (e['resources'] == null) {
                 String soundPath = await fetchAudioLetter(e['letter']);
+                print('debugging');
                 if (soundPath != null) {
                   Map resource = {'_id': e['_id'], 'localPath': soundPath};
                   e['resources'].add(resource);

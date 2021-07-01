@@ -20,14 +20,17 @@ class HandleDownload {
   }
 
   Future<dynamic> downloadFile(data, lessonId) async {
-    var typeFile = data['localPath'].substring(data['localPath'].indexOf('.'));
+    String typeFile =
+        data['localPath'].substring(data['localPath'].indexOf('.'));
     String dir = await _localPath;
     String subPath = "/$lessonId/${data['_id']}$typeFile";
     bool check = await checkFileExists(subPath);
     if (!check) {
       Io.File file = await Io.File('$dir' + '$subPath').create(recursive: true);
+      
       String params =
           '?token=${(await getToken())}&resourceId=${data['_id']}&time=${DateTime.now().toString()}';
+
       try {
         var resultDownload = await fetch(
             url: BaseUrl + "resources/get_resource_from_local" + params,

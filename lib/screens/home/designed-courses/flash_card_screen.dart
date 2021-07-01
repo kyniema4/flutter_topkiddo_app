@@ -23,6 +23,7 @@ import 'package:video_player/video_player.dart';
 
 import 'package:topkiddo/Utils/download_data.dart';
 import 'package:topkiddo/Utils/http_service.dart';
+import 'package:http/http.dart' as http;
 import 'package:topkiddo/screens/home/designed-courses/flashcard_store.dart';
 
 import '../../../components/languages_app.dart';
@@ -94,8 +95,11 @@ class _FlashCardScreen extends State<FlashCardScreen>
         await hiveService.getBoxesWithKey(key, boxFlashCard);
     print('debugging');
     //mới học lần đầu
-    if (fashCardIsLeaning.isNotEmpty &&
-        fashCardIsLeaning['flashCardId'] == null) {
+    if (fashCardIsLeaning != null && fashCardIsLeaning['flashCardId'] != null) {
+      List listData = widget.lessonDetail['part'];
+      String flashCardId = fashCardIsLeaning['flashCardId'];
+      createFlashCard(idPageLearning: flashCardId);
+    } else {
       List tempList = [];
       var flashCard = FlashCard();
       flashCard.height = MediaQuery.of(context).size.height;
@@ -106,11 +110,6 @@ class _FlashCardScreen extends State<FlashCardScreen>
       tempList.add(oneFlashCard);
       store.setListFlashCard(tempList);
       createFlashCard();
-    } else {
-      List listData = widget.lessonDetail['part'];
-      String flashCardId = fashCardIsLeaning['flashCardId'];
-      print('debugging');
-      createFlashCard(idPageLearning: flashCardId);
     }
   }
 
@@ -184,7 +183,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
     //tới flashcard đã học
     var pageNumber = tempList.indexWhere((e) => e["data"].id == idPageLearning);
     // _pageController.jumpToPage(pageNumber >= 0 ? pageNumber : 0);
-    _pageController.jumpToPage(0);
+    _pageController.jumpToPage(10);
     store.setListFlashCard(tempList);
   }
 
@@ -198,9 +197,10 @@ class _FlashCardScreen extends State<FlashCardScreen>
     flashCard.partId = partId;
     flashCard.lessonId = widget.lessonDetail['_id'];
     flashCard.unitId = widget.lessonDetail['unit'];
-    List listResource = flashCard.resource;
+    List listResource = flashCard.resources;
     List listLetterResource = flashCard.letterResources;
-    //trường hợp title có hoặc k có ảnh, âm thanh
+
+    //-------------------------trường hợp title có hoặc k có ảnh, âm thanh
     if (data['topic'] != null) {
       flashCard.sourceAudio = data['audio'] != null
           ? {
@@ -228,7 +228,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
           : tempList;
       return tempList;
     }
-    // trương hợp chữ ngắn
+    //-------------------------trương hợp chữ ngắn
     if (data['type'] == 1 &&
         listResource.length >= 0 &&
         listResource.length < 2) {
@@ -258,7 +258,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
         }
       }
     }
-    // trường hợp click vào từng hình để nghe
+    //-------------------------trường hợp click vào từng hình để nghe
     if (data['type'] == 3 && listLetterResource.length > 0) {
       List listPathImage = [];
       List listPathAudio = [];
@@ -292,7 +292,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
       tempList.add(oneFlashCard);
       return tempList;
     }
-    //trương hợp image full
+    //-------------------------trương hợp image full
     if (data['type'] == 1 &&
         listResource.length > 0 &&
         listResource.length < 3 &&
@@ -320,7 +320,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
 
       return tempList;
     }
-    //trường hợp video
+    //-------------------------trường hợp video
     if (data['type'] == 1 && listResource[0]['type'] >= 3) {
       flashCard.isVideo = true;
       String resourecId = listResource[0]['_id'] ?? "";
@@ -339,7 +339,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
       tempList.add(oneFlashCard);
       return tempList;
     }
-    //trường hợp câu lồng ảnh nhỏ
+    //----------------------------trường hợp câu lồng ảnh nhỏ
     if (data['type'] == 2 &&
         listResource.length > 0 &&
         listLetterResource.length > 0) {
@@ -361,8 +361,10 @@ class _FlashCardScreen extends State<FlashCardScreen>
           };
         }
       }
+      FlashCard flashCardImage = flashCard.copyWith();
+      flashCardImage.letterResources = null;
       oneFlashCard = {
-        'data': flashCard,
+        'data': flashCardImage,
         'widget':
             cardImageFull(pathImage: await getPathImage(flashCard.sourceImage))
       };
@@ -373,9 +375,10 @@ class _FlashCardScreen extends State<FlashCardScreen>
 
       for (var item in listLetterResource) {
         if (item['resources'].length == 1) {
+          print('debugging');
           Map letterAudio = {
             '_id': item['resources'][0]['_id'] ?? "",
-            'localPath': item['resources'][0]['localPath'] ?? ""
+            'localPath': item['resources'][0]['localPath'] ?? "",
           };
           var subSentence = cardSubSentence(flashCard,
               id: item['_id'], text: item['letter'], pathSound: letterAudio);
@@ -413,10 +416,11 @@ class _FlashCardScreen extends State<FlashCardScreen>
           listSubSentence.add(subSentence);
         }
       }
-      FlashCard newFlashCard = flashCard.copyWith();
-      newFlashCard.isAnimation = true;
+      FlashCard flashCardLetter = flashCard.copyWith();
+      flashCardLetter.isAnimation = true;
+      flashCardLetter.resources = null;
       oneFlashCard = {
-        'data': newFlashCard,
+        'data': flashCardLetter,
         'widget': cardSentence(listSubSentence)
       };
       tempList.add(oneFlashCard);
@@ -484,9 +488,18 @@ class _FlashCardScreen extends State<FlashCardScreen>
   //   });
   // }
 
+  playAudioTest() async {
+    print('play audio test');
+    String lessonId = widget.lessonDetail['_id'];
+    String subPath = "/$lessonId/60bb5eb2dd38fc1918818dbf.wav";
+    await audioPlayer.stop();
+    var path = await download.getFileFromLocal(subPath);
+    if (path != null) await audioPlayer.play(path, isLocal: true);
+  }
+
   playAudio(sourceAudio) async {
     String lessonId = widget.lessonDetail['_id'];
-
+    await audioPlayer.stop();
     try {
       if (sourceAudio != null) {
         var typeFile = sourceAudio['localPath']
@@ -515,6 +528,24 @@ class _FlashCardScreen extends State<FlashCardScreen>
       // }
     } catch (e) {
       print(e);
+    }
+  }
+
+  playAudioOutsideResources(String letter) async {
+    if (letter.length > 0) {
+      String soundPath = await fetchAudioLetter(letter);
+
+      if (soundPath != null) {
+        // Map resource = {'_id': e['_id'], 'localPath': soundPath};
+        // e['resources'].add(resource);
+        // print(content);
+        print(soundPath);
+        String path =
+            "https://media.merriam-webster.com/soundc11/love/love0001.wav";
+        audioPlayer.play(path);
+
+        print('debugging');
+      }
     }
   }
 
@@ -548,8 +579,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
 
     print("Current Page: " + page.toString());
     print(store.listFlashCard.length);
-    await audioPlayer.stop();
-    store.setChangePage(page);
+
     store.setAnimation(false);
     List dataFlashCard = store.listDataFlashCard;
     FlashCard data = dataFlashCard[page];
@@ -571,8 +601,13 @@ class _FlashCardScreen extends State<FlashCardScreen>
     }
     //lưu vị trí
     await savePositionFlashCard(data);
-    if ((page - 1) == 0) {
+
+    if (page == 1) {
       checkRemoveGuideFlashCard(page);
+    }
+    //kiểm tra trước data đã có chưa
+    if (page % 10 == 0) {
+      checkExistDataFuture(page + 10, dataFlashCard);
     }
   }
 
@@ -589,12 +624,68 @@ class _FlashCardScreen extends State<FlashCardScreen>
   }
 
   checkRemoveGuideFlashCard(int page) {
-    List tempList = [...store.listDataFlashCard];
-    if (tempList[0].id == null) {
+    List tempList = [...store.listFlashCard];
+    if (tempList[0]['data'].id == null) {
       tempList.removeAt(0);
+      store.setListFlashCard(tempList);
+      store.setShowQuestion(false);
+      _pageController.jumpToPage(0);
     }
-    print(tempList);
-    print('debugging');
+  }
+
+  checkExistDataFuture(int pageCheck, List listData) async {
+    List tempList = [...listData.sublist(pageCheck, pageCheck + 10)];
+    // var data1 = listData[pageCheck];
+    // var data2 = listData[pageCheck + 10];
+
+    if (tempList.length > 0) {
+      // for (var i = 0; i < tempList.length; i++) {
+      //   List listContent = tempList[i]['content'];
+
+      Future.forEach(tempList, (content) {
+        List data = [];
+        if (content?.resources != null && content?.resources.length > 0) {
+          data.addAll(content.resources);
+        }
+        // if (content?.letterResources != null &&
+        //     content?.letterResources.length > 0) {
+        //   List dataLetterResources = content.letterResources;
+        //   dataLetterResources.forEach((e) async {
+        //     if (e['resources'].length == 0) {
+        //       String soundPath = await fetchAudioLetter(e['letter']);
+        //       print('debugging');
+        //       if (soundPath != null) {
+        //         Map resource = {'_id': e['_id'], 'localPath': soundPath};
+        //         e['resources'].add(resource);
+        //         print(content);
+
+        //         print('debugging');
+        //       }
+        //     }
+
+        //     data.addAll(e['resources']);
+        //   });
+        // }
+        // if (content?.outsideResources.length > 0) {
+        //   data.addAll(content.outsideResources);
+        // }
+
+        downloadData(data, widget.lessonDetail['_id']);
+      });
+    }
+  }
+
+  Future downloadData(List listResource, String lessonId) async {
+    if (listResource.length > 0 && listResource.isNotEmpty) {
+      List<Future> listDataHandle = [];
+      listResource.forEach((resource) async {
+        if (resource['type'] < 3) {
+          await listDataHandle.add(download.downloadFile(resource, lessonId));
+          print('debugging');
+        }
+      });
+      await Future.wait(listDataHandle);
+    }
   }
 
   animationLetter({List timeFrame, List letterResources}) async {
@@ -801,9 +892,9 @@ class _FlashCardScreen extends State<FlashCardScreen>
 
   @override
   Widget build(BuildContext context) {
-    var flashCardStore = Provider.of<FlashCardStore>(context);
-    flashCardStore.setCheckData(false);
-    print('checkData in Widget: ' + flashCardStore.checkData.toString());
+    // var flashCardStore = Provider.of<FlashCardStore>(context);
+    // flashCardStore.setCheckData(false);
+    // print('checkData in Widget: ' + flashCardStore.checkData.toString());
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     return Container(
@@ -1471,8 +1562,14 @@ class _FlashCardScreen extends State<FlashCardScreen>
                   print(data);
                   print(pathSound);
                   print('debugging');
-                  // await
-                  //     .playAudioTest(lessonId, sourceAudio, timeFrame, text);
+                  if (pathSound.length > 0) {
+                    await playAudio(pathSound);
+                  } else {
+                    await playAudioOutsideResources(text);
+                  }
+
+                  //await playAudioTest();
+                  // await playAudioTest(lessonId, sourceAudio, timeFrame, text);
                 },
               ),
               // SizedBox(width: 5.w),
@@ -1625,7 +1722,7 @@ class FlashCard {
   Map sourceAudio;
   Map sourceImage;
   int type;
-  List resource;
+  List resources;
   List letterResources;
   double height;
   Widget widget;
@@ -1646,7 +1743,7 @@ class FlashCard {
     this.highlightColor,
     this.timeFrame,
     this.type,
-    this.resource,
+    this.resources,
     this.letterResources,
     this.sourceAudio,
     this.sourceImage,
@@ -1681,7 +1778,7 @@ class FlashCard {
       //         'localPath': parsedJson['resources']['localPath']
       //       }
       //     : null
-      resource: parsedJson['resources'] ?? null,
+      resources: parsedJson['resources'] ?? null,
       letterResources: parsedJson['letterResources'] ?? null,
     );
   }
@@ -1702,7 +1799,7 @@ class FlashCard {
     Map sourceAudio,
     Map sourceImage,
     int type,
-    List resource,
+    List resources,
     List letterResources,
     double height,
     Widget widget,
@@ -1722,7 +1819,7 @@ class FlashCard {
       sourceAudio: sourceAudio ?? this.sourceAudio,
       sourceImage: sourceAudio ?? this.sourceImage,
       type: type ?? this.type,
-      resource: resource ?? this.resource,
+      resources: resources ?? this.resources,
       letterResources: letterResources ?? this.letterResources,
       height: height ?? this.height,
       widget: widget ?? this.widget,

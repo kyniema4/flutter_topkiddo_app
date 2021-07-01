@@ -18,7 +18,7 @@ abstract class _FlashCardStore with Store {
   @observable
   List listDataFlashCard = [];
   @observable
-  bool isShowQuestion = false;
+  bool isShowQuestion = true;
   @observable
   bool isShowTopButton = true;
   @observable
@@ -88,16 +88,8 @@ abstract class _FlashCardStore with Store {
   }
 
   @action
-  void setChangePage(int value) {
-    // value > pageCurrent ? pageInPart++ : pageInPart--;
-    pageCurrent = value;
-    if (pageCurrent > 0) {
-      isShowQuestion = false;
-      isShowTopButton = false;
-    } else {
-      isShowQuestion = true;
-      isShowTopButton = true;
-    }
+  void setShowQuestion(bool value) {
+    isShowQuestion = value;
   }
 
   @action
@@ -121,5 +113,5 @@ abstract class _FlashCardStore with Store {
   //     print(listFlashCard[1]['data'].unitId);
   //   }
   // }
- 
+
 }
