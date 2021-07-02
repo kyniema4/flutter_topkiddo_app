@@ -182,8 +182,8 @@ class _FlashCardScreen extends State<FlashCardScreen>
     }
     //tới flashcard đã học
     var pageNumber = tempList.indexWhere((e) => e["data"].id == idPageLearning);
-    // _pageController.jumpToPage(pageNumber >= 0 ? pageNumber : 0);
-    _pageController.jumpToPage(10);
+    //_pageController.jumpToPage(pageNumber >= 0 ? pageNumber : 0);
+    _pageController.jumpToPage(90);
     store.setListFlashCard(tempList);
   }
 
@@ -381,7 +381,9 @@ class _FlashCardScreen extends State<FlashCardScreen>
             'localPath': item['resources'][0]['localPath'] ?? "",
           };
           var subSentence = cardSubSentence(flashCard,
-              id: item['_id'], text: item['letter'], pathSound: letterAudio);
+              idLetter: item['_id'],
+              text: item['letter'],
+              pathSound: letterAudio);
           listSubSentence.add(subSentence);
         }
         if (item['resources'].length < 1) {
@@ -390,8 +392,8 @@ class _FlashCardScreen extends State<FlashCardScreen>
           //   '_id': item['_id'] ?? "",
           //   'localPath': item['resources'][0]['localPath'] ?? ""
           // };
-          var subSentence =
-              cardSubSentence(flashCard, id: item['_id'], text: item['letter']);
+          var subSentence = cardSubSentence(flashCard,
+              idLetter: item['_id'], text: item['letter']);
           listSubSentence.add(subSentence);
         }
         if (item['resources'].length >= 2) {
@@ -407,7 +409,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
           };
           var subSentence = cardSubSentence(
             flashCard,
-            id: item['_id'],
+            idLetter: item['_id'],
             text: item['letter'],
             isImage: true,
             pathSound: letterAudio,
@@ -502,49 +504,60 @@ class _FlashCardScreen extends State<FlashCardScreen>
     await audioPlayer.stop();
     try {
       if (sourceAudio != null) {
-        var typeFile = sourceAudio['localPath']
-            .substring(sourceAudio['localPath'].indexOf('.'));
+        var typeFile = sourceAudio['localPath'] != null
+            ? sourceAudio['localPath']
+                .substring(sourceAudio['localPath'].indexOf('.'))
+            : ".wav";
         String subPath = "/$lessonId/${sourceAudio['_id']}$typeFile";
+        //60b7862add38fc1918816a24/60cb4337dd38fc19188193b6.wav
         var path = await download.getFileFromLocal(subPath);
-
-        if (path != null) await audioPlayer.play(path, isLocal: true);
-        if (path == null) {
+        print('debugging');
+        if (path != null) {
+          store.setPlayAudio(false);
+          await audioPlayer.play(path, isLocal: true);
+          audioPlayer.onPlayerCompletion.listen((event) {
+            store.setPlayAudio(true);
+          });
+        }
+        if (path == null && sourceAudio['localPath'] != null) {
+          print('debugging');
           String sourceUrl = BaseUrl +
               "resources/get_resource_from_local" +
               '?token=${(await getToken())}&resourceId=${sourceAudio['_id']}&time=${DateTime.now().toString()}';
 
-          await audioPlayer.play(sourceUrl);
+          store.setPlayAudio(false);
+          audioPlayer.onPlayerCompletion.listen((event) {
+            store.setPlayAudio(true);
+          });
+        }
+        //trường hợp lấy audioOutSide resource sau đó lưu vào local
+        if (path == null && sourceAudio['localPath'] == null) {
+          playAudioOutsideResources(sourceAudio, lessonId);
         }
       } else
         return false;
-      // print(sourceAudio);
-      // try {
-      //   var result = await audioPlayer.play(
-      //       "/data/user/0/com.example.topkiddo/app_flutter/60b7862add38fc1918816a24/60b84655dd38fc1918818b0b.mp3",
-      //       isLocal: true);
-      //   print('debugging');
-      // } catch (e) {
-      //   print(e);
-      // }
     } catch (e) {
       print(e);
     }
   }
 
-  playAudioOutsideResources(String letter) async {
-    if (letter.length > 0) {
+  playAudioOutsideResources(Map sourceAudio, String lessonId) async {
+    String letter = sourceAudio['letter'] ?? "";
+    if (letter.length > 0 && store.isPlayAudio) {
       String soundPath = await fetchAudioLetter(letter);
-
       if (soundPath != null) {
         // Map resource = {'_id': e['_id'], 'localPath': soundPath};
         // e['resources'].add(resource);
         // print(content);
-        print(soundPath);
-        String path =
-            "https://media.merriam-webster.com/soundc11/love/love0001.wav";
-        audioPlayer.play(path);
-
-        print('debugging');
+        // print(soundPath);
+        // String path =
+        //     "https://media.merriam-webster.com/soundc11/l/love0001.wav";
+        var result = await audioPlayer.play(soundPath);
+        if (result == 1) {
+          sourceAudio['localPath'] = soundPath;
+          await download.downloadFile(sourceAudio, lessonId);
+        } else
+          return;
       }
     }
   }
@@ -606,7 +619,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
       checkRemoveGuideFlashCard(page);
     }
     //kiểm tra trước data đã có chưa
-    if (page % 10 == 0) {
+    if (page % 10 == 0 && (page + 10) < dataFlashCard.length) {
       checkExistDataFuture(page + 10, dataFlashCard);
     }
   }
@@ -634,44 +647,82 @@ class _FlashCardScreen extends State<FlashCardScreen>
   }
 
   checkExistDataFuture(int pageCheck, List listData) async {
-    List tempList = [...listData.sublist(pageCheck, pageCheck + 10)];
+    //List tempList = [...listData.sublist(pageCheck, pageCheck + 10)];
     // var data1 = listData[pageCheck];
     // var data2 = listData[pageCheck + 10];
 
+    List tempList = [];
+    if ((listData.length - pageCheck) < 10) {
+      tempList = [...listData.sublist(pageCheck, listData.length)];
+    } else {
+      tempList = [...listData.sublist(pageCheck, pageCheck + 10)];
+    }
+
     if (tempList.length > 0) {
+      List<Future> data = [];
+      // tempList.forEach((content) async {
+      for (var content in tempList) {
+        if (content?.resources != null && content?.resources.length > 0) {
+          data.add(downloadData(content.resources, widget.lessonDetail['_id']));
+        }
+        if (content?.letterResources != null &&
+            content?.letterResources.length > 0) {
+          List dataLetterResources = content.letterResources;
+          // dataLetterResources.forEach((e) async {
+          for (var e in dataLetterResources) {
+            if (e['resources'].length == 0) {
+              String soundPath = await fetchAudioLetter(e['letter']);
+              print('debugging');
+              if (soundPath != null) {
+                Map resource = {
+                  '_id': e['_id'],
+                  'localPath': soundPath,
+                  'type': 2
+                };
+                e['resources'].add(resource);
+                print(content);
+
+                print('debugging');
+              }
+            }
+
+            data.add(downloadData(e['resources'], widget.lessonDetail['_id']));
+          }
+        }
+      }
       // for (var i = 0; i < tempList.length; i++) {
       //   List listContent = tempList[i]['content'];
+      //Future.forEach(tempList, (content) {
+      //List data = [];
+      // if (content?.resources != null && content?.resources.length > 0) {
+      //   data.addAll(content.resources);
+      // }
+      // if (content?.letterResources != null &&
+      //     content?.letterResources.length > 0) {
+      //   List dataLetterResources = content.letterResources;
+      //   dataLetterResources.forEach((e) async {
+      //     if (e['resources'].length == 0) {
+      //       String soundPath = await fetchAudioLetter(e['letter']);
+      //       print('debugging');
+      //       if (soundPath != null) {
+      //         Map resource = {'_id': e['_id'], 'localPath': soundPath};
+      //         e['resources'].add(resource);
+      //         print(content);
 
-      Future.forEach(tempList, (content) {
-        List data = [];
-        if (content?.resources != null && content?.resources.length > 0) {
-          data.addAll(content.resources);
-        }
-        // if (content?.letterResources != null &&
-        //     content?.letterResources.length > 0) {
-        //   List dataLetterResources = content.letterResources;
-        //   dataLetterResources.forEach((e) async {
-        //     if (e['resources'].length == 0) {
-        //       String soundPath = await fetchAudioLetter(e['letter']);
-        //       print('debugging');
-        //       if (soundPath != null) {
-        //         Map resource = {'_id': e['_id'], 'localPath': soundPath};
-        //         e['resources'].add(resource);
-        //         print(content);
+      //         print('debugging');
+      //       }
+      //     }
 
-        //         print('debugging');
-        //       }
-        //     }
+      //     data.addAll(e['resources']);
+      //   });
+      // }
+      // if (content?.outsideResources.length > 0) {
+      //   data.addAll(content.outsideResources);
+      // }
 
-        //     data.addAll(e['resources']);
-        //   });
-        // }
-        // if (content?.outsideResources.length > 0) {
-        //   data.addAll(content.outsideResources);
-        // }
-
-        downloadData(data, widget.lessonDetail['_id']);
-      });
+      //downloadData(data, widget.lessonDetail['_id']);
+      //});
+      await Future.wait(data);
     }
   }
 
@@ -682,6 +733,8 @@ class _FlashCardScreen extends State<FlashCardScreen>
         if (resource['type'] < 3) {
           await listDataHandle.add(download.downloadFile(resource, lessonId));
           print('debugging');
+        } else {
+          return;
         }
       });
       await Future.wait(listDataHandle);
@@ -1465,7 +1518,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
   }
 
   Widget cardSubSentence(FlashCard data,
-      {id: "", text: "", pathSound: "", isImage: false, Map pathImage}) {
+      {idLetter: "", text: "", pathSound: "", isImage: false, Map pathImage}) {
     double height = MediaQuery.of(context).size.height;
     FlashCard flashCard = data;
     return Observer(
@@ -1517,7 +1570,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                     : Container(),
                             AnimatedDefaultTextStyle(
                                 duration: Duration(milliseconds: 0),
-                                style: id == store.animationId
+                                style: idLetter == store.animationId
                                     ? TextStyle(
                                         fontSize: height > 600 ? 45.sp : 65.sp,
                                         color: Colors.yellow,
@@ -1539,7 +1592,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
                         : [
                             AnimatedDefaultTextStyle(
                                 duration: Duration(milliseconds: 0),
-                                style: id == store.animationId
+                                style: idLetter == store.animationId
                                     ? TextStyle(
                                         fontSize: height > 600 ? 70.sp : 100.sp,
                                         color: Colors.yellow,
@@ -1559,17 +1612,24 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                         fontFamily: 'UTMCooperBlack'))),
                           ]),
                 onTap: () async {
-                  print(data);
-                  print(pathSound);
-                  print('debugging');
+                  // print(data);
+                  // print(pathSound);
+                  // print(idLetter);
+                  // print('debugging');
+                  // String path =
+                  //     "media.merriam-webster.com/soundc11/l/love0001.wav";
+                  // bool _validURL = Uri.parse(path).isAbsolute;
+                  // print('debugging');
                   if (pathSound.length > 0) {
                     await playAudio(pathSound);
                   } else {
-                    await playAudioOutsideResources(text);
+                    Map pathSound = {
+                      "_id": idLetter,
+                      "sourceAudio": null,
+                      "letter": text
+                    };
+                    await playAudio(pathSound);
                   }
-
-                  //await playAudioTest();
-                  // await playAudioTest(lessonId, sourceAudio, timeFrame, text);
                 },
               ),
               // SizedBox(width: 5.w),

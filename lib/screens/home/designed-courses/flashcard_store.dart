@@ -37,6 +37,8 @@ abstract class _FlashCardStore with Store {
   int pageCurrent = 0;
   @observable
   int pageInPart = 0;
+  @observable
+  bool isPlayAudio = true;
 
   @action
   void setCheckData(bool value) {
@@ -46,6 +48,11 @@ abstract class _FlashCardStore with Store {
   @action
   void setAnimationId(String value) {
     animationId = value;
+  }
+
+  @action
+  bool setPlayAudio(bool value) {
+    isPlayAudio = value;
   }
 
   @action

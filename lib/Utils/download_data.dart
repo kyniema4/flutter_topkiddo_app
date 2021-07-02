@@ -21,28 +21,45 @@ class HandleDownload {
 
   Future<dynamic> downloadFile(data, lessonId) async {
     String typeFile =
-        data['localPath'].substring(data['localPath'].indexOf('.'));
+        data['localPath'].substring(data['localPath'].lastIndexOf('.'));
+
     String dir = await _localPath;
     String subPath = "/$lessonId/${data['_id']}$typeFile";
     bool check = await checkFileExists(subPath);
+    bool ischeckOutSideResource = Uri.parse(data['localPath']).isAbsolute;
+
     if (!check) {
       Io.File file = await Io.File('$dir' + '$subPath').create(recursive: true);
-      
-      String params =
-          '?token=${(await getToken())}&resourceId=${data['_id']}&time=${DateTime.now().toString()}';
+      if (!ischeckOutSideResource) {
+        String params =
+            '?token=${(await getToken())}&resourceId=${data['_id']}&time=${DateTime.now().toString()}';
 
-      try {
-        var resultDownload = await fetch(
-            url: BaseUrl + "resources/get_resource_from_local" + params,
-            method: 5);
+        try {
+          var resultDownload = await fetch(
+              url: BaseUrl + "resources/get_resource_from_local" + params,
+              method: 5);
 
-        var bytes = await resultDownload.bodyBytes; //close();
-        await file.writeAsBytes(bytes);
-        print(file.path);
-        return true;
-      } catch (e) {
-        print('error downloadFile ' + e);
-        return false;
+          var bytes = await resultDownload.bodyBytes; //close();
+          await file.writeAsBytes(bytes);
+          print(file.path);
+          return true;
+        } catch (e) {
+          print('error downloadFile ' + e);
+          return false;
+        }
+      } else {
+        print('debugging');
+        try {
+          var resultDownload = await fetch(url: data['localPath'], method: 5);
+          print('debugging');
+          var bytes = await resultDownload.bodyBytes; //close();
+          await file.writeAsBytes(bytes);
+          print(file.path);
+          return true;
+        } catch (e) {
+          print('error downloadFile outSideResource ' + e);
+          return false;
+        }
       }
     } else {
       print('file is exists');

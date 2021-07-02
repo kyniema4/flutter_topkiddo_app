@@ -220,6 +220,21 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
     });
   }
 
+  final _$isPlayAudioAtom = Atom(name: '_FlashCardStore.isPlayAudio');
+
+  @override
+  bool get isPlayAudio {
+    _$isPlayAudioAtom.reportRead();
+    return super.isPlayAudio;
+  }
+
+  @override
+  set isPlayAudio(bool value) {
+    _$isPlayAudioAtom.reportWrite(value, super.isPlayAudio, () {
+      super.isPlayAudio = value;
+    });
+  }
+
   final _$_FlashCardStoreActionController =
       ActionController(name: '_FlashCardStore');
 
@@ -240,6 +255,17 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
         name: '_FlashCardStore.setAnimationId');
     try {
       return super.setAnimationId(value);
+    } finally {
+      _$_FlashCardStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  bool setPlayAudio(bool value) {
+    final _$actionInfo = _$_FlashCardStoreActionController.startAction(
+        name: '_FlashCardStore.setPlayAudio');
+    try {
+      return super.setPlayAudio(value);
     } finally {
       _$_FlashCardStoreActionController.endAction(_$actionInfo);
     }
@@ -360,7 +386,8 @@ animationId: ${animationId},
 isAnimation: ${isAnimation},
 currentPartId: ${currentPartId},
 pageCurrent: ${pageCurrent},
-pageInPart: ${pageInPart}
+pageInPart: ${pageInPart},
+isPlayAudio: ${isPlayAudio}
     ''';
   }
 }

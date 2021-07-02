@@ -172,9 +172,9 @@ Future fetchAudioLetter(String letter) async {
               break;
             }
           }
-          var keyLetter = letter[0].toLowerCase();
+          //var keyLetter = letter[0].toLowerCase();
           var path = 'https://media.merriam-webster.com/soundc11/' +
-              letter +
+              letter[0].toLowerCase() +
               '/' +
               soundFind['audio'] +
               '.wav';
