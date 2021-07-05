@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:topkiddo/Utils/http_service.dart';
 import 'package:topkiddo/components/Loading_dialog.dart';
+import 'package:topkiddo/components/lesson_dialog.dart';
 import 'package:topkiddo/screens/home/designed-courses/library_screen.dart';
 
 import '../../../Utils/hive_service.dart';
@@ -34,6 +35,7 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
   List listLesson = [];
   final HiveService hiveService = HiveService();
   String boxContent = 'content';
+  String boxFlashCard = "flashCard";
   @override
   void initState() {
     super.initState();
@@ -70,26 +72,97 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
     });
     try {
       List data = await hiveService.getBoxes(boxContent);
-      print('debugging');
-      Dialogs.showLoadingDialog(context);
 
+      //Dialogs.showLoadingDialog(context);
+      print('debugging');
       if (data.length > 0 && data.isNotEmpty) {
-        Navigator.of(context, rootNavigator: true).pop();
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (BuildContext context) => FlashCardScreen(
-                      lessonDetail: data[index],
-                    )));
+        Map isLearning = await hiveService.getBoxesWithKey(
+            hiveService.keyFlashCard, boxFlashCard);
+
+        if (isLearning != null) {
+          //*weak
+          isLearning['lessonId'] == data[index]['_id']
+              //lesson đang học, học tiếp hay học lại từ đầu
+              ? await checkInLessonIsLearning(data[index])
+              //chọn lesson khác với lesson đang học
+              : await checkDifferenceLesson(isLearning, data[index], data);
+        } else {
+          //học lần đầu
+
+          Navigator.of(context, rootNavigator: true).pop();
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (BuildContext context) => FlashCardScreen(
+                        lessonDetail: data[index],
+                      )));
+        }
       } else {
         Navigator.of(context, rootNavigator: true).pop();
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text("Please try again")));
       }
     } catch (e) {
+      print(e);
+      print('debugging');
       Navigator.of(context, rootNavigator: true).pop();
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Please try again")));
+    }
+  }
+
+  checkInLessonIsLearning(
+    data,
+  ) async {
+    bool select = await LessonDialog().previousLearningInLesson(context);
+
+    if (select == false) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (BuildContext context) => FlashCardScreen(
+                    lessonDetail: data,
+                  )));
+    }
+    if (select == true) {
+      Map items;
+      await hiveService.putBoxesWithKey(
+          hiveService.keyFlashCard, items, boxFlashCard);
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (BuildContext context) => FlashCardScreen(
+                    lessonDetail: data,
+                  )));
+    }
+  }
+
+  checkDifferenceLesson(Map isLearning, lessonDetail, listLesson) async {
+    // print(isLearning);
+    // print(lessonDetail);
+    // print(listLesson);
+    // print('debugging');
+    var index =
+        listLesson.indexWhere((e) => e['_id'] == isLearning['lessonId']);
+
+    bool select = await LessonDialog()
+        .learningDifferenceLesson(context, listLesson[index]['name']);
+
+    if (select == false) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (BuildContext context) => FlashCardScreen(
+                    lessonDetail: lessonDetail,
+                  )));
+    }
+    if (select == true) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (BuildContext context) => FlashCardScreen(
+                    lessonDetail: listLesson[index],
+                  )));
     }
   }
   // getDataFlashCard(String lessonId) async {
@@ -279,44 +352,42 @@ class TopButton extends StatelessWidget {
                 child: Container(
               padding: new EdgeInsets.only(top: 9.w),
               height: MediaQuery.of(context).size.height,
-              child: Stack(
-                children: <Widget>[
-                  Positioned(
-                    top: 4.5.w,
-                    left: -69.w,
-                    // right: 0,
-                    child: Align(
-                      child: Image.asset(
-                        'assets/images/button/bar-long.png',
-                        height: 12.w,
-                        fit: BoxFit.fill,
-                      ),
+              child: Stack(children: <Widget>[
+                Positioned(
+                  top: 4.5.w,
+                  left: -69.w,
+                  // right: 0,
+                  child: Align(
+                    child: Image.asset(
+                      'assets/images/button/bar-long.png',
+                      height: 12.w,
+                      fit: BoxFit.fill,
                     ),
                   ),
-                  Positioned(
-                    top: 1.w,
-                    left: 15.w,
-                    child: GestureDetector(
-                        child: Container(
-                            width: 20.w,
-                            height: 20.w,
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                  image: AssetImage(
-                                    'assets/images/button/back-button.png',
-                                  ),
-                                  fit: BoxFit.contain),
-                            )),
-                        onTap: () {
-                          Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => LibraryScreen()),
-                              (route) => false);
-                        }),
-                  )
-                ]
-              ),
+                ),
+                Positioned(
+                  top: 1.w,
+                  left: 15.w,
+                  child: GestureDetector(
+                      child: Container(
+                          width: 20.w,
+                          height: 20.w,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                                image: AssetImage(
+                                  'assets/images/button/back-button.png',
+                                ),
+                                fit: BoxFit.contain),
+                          )),
+                      onTap: () {
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LibraryScreen()),
+                            (route) => false);
+                      }),
+                )
+              ]),
             )),
             Expanded(
               child: GestureDetector(

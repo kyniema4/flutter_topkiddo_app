@@ -18,7 +18,7 @@ abstract class _FlashCardStore with Store {
   @observable
   List listDataFlashCard = [];
   @observable
-  bool isShowQuestion = true;
+  bool isShowQuestion = false;
   @observable
   bool isShowTopButton = true;
   @observable

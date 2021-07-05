@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:topkiddo/Utils/hive_service.dart';
 import 'package:topkiddo/Utils/download_data.dart';
 import 'package:topkiddo/components/Loading_dialog.dart';
-import 'package:topkiddo/components/navigator_screen_dialog.dart';
+import 'package:topkiddo/components/lesson_dialog.dart';
 import 'package:topkiddo/data_local/lesson/lesson_data_model.dart';
 import 'package:topkiddo/screens/animation_auto_screen.dart';
 import 'package:topkiddo/screens/home/designed-courses/flash_card_screen.dart';
@@ -163,14 +163,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   getDataLesson() async {
     var flashCardStore = Provider.of<FlashCardStore>(context, listen: false);
+    print('debugging');
     bool checkListContent = await hiveService.isExists(boxName: boxContent);
     print('checkListContent: ' + checkListContent.toString());
 
     //đã có content
     if (checkListContent) {
-      var isLearning =
-          await hiveService.getBoxesWithKey("currentData", boxFlashCard);
-    
+      var isLearning = await hiveService.getBoxesWithKey(
+          hiveService.keyFlashCard, boxFlashCard);
+
       //đã từng học & hiện thông báo vào bài
       if (isLearning != null &&
           isLearning.length > 0 &&
@@ -187,8 +188,7 @@ class _HomeScreenState extends State<HomeScreen> {
           print(listLesson.length);
           print('debugging');
           if (listLesson.length > 0 && listLesson.isNotEmpty) {
-            bool check =
-                await NavigatorScreenDialog.ShowPopNaviagation(context);
+            bool check = await LessonDialog.ShowPopNaviagation(context);
             if (check) {
               var index = listLesson
                   .indexWhere((e) => e['_id'] == isLearning['lessonId']);

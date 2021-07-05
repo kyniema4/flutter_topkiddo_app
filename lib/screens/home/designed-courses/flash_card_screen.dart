@@ -29,8 +29,6 @@ import 'package:topkiddo/screens/home/designed-courses/flashcard_store.dart';
 import '../../../components/languages_app.dart';
 import '../../../components/swipe-configuration.dart';
 import '../../../theme/style.dart';
-import '../../../theme/style.dart';
-import '../../../theme/theme.dart' as Theme;
 import '../../../theme/theme.dart' as Theme;
 import '../../home/home_screen.dart';
 // import 'package:swipedetector/swipedetector.dart';
@@ -38,7 +36,7 @@ import '../../home/home_screen.dart';
 class FlashCardScreen extends StatefulWidget {
   final lessonDetail;
 
-  const FlashCardScreen({Key key, this.lessonDetail}) : super(key: key);
+  FlashCardScreen({Key key, this.lessonDetail}) : super(key: key);
   @override
   _FlashCardScreen createState() => _FlashCardScreen();
 }
@@ -65,7 +63,6 @@ class _FlashCardScreen extends State<FlashCardScreen>
   final HiveService hiveService = HiveService();
   String boxFlashCard = "flashCard";
   int pageInPart = 0;
-  String key = "currentData";
   // VideoPlayerController _controllerVideo;
   // ChewieController _chewieController;
   // Future<void> _initializeVideoPlayerFuture;
@@ -91,13 +88,14 @@ class _FlashCardScreen extends State<FlashCardScreen>
   }
 
   checkBeforeCreateFlashCard() async {
-    Map fashCardIsLeaning =
-        await hiveService.getBoxesWithKey(key, boxFlashCard);
+    Map fashCardIsLeaning = await hiveService.getBoxesWithKey(
+        hiveService.keyFlashCard, boxFlashCard);
     print('debugging');
     //mới học lần đầu
     if (fashCardIsLeaning != null && fashCardIsLeaning['flashCardId'] != null) {
       List listData = widget.lessonDetail['part'];
       String flashCardId = fashCardIsLeaning['flashCardId'];
+      store.setShowQuestion(true);
       createFlashCard(idPageLearning: flashCardId);
     } else {
       List tempList = [];
@@ -182,8 +180,8 @@ class _FlashCardScreen extends State<FlashCardScreen>
     }
     //tới flashcard đã học
     var pageNumber = tempList.indexWhere((e) => e["data"].id == idPageLearning);
-    //_pageController.jumpToPage(pageNumber >= 0 ? pageNumber : 0);
-    _pageController.jumpToPage(90);
+    _pageController.jumpToPage(pageNumber >= 0 ? pageNumber : 0);
+    //_pageController.jumpToPage(90);
     store.setListFlashCard(tempList);
   }
 
@@ -587,6 +585,9 @@ class _FlashCardScreen extends State<FlashCardScreen>
   //   }
 
   _onPageViewChange(int page) async {
+    if (page == 0) {
+      print('debugging');
+    }
     print('checkData ' + store.checkData.toString());
     store.setCheckData(false);
 
@@ -620,20 +621,25 @@ class _FlashCardScreen extends State<FlashCardScreen>
     }
     //kiểm tra trước data đã có chưa
     if (page % 10 == 0 && (page + 10) < dataFlashCard.length) {
+      print('debugging');
       checkExistDataFuture(page + 10, dataFlashCard);
     }
   }
 
-  savePositionFlashCard(FlashCard value) async {
-    var data = null;
+  savePositionFlashCard(FlashCard data) async {
+    //var data = null;
     Map items = {
-      "flashCardId": data?.id ?? null,
-      "partId": data?.partId ?? null,
-      "lessonId": data?.lessonId ?? null,
-      "unitId": data?.unitId ?? null,
+      "flashCardId": data?.id ?? "",
+      "partId": data?.partId ?? "",
+      "lessonId": data?.lessonId ?? "",
+      "unitId": data?.unitId ?? "",
       "ordinalNumber": 0
     };
-    await hiveService.putBoxesWithKey(key, items, boxFlashCard);
+
+    await hiveService.putBoxesWithKey(
+        hiveService.keyFlashCard, items, boxFlashCard);
+    print(hiveService.getBoxesWithKey(hiveService.keyFlashCard, boxFlashCard));
+    print('debugging');
   }
 
   checkRemoveGuideFlashCard(int page) {
@@ -945,8 +951,8 @@ class _FlashCardScreen extends State<FlashCardScreen>
 
   @override
   Widget build(BuildContext context) {
-    // var flashCardStore = Provider.of<FlashCardStore>(context);
-    // flashCardStore.setCheckData(false);
+    var flashCardStore = Provider.of<FlashCardStore>(context);
+    flashCardStore.setCheckData(false);
     // print('checkData in Widget: ' + flashCardStore.checkData.toString());
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
@@ -997,7 +1003,11 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                   physics: store.isPreventSwipe
                                       ? BouncingScrollPhysics()
                                       : NeverScrollableScrollPhysics(),
-                                  onPageChanged: _onPageViewChange,
+                                  //onPageChanged: _onPageViewChange,
+                                  onPageChanged: (page) {
+                                    _onPageViewChange(page);
+                                    print('debugging');
+                                  },
                                   children: store.listWidget != null
                                       ? [...store.listWidget]
                                       : []),
@@ -1862,7 +1872,6 @@ class FlashCard {
     List resources,
     List letterResources,
     double height,
-    Widget widget,
     bool isAnimation,
   }) {
     return FlashCard(
@@ -1882,7 +1891,6 @@ class FlashCard {
       resources: resources ?? this.resources,
       letterResources: letterResources ?? this.letterResources,
       height: height ?? this.height,
-      widget: widget ?? this.widget,
       isAnimation: isAnimation ?? this.isAnimation,
     );
   }
