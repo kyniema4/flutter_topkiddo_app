@@ -197,6 +197,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   )));
     } else {
       //fetch listlesson Api
+      print('debugging');
       Navigator.of(context, rootNavigator: true).pop();
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Please try again")));

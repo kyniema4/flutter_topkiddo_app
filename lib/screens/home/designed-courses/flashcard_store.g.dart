@@ -190,18 +190,18 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
     });
   }
 
-  final _$pageCurrentAtom = Atom(name: '_FlashCardStore.pageCurrent');
+  final _$currentPageAtom = Atom(name: '_FlashCardStore.currentPage');
 
   @override
-  int get pageCurrent {
-    _$pageCurrentAtom.reportRead();
-    return super.pageCurrent;
+  int get currentPage {
+    _$currentPageAtom.reportRead();
+    return super.currentPage;
   }
 
   @override
-  set pageCurrent(int value) {
-    _$pageCurrentAtom.reportWrite(value, super.pageCurrent, () {
-      super.pageCurrent = value;
+  set currentPage(int value) {
+    _$currentPageAtom.reportWrite(value, super.currentPage, () {
+      super.currentPage = value;
     });
   }
 
@@ -237,6 +237,17 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
 
   final _$_FlashCardStoreActionController =
       ActionController(name: '_FlashCardStore');
+
+  @override
+  void setCurrentPage(int value) {
+    final _$actionInfo = _$_FlashCardStoreActionController.startAction(
+        name: '_FlashCardStore.setCurrentPage');
+    try {
+      return super.setCurrentPage(value);
+    } finally {
+      _$_FlashCardStoreActionController.endAction(_$actionInfo);
+    }
+  }
 
   @override
   void setCheckData(bool value) {
@@ -305,28 +316,6 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
   }
 
   @override
-  void setCurrentPartId(String value) {
-    final _$actionInfo = _$_FlashCardStoreActionController.startAction(
-        name: '_FlashCardStore.setCurrentPartId');
-    try {
-      return super.setCurrentPartId(value);
-    } finally {
-      _$_FlashCardStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void setPageInPart(int value) {
-    final _$actionInfo = _$_FlashCardStoreActionController.startAction(
-        name: '_FlashCardStore.setPageInPart');
-    try {
-      return super.setPageInPart(value);
-    } finally {
-      _$_FlashCardStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   void setShowQuestion(bool value) {
     final _$actionInfo = _$_FlashCardStoreActionController.startAction(
         name: '_FlashCardStore.setShowQuestion');
@@ -385,7 +374,7 @@ isPreventSwipe: ${isPreventSwipe},
 animationId: ${animationId},
 isAnimation: ${isAnimation},
 currentPartId: ${currentPartId},
-pageCurrent: ${pageCurrent},
+currentPage: ${currentPage},
 pageInPart: ${pageInPart},
 isPlayAudio: ${isPlayAudio}
     ''';

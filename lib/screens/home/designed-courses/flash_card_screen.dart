@@ -81,32 +81,38 @@ class _FlashCardScreen extends State<FlashCardScreen>
   }
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     super.didChangeDependencies();
-
     checkBeforeCreateFlashCard();
   }
 
   checkBeforeCreateFlashCard() async {
-    Map fashCardIsLeaning = await hiveService.getBoxesWithKey(
+    Map fashCardIsLearning = await hiveService.getBoxesWithKey(
         hiveService.keyFlashCard, boxFlashCard);
     print('debugging');
-    //mới học lần đầu
-    if (fashCardIsLeaning != null && fashCardIsLeaning['flashCardId'] != null) {
+    //mới học lần đầu check show hướng dẫn
+
+    if (fashCardIsLearning != null &&
+        fashCardIsLearning['flashCardId'] != null) {
       List listData = widget.lessonDetail['part'];
-      String flashCardId = fashCardIsLeaning['flashCardId'];
-      store.setShowQuestion(true);
+      String flashCardId = fashCardIsLearning['flashCardId'];
+      //store.setShowQuestion(true);
       createFlashCard(idPageLearning: flashCardId);
     } else {
-      List tempList = [];
-      var flashCard = FlashCard();
-      flashCard.height = MediaQuery.of(context).size.height;
-      Map<String, dynamic> oneFlashCard = {
-        'data': flashCard,
-        'widget': cardMultisensory()
-      };
-      tempList.add(oneFlashCard);
-      store.setListFlashCard(tempList);
+      print('debugging');
+      if (fashCardIsLearning['showGuide'] == true) {
+        List tempList = [];
+        var flashCard = FlashCard();
+        flashCard.height = MediaQuery.of(context).size.height;
+        Map<String, dynamic> oneFlashCard = {
+          'data': flashCard,
+          'widget': cardMultisensory()
+        };
+        tempList.add(oneFlashCard);
+        store.setListFlashCard(tempList);
+        store.setShowQuestion(true);
+      }
+
       createFlashCard();
     }
   }
@@ -179,10 +185,23 @@ class _FlashCardScreen extends State<FlashCardScreen>
       //fetch data;
     }
     //tới flashcard đã học
-    var pageNumber = tempList.indexWhere((e) => e["data"].id == idPageLearning);
+    int pageNumber =
+        tempList.indexWhere((e) => e["data"].id == idPageLearning) ?? 0;
     _pageController.jumpToPage(pageNumber >= 0 ? pageNumber : 0);
     //_pageController.jumpToPage(90);
+
     store.setListFlashCard(tempList);
+    playAudioInitial(pageNumber);
+  }
+
+  playAudioInitial(int page) {
+    if (page >= 0) {
+      Map sourceAudio = store.listDataFlashCard[page].sourceAudio;
+      playAudio(sourceAudio);
+    }
+    if (page < 0 && store.listDataFlashCard[0].sourceAudio != null) {
+      playAudio(store.listDataFlashCard[0].sourceAudio);
+    }
   }
 
   //chia flashcard
@@ -510,6 +529,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
         //60b7862add38fc1918816a24/60cb4337dd38fc19188193b6.wav
         var path = await download.getFileFromLocal(subPath);
         print('debugging');
+        //play source đã lưu trong local
         if (path != null) {
           store.setPlayAudio(false);
           await audioPlayer.play(path, isLocal: true);
@@ -517,15 +537,19 @@ class _FlashCardScreen extends State<FlashCardScreen>
             store.setPlayAudio(true);
           });
         }
+        //play source trên server sau đó lưu vào local
         if (path == null && sourceAudio['localPath'] != null) {
-          print('debugging');
           String sourceUrl = BaseUrl +
               "resources/get_resource_from_local" +
               '?token=${(await getToken())}&resourceId=${sourceAudio['_id']}&time=${DateTime.now().toString()}';
 
           store.setPlayAudio(false);
-          audioPlayer.onPlayerCompletion.listen((event) {
+          print('debugging');
+          await audioPlayer.play(sourceUrl);
+
+          audioPlayer.onPlayerCompletion.listen((event) async {
             store.setPlayAudio(true);
+            await download.downloadFile(sourceAudio, lessonId);
           });
         }
         //trường hợp lấy audioOutSide resource sau đó lưu vào local
@@ -585,9 +609,9 @@ class _FlashCardScreen extends State<FlashCardScreen>
   //   }
 
   _onPageViewChange(int page) async {
-    if (page == 0) {
-      print('debugging');
-    }
+    // if (page == 0) {
+    //   print('debugging');
+    // }
     print('checkData ' + store.checkData.toString());
     store.setCheckData(false);
 
@@ -610,7 +634,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
       animationController.reverse();
     });
     //play audio
-    if (data != null) {
+    if (data != null && data?.sourceAudio != null) {
       playAudio(data.sourceAudio);
     }
     //lưu vị trí
@@ -633,7 +657,8 @@ class _FlashCardScreen extends State<FlashCardScreen>
       "partId": data?.partId ?? "",
       "lessonId": data?.lessonId ?? "",
       "unitId": data?.unitId ?? "",
-      "ordinalNumber": 0
+      "ordinalNumber": 0,
+      "showGuide": false
     };
 
     await hiveService.putBoxesWithKey(
@@ -1280,7 +1305,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
           //     errorBuilder: (BuildContext context, Object exception,
           //         StackTrace stackTrace) {
           //       return Text('');
-          //     },
+          //     }, 
           //     fit: BoxFit.contain,
           //   )
           CachedNetworkImage(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:topkiddo/Utils/download_data.dart';
 import 'package:topkiddo/Utils/http_service.dart';
 import 'package:topkiddo/components/Loading_dialog.dart';
 import 'package:topkiddo/components/lesson_dialog.dart';
@@ -36,6 +37,7 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
   final HiveService hiveService = HiveService();
   String boxContent = 'content';
   String boxFlashCard = "flashCard";
+  final HandleDownload download = HandleDownload();
   @override
   void initState() {
     super.initState();
@@ -56,6 +58,7 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
   initData() async {
     var lessonData = widget.lesson;
     if (lessonData != null) {
+      if (!mounted) return;
       setState(() {
         listLesson = [...lessonData];
       });
@@ -67,19 +70,19 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
 
   //get data from localstorage
   getDataFlashCard(String lessonId, int index) async {
+    if (!mounted) return;
     setState(() {
       _pressId = !_pressId;
     });
     try {
       List data = await hiveService.getBoxes(boxContent);
 
-      //Dialogs.showLoadingDialog(context);
       print('debugging');
       if (data.length > 0 && data.isNotEmpty) {
         Map isLearning = await hiveService.getBoxesWithKey(
             hiveService.keyFlashCard, boxFlashCard);
-
-        if (isLearning != null) {
+        print('debugging');
+        if (isLearning != null && isLearning['lessonId'] != null) {
           //*weak
           isLearning['lessonId'] == data[index]['_id']
               //lesson đang học, học tiếp hay học lại từ đầu
@@ -87,9 +90,16 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
               //chọn lesson khác với lesson đang học
               : await checkDifferenceLesson(isLearning, data[index], data);
         } else {
-          //học lần đầu
-
+          Dialogs.showLoadingDialog(context);
+          await checkDataLessonInitial(data[index]);
           Navigator.of(context, rootNavigator: true).pop();
+          //học lần đầu đi kèm với showGuide
+          Map items = {"ordinalNumber": 0, "showGuide": true};
+
+          await hiveService.putBoxesWithKey(
+              hiveService.keyFlashCard, items, boxFlashCard);
+          // Navigator.of(context, rootNavigator: true).pop();
+          // print('debugigng');
           Navigator.push(
               context,
               MaterialPageRoute(
@@ -105,34 +115,43 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
     } catch (e) {
       print(e);
       print('debugging');
-      Navigator.of(context, rootNavigator: true).pop();
+
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Please try again")));
     }
   }
 
   checkInLessonIsLearning(
-    data,
+    lessonDetail,
   ) async {
+    print('debugging');
     bool select = await LessonDialog().previousLearningInLesson(context);
 
     if (select == false) {
+      // Dialogs.showLoadingDialog(context);
+      // await checkDataLessonInitial(lessonDetail);
+      // Navigator.of(context, rootNavigator: true).pop();
       Navigator.push(
           context,
           MaterialPageRoute(
               builder: (BuildContext context) => FlashCardScreen(
-                    lessonDetail: data,
+                    lessonDetail: lessonDetail,
                   )));
     }
     if (select == true) {
-      Map items;
+      // Dialogs.showLoadingDialog(context);
+
+      // await checkDataLessonInitial(lessonDetail);
+      Navigator.of(context, rootNavigator: true).pop();
+      Map items = {"lessonId": null, "ordinalNumber": 0, "showGuide": false};
       await hiveService.putBoxesWithKey(
           hiveService.keyFlashCard, items, boxFlashCard);
+
       Navigator.push(
           context,
           MaterialPageRoute(
               builder: (BuildContext context) => FlashCardScreen(
-                    lessonDetail: data,
+                    lessonDetail: lessonDetail,
                   )));
     }
   }
@@ -148,7 +167,11 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
     bool select = await LessonDialog()
         .learningDifferenceLesson(context, listLesson[index]['name']);
 
+    //học lesson vừa chòn
     if (select == false) {
+      Dialogs.showLoadingDialog(context);
+      await checkDataLessonInitial(lessonDetail);
+      Navigator.of(context, rootNavigator: true).pop();
       Navigator.push(
           context,
           MaterialPageRoute(
@@ -156,6 +179,7 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
                     lessonDetail: lessonDetail,
                   )));
     }
+    //học lesson đang học dở
     if (select == true) {
       Navigator.push(
           context,
@@ -165,6 +189,7 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
                   )));
     }
   }
+
   // getDataFlashCard(String lessonId) async {
   //   setState(() {
   //     _pressId = !_pressId;
@@ -192,6 +217,63 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
   //         .showSnackBar(SnackBar(content: Text("Please try again")));
   //   }
   // }
+
+  //lấy data 5 flashcard đâu tiên
+  checkDataLessonInitial(dataLesson) async {
+    if (dataLesson['part'].length > 0) {
+      List<Future> data = [];
+
+      int getNumber = dataLesson['part'][0]['content'].length < 5
+          ? dataLesson['part'][0]['content'].length
+          : 5;
+      List listDataInitial =
+          dataLesson['part'][0]['content'].sublist(0, getNumber);
+
+      for (var content in listDataInitial) {
+        if (content['resources'].length > 0) {
+          data.add(downloadData(content['resources'], dataLesson['_id']));
+        }
+        print(data);
+        print('debugging');
+        if (content['letterResources'].length > 0) {
+          List dataLetterResources = content['letterResources'];
+
+          for (var e in dataLetterResources) {
+            print(e);
+            print('debugging');
+            if (e['resources'] == null) {
+              String soundPath = await fetchAudioLetter(e['letter']);
+              print('debugging');
+              if (soundPath != null) {
+                Map resource = {'_id': e['_id'], 'localPath': soundPath};
+                e['resources'].add(resource);
+              }
+            }
+            print('debugging');
+            data.add(downloadData(e['resources'], dataLesson['_id']));
+          }
+        }
+        // if (content['outsideResources'].length > 0) {
+        //   data.addAll(content['outsideResources']);
+        // }
+
+      }
+      // await Future.wait(data);
+      await Future.wait(data);
+    }
+  }
+
+  Future downloadData(List listResource, String lessonId) async {
+    if (listResource.length > 0 && listResource.isNotEmpty) {
+      List<Future> listDataHandle = [];
+      for (var resource in listResource) {
+        if (resource['type'] < 3) {
+          listDataHandle.add(download.downloadFile(resource, lessonId));
+        }
+      }
+      await Future.wait(listDataHandle);
+    }
+  }
 
   @override
   void dispose() {

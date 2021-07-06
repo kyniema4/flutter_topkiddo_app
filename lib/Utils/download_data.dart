@@ -27,7 +27,7 @@ class HandleDownload {
     String subPath = "/$lessonId/${data['_id']}$typeFile";
     bool check = await checkFileExists(subPath);
     bool ischeckOutSideResource = Uri.parse(data['localPath']).isAbsolute;
-
+    
     if (!check) {
       Io.File file = await Io.File('$dir' + '$subPath').create(recursive: true);
       if (!ischeckOutSideResource) {

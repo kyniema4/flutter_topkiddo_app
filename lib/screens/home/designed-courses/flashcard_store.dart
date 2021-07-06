@@ -34,11 +34,16 @@ abstract class _FlashCardStore with Store {
   @observable
   String currentPartId;
   @observable
-  int pageCurrent = 0;
+  int currentPage = 0;
   @observable
   int pageInPart = 0;
   @observable
   bool isPlayAudio = true;
+
+  @action
+  void setCurrentPage(int value) {
+    currentPage = value;
+  }
 
   @action
   void setCheckData(bool value) {
@@ -84,15 +89,15 @@ abstract class _FlashCardStore with Store {
     listDataFlashCard = [...tempListDataFlashCard];
   }
 
-  @action
-  void setCurrentPartId(String value) {
-    currentPartId = value;
-  }
+  // @action
+  // void setCurrentPartId(String value) {
+  //   currentPartId = value;
+  // }
 
-  @action
-  void setPageInPart(int value) {
-    pageInPart = value;
-  }
+  // @action
+  // void setPageInPart(int value) {
+  //   pageInPart = value;
+  // }
 
   @action
   void setShowQuestion(bool value) {
@@ -111,7 +116,7 @@ abstract class _FlashCardStore with Store {
 
   @action
   void setSourceAudio() {
-    print(listFlashCard[pageCurrent]['data']);
+    print(listFlashCard[currentPage]['data']);
   }
 
   // @computed
