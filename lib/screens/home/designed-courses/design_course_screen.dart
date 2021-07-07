@@ -108,7 +108,8 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
                       )));
         }
       } else {
-        Navigator.of(context, rootNavigator: true).pop();
+        //Navigator.of(context, rootNavigator: true).pop();
+        print('debugging');
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text("Please try again")));
       }
@@ -228,6 +229,17 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
           : 5;
       List listDataInitial =
           dataLesson['part'][0]['content'].sublist(0, getNumber);
+      if (dataLesson['part'][0]['audio'] != null) {
+        
+        List tempList=[];
+        tempList.add(dataLesson['part'][0]['audio']);
+        data.add(downloadData(tempList, dataLesson['_id']));
+      }
+      if (dataLesson['part'][0]['image'] != null) {
+        List tempList=[];
+        tempList.add(dataLesson['part'][0]['image']);
+        data.add(downloadData(tempList, dataLesson['_id']));
+      }
 
       for (var content in listDataInitial) {
         if (content['resources'].length > 0) {

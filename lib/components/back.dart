@@ -44,8 +44,7 @@ class _BackState extends State<Back> {
                           fit: BoxFit.contain),
                     )),
                 onTap: () {
-                  print(context);
-                  // Navigator.pop(context);
+                  Navigator.pop(context);
                 }),
           )
         ],

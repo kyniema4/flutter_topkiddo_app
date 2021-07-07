@@ -201,6 +201,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         )),
                 (Route<dynamic> route) => false,
               );
+              flashCardStore.setCheckData(false);
+            } else {
+              flashCardStore.setCheckData(false);
             }
             return;
           }
@@ -211,7 +214,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     } else {
       print('học lần đầu');
-      await fetchListUnit();
+      //await fetchListUnit();
     }
   }
 
@@ -248,7 +251,7 @@ class _HomeScreenState extends State<HomeScreen> {
             for (var i = 0; i < listSaveContent.length; i++) {
               await downloadListContent(listSaveContent[i]);
             }
-            setCurrentUnit(resultListUnit['data']['docs'][0]['_id']);
+            //setCurrentUnit(resultListUnit['data']['docs'][0]['_id']);
             await hiveService.addBoxes(listSaveContent, boxContent);
           }
         } else {

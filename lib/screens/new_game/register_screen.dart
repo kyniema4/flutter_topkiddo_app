@@ -67,10 +67,11 @@ class _RegisterScreen extends State<RegisterScreen> {
     }
   }
 
-  void signInWithPhoneAuthCredential(
-      PhoneAuthCredential phoneAuthCredential) async {
+  void signInWithPhoneAuthCredential() async {
     Dialogs.showLoadingDialog(context);
     try {
+      PhoneAuthCredential phoneAuthCredential = PhoneAuthProvider.credential(
+          verificationId: verificationId, smsCode: otpController.text);
       final authCredential =
           await _auth.signInWithCredential(phoneAuthCredential);
 
@@ -395,12 +396,12 @@ class _RegisterScreen extends State<RegisterScreen> {
                         fit: BoxFit.contain),
                   )),
               onTap: () async {
-                PhoneAuthCredential phoneAuthCredential =
-                    PhoneAuthProvider.credential(
-                        verificationId: verificationId,
-                        smsCode: otpController.text);
+                // PhoneAuthCredential phoneAuthCredential =
+                //     PhoneAuthProvider.credential(
+                //         verificationId: verificationId,
+                //         smsCode: otpController.text);
 
-                signInWithPhoneAuthCredential(phoneAuthCredential);
+                signInWithPhoneAuthCredential();
               },
             ),
           ),

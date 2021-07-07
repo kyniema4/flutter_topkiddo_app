@@ -5,6 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:topkiddo/Utils/download_data.dart';
 import 'package:topkiddo/Utils/hive_service.dart';
 import 'package:topkiddo/components/Loading_dialog.dart';
+import 'package:topkiddo/data_local/lesson/lesson_data_model.dart';
+import 'package:topkiddo/data_local/lesson/unit_data_model.dart';
 import 'package:topkiddo/screens/home/home_screen.dart';
 
 import '../../../Utils/http_service.dart';
@@ -153,6 +155,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
     List listDataEasy = [];
     List listDataMedium = [];
     List listDataAdvanced = [];
+    //lấy từ local
     if (data.length != 0) {
       for (var i = 0; i < data.length; i++) {
         var unit = UnitModel.fromJson(data[i].toMap());
@@ -171,23 +174,62 @@ class _LibraryScreenState extends State<LibraryScreen> {
         listUnitMedium = listDataMedium;
         listUnitAdvanced = listDataAdvanced;
       });
+      //fetch unit từ server
     } else {
-      print('please connect to the network');
+      var token = (await getToken()).toString();
+      //*get unitLanguage
+      List listUnit = [];
+      int unitLanguage = 2;
+      Dialogs.showLoadingDialog(context);
+      if (token.length > 0) {
+        try {
+          var resultListUnit = await fetch(
+            url: ApiList.getListUnit,
+            body: {
+              "filter": {"language": unitLanguage ?? 2}
+            },
+          );
+          if (resultListUnit['success'] &&
+              resultListUnit['data']['docs'].length > 0) {
+            resultListUnit['data']['docs'].forEach((e) {
+              UnitDataModel unit = UnitDataModel.fromJson(e);
+              listUnit.add(unit);
+              if (unit.level == 1) {
+                listDataEasy.add(unit);
+              }
+              if (unit.level == 2) {
+                listDataMedium.add(unit);
+              }
+              if (unit.level == 3) {
+                listDataAdvanced.add(unit);
+              }
+            });
+            setState(() {
+              listUnitEasy = listDataEasy;
+              listUnitMedium = listDataMedium;
+              listUnitAdvanced = listDataAdvanced;
+            });
+            await hiveService.addBoxes(listUnit, boxUnit);
+            Navigator.of(context, rootNavigator: true).pop();
+          } else {
+            print('error when get list Unit');
+            Navigator.of(context, rootNavigator: true).pop();
+          }
+        } catch (e) {
+          Navigator.of(context, rootNavigator: true).pop();
+          print('error get list Unit ' + e);
+        }
+      } else
+        return;
     }
   }
 
-  getListLesson(String id) async {
+  getListLesson(String unitId) async {
     Dialogs.showLoadingDialog(context);
-    var listLesson = await hiveService.getBoxesWithKey(id, boxLesson);
+    var listLesson = await hiveService.getBoxesWithKey(unitId, boxLesson);
 
+    //lấy lesson trong local
     if (listLesson != null) {
-      //fetch data lesson and save to local
-      // var futures = <Future>[];
-      // for (var lesson in listLesson) {
-      //   futures.add(downloadDataLesson(lesson.id));
-      // }
-      // await Future.wait(futures);
-
       Navigator.of(context, rootNavigator: true).pop();
       Navigator.push(
           context,
@@ -197,10 +239,38 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   )));
     } else {
       //fetch listlesson Api
-      print('debugging');
-      Navigator.of(context, rootNavigator: true).pop();
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Please try again")));
+      try {
+        var resultListLesson = await fetch(
+            url: ApiList.getListLesson,
+            body: {
+              "filter": {"unit": unitId}
+            },
+            needAutoHeader: true);
+        //print('debugging');
+        List listLesson = [];
+        if (resultListLesson['success'] &&
+            resultListLesson['data']['docs'].length > 0) {
+          List listSaveContent = [...resultListLesson['data']['docs']];
+          listSaveContent.forEach((e) {
+            LessonDataModel lesson = LessonDataModel.fromJson(e);
+            listLesson.add(lesson);
+          });
+          Navigator.of(context, rootNavigator: true).pop();
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (BuildContext context) => DesignCourseScreen(
+                        lesson: listLesson,
+                      )));
+          await hiveService.putBoxesWithKey(unitId, listLesson, boxLesson);
+          await hiveService.addBoxes(listSaveContent, boxContent);
+          print('save data lesson success');
+        }
+      } catch (e) {
+        Navigator.of(context, rootNavigator: true).pop();
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("Please try again")));
+      }
     }
   }
 

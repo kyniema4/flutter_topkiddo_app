@@ -79,7 +79,6 @@ class _LoginScreen extends State<LoginScreen> {
           print(val['data']);
           String token = val['data']['token'];
           setToken(token);
-          //Navigator.of(context, rootNavigator: true).pop();
           Navigator.of(context, rootNavigator: true).pop();
           Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(builder: (context) => HomeScreen()),
@@ -87,9 +86,13 @@ class _LoginScreen extends State<LoginScreen> {
         }
       });
     } catch (e) {
+      numberController.clear();
+      passwordController.clear();
       Navigator.of(context, rootNavigator: true).pop();
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.message)));
+      // ScaffoldMessenger.of(context)
+      //     .showSnackBar(SnackBar(content: Text(e.message)));
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('alertConnectionInternet'.tr())));
     }
   }
 

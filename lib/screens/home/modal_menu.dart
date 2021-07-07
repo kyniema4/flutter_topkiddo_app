@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:topkiddo/Utils/download_data.dart';
+import 'package:topkiddo/Utils/hive_service.dart';
+import 'package:topkiddo/Utils/http_service.dart';
 import '../../theme/theme.dart' as Theme;
 import '.../../menu/write-for-kids.dart';
 import '.../../profile/profile-father-screen.dart';
@@ -15,70 +18,102 @@ import '../new_game/login_screen.dart';
 import '.../../menu/enter-code-screen.dart';
 
 class Menu {
+  final int type;
   final String icon;
   final String title;
   final dynamic page;
 
-  Menu({this.icon, this.title, this.page});
+  Menu({this.icon, this.title, this.page, this.type});
 }
 
 class ShowModalMenu {
   static Future<void> modalBottomSheetMenu(context) async {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
+    String boxUnit = "unit";
+    String boxLesson = "lesson";
+    String boxContent = "content";
+    String boxFlashCard = "flashCard";
+    final HiveService hiveService = HiveService();
+    final HandleDownload download = HandleDownload();
+
     List<Menu> menuLists = [
       Menu(
+        type: 0,
         icon: 'assets/images/menu/notificationbutton.png',
         title: 'notification'.tr(),
         page: NotificationScreen(),
         // page: ModalNotification(),
       ),
       Menu(
+        type: 1,
         icon: 'assets/images/menu/profilebutton.png',
         title: 'profile'.tr(),
         page: ProfileFatherScreen(),
       ),
       Menu(
+        type: 2,
         icon: 'assets/images/menu/parentsbutton.png',
         title: 'parent'.tr(),
         page: ProfileKidScreen(),
       ),
       Menu(
+        type: 3,
         icon: 'assets/images/menu/profilebutton.png',
         title: 'addChild'.tr(),
         page: ProfileAddChildScreen(),
       ),
       Menu(
+        type: 4,
         icon: 'assets/images/menu/settingbutton.png',
         title: 'setting'.tr(),
         page: SettingScreen(),
       ),
       Menu(
+        type: 5,
         icon: 'assets/images/menu/writeforkidbutton.png',
         title: 'writeForKid'.tr(),
         page: WriteForKidsScreen(),
       ),
       Menu(
+        type: 6,
         icon: 'assets/images/menu/library.png',
         title: 'library'.tr(),
         page: LibraryScreen(),
       ),
       Menu(
+        type: 7,
         icon: 'assets/images/menu/entercodebutton.png',
         title: 'enterCode'.tr(),
         page: EnterCodeScreen(),
       ),
       Menu(
+        type: 8,
         icon: 'assets/images/menu/subscribebutton.png',
         title: 'subscribe'.tr(),
         page: SubcribeScreen(),
       ),
       Menu(
+        type: 9,
         icon: 'assets/images/menu/logout.png',
         title: 'logout'.tr(),
         page: LoginScreen(),
       ),
     ];
+
+    handleModalMenu(Menu menu) async {
+      if (menu.type == 9) {
+        await hiveService.clearBoxes(boxUnit);
+        await hiveService.clearBoxes(boxLesson);
+        await hiveService.clearBoxes(boxContent);
+        await hiveService.clearBoxes(boxFlashCard);
+        await download.deleteAll();
+        deleteToken();
+      }
+      Navigator.push(context,
+          MaterialPageRoute(builder: (BuildContext context) => menu.page));
+    }
+
     showModalBottomSheet(
         context: context,
         backgroundColor: Colors.transparent,
@@ -134,12 +169,13 @@ class ShowModalMenu {
                                           ),
                                         ),
                                         onTap: () {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder:
-                                                      (BuildContext context) =>
-                                                          menu.page));
+                                          handleModalMenu(menu);
+                                          // Navigator.push(
+                                          //     context,
+                                          //     MaterialPageRoute(
+                                          //         builder:
+                                          //             (BuildContext context) =>
+                                          //                 menu.page));
                                         }),
                                     Container(
                                       height: 17.w,
