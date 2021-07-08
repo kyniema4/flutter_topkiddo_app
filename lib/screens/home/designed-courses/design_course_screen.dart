@@ -222,70 +222,81 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
   //lấy data 5 flashcard đâu tiên
   checkDataLessonInitial(dataLesson) async {
     if (dataLesson['part'].length > 0) {
-      List<Future> data = [];
-
-      int getNumber = dataLesson['part'][0]['content'].length < 5
-          ? dataLesson['part'][0]['content'].length
-          : 5;
-      List listDataInitial =
-          dataLesson['part'][0]['content'].sublist(0, getNumber);
-      if (dataLesson['part'][0]['audio'] != null) {
-        
-        List tempList=[];
-        tempList.add(dataLesson['part'][0]['audio']);
-        data.add(downloadData(tempList, dataLesson['_id']));
-      }
-      if (dataLesson['part'][0]['image'] != null) {
-        List tempList=[];
-        tempList.add(dataLesson['part'][0]['image']);
-        data.add(downloadData(tempList, dataLesson['_id']));
-      }
-
-      for (var content in listDataInitial) {
-        if (content['resources'].length > 0) {
-          data.add(downloadData(content['resources'], dataLesson['_id']));
-        }
-        print(data);
-        print('debugging');
-        if (content['letterResources'].length > 0) {
-          List dataLetterResources = content['letterResources'];
-
-          for (var e in dataLetterResources) {
-            print(e);
-            print('debugging');
-            if (e['resources'] == null) {
-              String soundPath = await fetchAudioLetter(e['letter']);
-              print('debugging');
-              if (soundPath != null) {
-                Map resource = {'_id': e['_id'], 'localPath': soundPath};
-                e['resources'].add(resource);
-              }
-            }
-            print('debugging');
-            data.add(downloadData(e['resources'], dataLesson['_id']));
-          }
-        }
-        // if (content['outsideResources'].length > 0) {
-        //   data.addAll(content['outsideResources']);
-        // }
-
-      }
-      // await Future.wait(data);
-      await Future.wait(data);
-    }
-  }
-
-  Future downloadData(List listResource, String lessonId) async {
-    if (listResource.length > 0 && listResource.isNotEmpty) {
       List<Future> listDataHandle = [];
-      for (var resource in listResource) {
-        if (resource['type'] < 3) {
-          listDataHandle.add(download.downloadFile(resource, lessonId));
+      for (var item in dataLesson['part']) {
+        if (item['audio'] != null) {
+          listDataHandle
+              .add(download.downloadFile(item['audio'], dataLesson['_id']));
         }
+        if (item['image'] != null) {
+          print(item['image']);
+          listDataHandle
+              .add(download.downloadFile(item['image'], dataLesson['_id']));
+        }
+        // if (item['game'] != null) {
+        //   print(item['game']);
+        //   print('debugging');
+        // }
       }
+      // int getNumber = dataLesson['part'][0]['content'].length < 5
+      //     ? dataLesson['part'][0]['content'].length
+      //     : 5;
+      // List listDataInitial =
+      //     dataLesson['part'][0]['content'].sublist(0, getNumber);
+      // if (dataLesson['part'][0]['audio'] != null) {
+      //   List tempList = [];
+      //   tempList.add(dataLesson['part'][0]['audio']);
+      //   listDataHandle.add(downloadData(tempList, dataLesson['_id']));
+      // }
+      // if (dataLesson['part'][0]['image'] != null) {
+      //   List tempList = [];
+      //   tempList.add(dataLesson['part'][0]['image']);
+      //   listDataHandle.add(downloadData(tempList, dataLesson['_id']));
+      // }
+
+      // for (var content in listDataInitial) {
+      //   if (content['resources'].length > 0) {
+      //     listDataHandle
+      //         .add(downloadData(content['resources'], dataLesson['_id']));
+      //   }
+      //   print(listDataHandle);
+      //   print('debugging');
+      //   if (content['letterResources'].length > 0) {
+      //     List dataLetterResources = content['letterResources'];
+
+      //     for (var e in dataLetterResources) {
+      //       print(e);
+      //       print('debugging');
+      //       if (e['resources'] == null) {
+      //         String soundPath = await fetchAudioLetter(e['letter']);
+      //         print('debugging');
+      //         if (soundPath != null) {
+      //           Map resource = {'_id': e['_id'], 'localPath': soundPath};
+      //           e['resources'].add(resource);
+      //         }
+      //       }
+      //       print('debugging');
+      //       listDataHandle.add(downloadData(e['resources'], dataLesson['_id']));
+      //     }
+      //   }
+
+      // }
+
       await Future.wait(listDataHandle);
     }
   }
+
+  // Future downloadData(List listResource, String lessonId) async {
+  //   if (listResource.length > 0 && listResource.isNotEmpty) {
+  //     List<Future> listDataHandle = [];
+  //     for (var resource in listResource) {
+  //       if (resource['type'] < 3) {
+  //         listDataHandle.add(download.downloadFile(resource, lessonId));
+  //       }
+  //     }
+  //     await Future.wait(listDataHandle);
+  //   }
+  // }
 
   @override
   void dispose() {

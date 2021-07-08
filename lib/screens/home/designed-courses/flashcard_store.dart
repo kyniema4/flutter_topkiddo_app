@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:mobx/mobx.dart';
+import 'package:volume_control/volume_control.dart';
 
 // Include generated file
 part 'flashcard_store.g.dart';
@@ -12,7 +13,7 @@ abstract class _FlashCardStore with Store {
   @observable
   bool checkData = true;
   @observable
-  List listFlashCard = [];
+  List listFlashCard =[];
   @observable
   List<Widget> listWidget = [];
   @observable
@@ -39,6 +40,8 @@ abstract class _FlashCardStore with Store {
   int pageInPart = 0;
   @observable
   bool isPlayAudio = true;
+  @observable
+  bool muteSound = false;
 
   @action
   void setCurrentPage(int value) {
@@ -58,6 +61,16 @@ abstract class _FlashCardStore with Store {
   @action
   bool setPlayAudio(bool value) {
     isPlayAudio = value;
+  }
+
+  @action
+  void setMuteSound() {
+    muteSound = !muteSound;
+    if(muteSound==true){
+      VolumeControl.setVolume(0.0);
+    }else{
+      VolumeControl.setVolume(0.2);
+    }
   }
 
   @action

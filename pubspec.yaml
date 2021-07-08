@@ -47,6 +47,7 @@ dependencies:
   better_player: ^0.0.70
   chewie: ^1.2.2
   audioplayers: ^0.19.0
+  volume_control: ^0.1.5
   carousel_slider: ^3.0.0
   cached_network_image: ^3.0.0
 

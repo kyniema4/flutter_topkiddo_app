@@ -19,12 +19,11 @@ import 'package:topkiddo/Utils/hive_service.dart';
 import 'package:topkiddo/components/Loading_dialog.dart';
 import 'package:topkiddo/screens/home/designed-courses/design_course_screen.dart';
 import 'package:video_player/video_player.dart';
-import 'package:video_player/video_player.dart';
-
 import 'package:topkiddo/Utils/download_data.dart';
 import 'package:topkiddo/Utils/http_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:topkiddo/screens/home/designed-courses/flashcard_store.dart';
+import 'package:volume_control/volume_control.dart';
 
 import '../../../components/languages_app.dart';
 import '../../../components/swipe-configuration.dart';
@@ -59,6 +58,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
   List listFlashCard = [];
   HandleDownload download = HandleDownload();
   final FlashCardStore store = FlashCardStore();
+
   AudioPlayer audioPlayer = AudioPlayer();
   final HiveService hiveService = HiveService();
   String boxFlashCard = "flashCard";
@@ -96,8 +96,10 @@ class _FlashCardScreen extends State<FlashCardScreen>
         fashCardIsLearning['flashCardId'] != null) {
       List listData = widget.lessonDetail['part'];
       String flashCardId = fashCardIsLearning['flashCardId'];
+      int ordinalNumber = fashCardIsLearning['ordinalNumber'] ?? 0;
       //store.setShowQuestion(true);
-      createFlashCard(idPageLearning: flashCardId);
+      createFlashCard(
+          idPageLearning: flashCardId, ordinalNumber: ordinalNumber);
     } else {
       print('debugging');
       if (fashCardIsLearning['showGuide'] == true) {
@@ -118,7 +120,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
   }
 
   //check part and add data
-  createFlashCard({idPageLearning: ""}) async {
+  createFlashCard({idPageLearning: "", ordinalNumber: 0}) async {
     Map data = widget.lessonDetail;
     List tempList = [...store.listFlashCard];
     if (data != null) {
@@ -145,6 +147,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
                 var result = await dealerWidget(content, listPart[i]['_id']);
                 if (result != null) {
                   tempList.addAll(result);
+                  print('debugging');
                 }
               } catch (e) {
                 print(e);
@@ -184,24 +187,43 @@ class _FlashCardScreen extends State<FlashCardScreen>
     } else {
       //fetch data;
     }
+    print(ordinalNumber);
+    print('debugging');
     //tới flashcard đã học
     int pageNumber =
         tempList.indexWhere((e) => e["data"].id == idPageLearning) ?? 0;
-    _pageController.jumpToPage(pageNumber >= 0 ? pageNumber : 0);
+    _pageController
+        .jumpToPage(pageNumber >= 0 ? (pageNumber + ordinalNumber) : 0);
     //_pageController.jumpToPage(90);
-
+    print(tempList);
+    print('debugging');
     store.setListFlashCard(tempList);
-    playAudioInitial(pageNumber);
+    await handleInitial(pageNumber);
   }
 
-  playAudioInitial(int page) {
+  handleInitial(int page) async {
+    var data = store.listDataFlashCard[page];
+
     if (page >= 0) {
       Map sourceAudio = store.listDataFlashCard[page].sourceAudio;
+      // List dataFlashCard = store.listDataFlashCard;
+      // print('debugging');
+      // await checkExistDataFuture(page, dataFlashCard);
       playAudio(sourceAudio);
     }
     if (page < 0 && store.listDataFlashCard[0].sourceAudio != null) {
       playAudio(store.listDataFlashCard[0].sourceAudio);
     }
+    if (store.listDataFlashCard[page].timeFrame != null &&
+        store.listDataFlashCard[page].isAnimation == true) {
+      print('debugging');
+      store.setAnimation(true);
+      animationLetter(
+          timeFrame: store.listDataFlashCard[page].timeFrame,
+          letterResources: store.listDataFlashCard[page].letterResources);
+    }
+    List dataFlashCard = store.listDataFlashCard;
+    await checkExistDataFuture(page < 0 ? 0 : page, dataFlashCard);
   }
 
   //chia flashcard
@@ -216,7 +238,6 @@ class _FlashCardScreen extends State<FlashCardScreen>
     flashCard.unitId = widget.lessonDetail['unit'];
     List listResource = flashCard.resources;
     List listLetterResource = flashCard.letterResources;
-
     //-------------------------trường hợp title có hoặc k có ảnh, âm thanh
     if (data['topic'] != null) {
       flashCard.sourceAudio = data['audio'] != null
@@ -282,6 +303,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
 
       for (var i in listLetterResource) {
         var type = i['resources'][0]['type'];
+
         if (type == 1) {
           Map sourceImage = {
             '_id': i['resources'][0]['_id'],
@@ -290,6 +312,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
           var pathImage = await getPathImage(sourceImage);
           listPathImage.add(pathImage);
         }
+
         if (type == 2) {
           Map sourceAudio = {
             '_id': i['resources'][0]['_id'],
@@ -298,6 +321,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
           listPathAudio.add(sourceAudio);
         }
       }
+
       oneFlashCard = {
         'data': flashCard,
         'widget': cardClickEachImage(
@@ -438,6 +462,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
       FlashCard flashCardLetter = flashCard.copyWith();
       flashCardLetter.isAnimation = true;
       flashCardLetter.resources = null;
+      flashCardLetter.ordinalNumber = 1;
       oneFlashCard = {
         'data': flashCardLetter,
         'widget': cardSentence(listSubSentence)
@@ -507,18 +532,20 @@ class _FlashCardScreen extends State<FlashCardScreen>
   //   });
   // }
 
-  playAudioTest() async {
-    print('play audio test');
-    String lessonId = widget.lessonDetail['_id'];
-    String subPath = "/$lessonId/60bb5eb2dd38fc1918818dbf.wav";
-    await audioPlayer.stop();
-    var path = await download.getFileFromLocal(subPath);
-    if (path != null) await audioPlayer.play(path, isLocal: true);
-  }
+  // playAudioTest() async {
+  //   print('play audio test');
+  //   String lessonId = widget.lessonDetail['_id'];
+  //   String subPath = "/$lessonId/60bb5eb2dd38fc1918818dbf.wav";
+  //   await audioPlayer.stop();
+  //   var path = await download.getFileFromLocal(subPath);
+  //   if (path != null) await audioPlayer.play(path, isLocal: true);
+  // }
 
   playAudio(sourceAudio) async {
     String lessonId = widget.lessonDetail['_id'];
+
     await audioPlayer.stop();
+
     try {
       if (sourceAudio != null) {
         var typeFile = sourceAudio['localPath'] != null
@@ -528,11 +555,12 @@ class _FlashCardScreen extends State<FlashCardScreen>
         String subPath = "/$lessonId/${sourceAudio['_id']}$typeFile";
         //60b7862add38fc1918816a24/60cb4337dd38fc19188193b6.wav
         var path = await download.getFileFromLocal(subPath);
-        print('debugging');
+
         //play source đã lưu trong local
         if (path != null) {
           store.setPlayAudio(false);
           await audioPlayer.play(path, isLocal: true);
+
           audioPlayer.onPlayerCompletion.listen((event) {
             store.setPlayAudio(true);
           });
@@ -614,14 +642,13 @@ class _FlashCardScreen extends State<FlashCardScreen>
     // }
     print('checkData ' + store.checkData.toString());
     store.setCheckData(false);
-
+    store.setShowTopButton(false);
     print("Current Page: " + page.toString());
     print(store.listFlashCard.length);
 
     store.setAnimation(false);
     List dataFlashCard = store.listDataFlashCard;
     FlashCard data = dataFlashCard[page];
-
     if (data.isVideo) {}
     //animation cho câu
     if (data.timeFrame != null && data.isAnimation == true) {
@@ -651,13 +678,12 @@ class _FlashCardScreen extends State<FlashCardScreen>
   }
 
   savePositionFlashCard(FlashCard data) async {
-    //var data = null;
     Map items = {
       "flashCardId": data?.id ?? "",
       "partId": data?.partId ?? "",
       "lessonId": data?.lessonId ?? "",
       "unitId": data?.unitId ?? "",
-      "ordinalNumber": 0,
+      "ordinalNumber": data?.ordinalNumber ?? 0,
       "showGuide": false
     };
 
@@ -688,16 +714,18 @@ class _FlashCardScreen extends State<FlashCardScreen>
     } else {
       tempList = [...listData.sublist(pageCheck, pageCheck + 10)];
     }
-
+    print('debugging');
     if (tempList.length > 0) {
       List<Future> data = [];
       // tempList.forEach((content) async {
       for (var content in tempList) {
         if (content?.resources != null && content?.resources.length > 0) {
+          print('debugging');
           data.add(downloadData(content.resources, widget.lessonDetail['_id']));
         }
         if (content?.letterResources != null &&
             content?.letterResources.length > 0) {
+          print('debugging');
           List dataLetterResources = content.letterResources;
           // dataLetterResources.forEach((e) async {
           for (var e in dataLetterResources) {
@@ -762,7 +790,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
       List<Future> listDataHandle = [];
       listResource.forEach((resource) async {
         if (resource['type'] < 3) {
-          await listDataHandle.add(download.downloadFile(resource, lessonId));
+          listDataHandle.add(download.downloadFile(resource, lessonId));
           print('debugging');
         } else {
           return;
@@ -978,6 +1006,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
   Widget build(BuildContext context) {
     var flashCardStore = Provider.of<FlashCardStore>(context);
     flashCardStore.setCheckData(false);
+    // print(flashCardStore.muteSound);
     // print('checkData in Widget: ' + flashCardStore.checkData.toString());
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
@@ -1305,7 +1334,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
           //     errorBuilder: (BuildContext context, Object exception,
           //         StackTrace stackTrace) {
           //       return Text('');
-          //     }, 
+          //     },
           //     fit: BoxFit.contain,
           //   )
           CachedNetworkImage(
@@ -1357,6 +1386,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
   Widget cardClickEachImage(
       {pathImg1: '', pathImg2: '', pathSound1: '', pathSound2: ''}) {
     double height = MediaQuery.of(context).size.height;
+
     return Container(
         margin: EdgeInsets.all(8.5.w),
         child: Column(
@@ -1378,7 +1408,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
                 GestureDetector(
                   child: pathImg1['type'] == 1
                       ? Image(
-                          image: FileImage(File(pathImg1)),
+                          image: FileImage(File(pathImg1['path'])),
                           fit: BoxFit.contain,
                           height: 70.w,
                         )
@@ -1403,7 +1433,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
                 GestureDetector(
                   child: pathImg2['type'] == 1
                       ? Image(
-                          image: FileImage(File(pathImg2)),
+                          image: FileImage(File(pathImg2['path'])),
                           fit: BoxFit.contain,
                           height: 70.w,
                         )
@@ -1685,6 +1715,26 @@ class _TopButtonState extends State<TopButton> {
   String boxLesson = "lesson";
   String boxFlashCard = "flashCard";
   String key = "currentData";
+  FlashCardStore flashCardStore;
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   initVolumeState();
+  // }
+
+  // Future<void> initVolumeState() async {
+  //   if (!mounted) return;
+  //   flashCardStore = Provider.of<FlashCardStore>(context, listen: false);
+  //   if (flashCardStore.muteSound == true) {
+  //     VolumeControl.setVolume(0.0);
+  //   } else {
+  //     VolumeControl.setVolume(1.0);
+  //   }
+
+  //   //  var _val = await VolumeControl.volume;
+  //   // print('debugging');
+  // }
 
   getListLesson() async {
     Dialogs.showLoadingDialog(context);
@@ -1708,96 +1758,105 @@ class _TopButtonState extends State<TopButton> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        height: 32.w,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Expanded(
-              child: Container(
-                height: MediaQuery.of(context).size.height,
-                child: Stack(
-                  children: <Widget>[
-                    Positioned(
-                      top: 13.5.w,
-                      left: -13.5.w,
-                      child: Align(
-                        child: Image.asset(
-                          'assets/images/button/bar-long.png',
-                          height: 12.w,
-                          fit: BoxFit.fill,
+    var flashCardStore = Provider.of<FlashCardStore>(context);
+    return Observer(
+        name: 'topButton',
+        builder: (_) => Container(
+            height: 32.w,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Expanded(
+                  child: Container(
+                    height: MediaQuery.of(context).size.height,
+                    child: Stack(
+                      children: <Widget>[
+                        Positioned(
+                          top: 13.5.w,
+                          left: -13.5.w,
+                          child: Align(
+                            child: Image.asset(
+                              'assets/images/button/bar-long.png',
+                              height: 12.w,
+                              fit: BoxFit.fill,
+                            ),
+                          ),
                         ),
-                      ),
+                        Positioned(
+                          top: 10.w,
+                          left: 15.w,
+                          child: Row(
+                            children: [
+                              GestureDetector(
+                                  child: Container(
+                                      width: 20.w,
+                                      height: 20.w,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                            image: AssetImage(
+                                              'assets/images/button/back-button.png',
+                                            ),
+                                            fit: BoxFit.contain),
+                                      )),
+                                  onTap: () {
+                                    getListLesson();
+                                  }),
+                              SizedBox(
+                                width: 8.w,
+                              ),
+                              GestureDetector(
+                                  child: Container(
+                                      width: 20.w,
+                                      height: 20.w,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                            image: AssetImage(
+                                              'assets/images/button/home-button.png',
+                                            ),
+                                            fit: BoxFit.contain),
+                                      )),
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (BuildContext context) =>
+                                                HomeScreen()));
+                                  }),
+                              SizedBox(
+                                width: 8.w,
+                              ),
+                              GestureDetector(
+                                  child: Container(
+                                      width: 20.w,
+                                      height: 20.w,
+                                      decoration: BoxDecoration(
+                                        image: !flashCardStore.muteSound
+                                            ? DecorationImage(
+                                                image: AssetImage(
+                                                  'assets/images/button/musicon-button.png',
+                                                ),
+                                                fit: BoxFit.contain)
+                                            : DecorationImage(
+                                                image: AssetImage(
+                                                  'assets/images/button/musicoff-button.png',
+                                                ),
+                                                fit: BoxFit.contain),
+                                      )),
+                                  onTap: () {
+                                    flashCardStore.setMuteSound();
+                                  }),
+                            ],
+                          ),
+                        )
+                      ],
                     ),
-                    Positioned(
-                      top: 10.w,
-                      left: 15.w,
-                      child: Row(
-                        children: [
-                          GestureDetector(
-                              child: Container(
-                                  width: 20.w,
-                                  height: 20.w,
-                                  decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                        image: AssetImage(
-                                          'assets/images/button/back-button.png',
-                                        ),
-                                        fit: BoxFit.contain),
-                                  )),
-                              onTap: () {
-                                getListLesson();
-                              }),
-                          SizedBox(
-                            width: 8.w,
-                          ),
-                          GestureDetector(
-                              child: Container(
-                                  width: 20.w,
-                                  height: 20.w,
-                                  decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                        image: AssetImage(
-                                          'assets/images/button/home-button.png',
-                                        ),
-                                        fit: BoxFit.contain),
-                                  )),
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (BuildContext context) =>
-                                            HomeScreen()));
-                              }),
-                          SizedBox(
-                            width: 8.w,
-                          ),
-                          GestureDetector(
-                              child: Container(
-                                  width: 20.w,
-                                  height: 20.w,
-                                  decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                        image: AssetImage(
-                                          'assets/images/button/musicon-button.png',
-                                        ),
-                                        fit: BoxFit.contain),
-                                  )),
-                              onTap: () {
-                                Navigator.pop(context);
-                              }),
-                        ],
-                      ),
-                    )
-                  ],
+                  ),
                 ),
-              ),
-            ),
-            Expanded(child: LanguagesApp()),
-          ],
-        ));
+                Expanded(child: LanguagesApp()),
+              ],
+            )));
   }
 }
 
@@ -1807,6 +1866,7 @@ class FlashCard {
   String lessonId;
   String unitId;
   String content;
+  int ordinalNumber;
   int language;
   int sizeContent;
   int contentPosition;
@@ -1830,6 +1890,7 @@ class FlashCard {
     this.lessonId,
     this.unitId,
     this.content,
+    this.ordinalNumber,
     this.language,
     this.sizeContent,
     this.contentPosition,
@@ -1883,7 +1944,10 @@ class FlashCard {
   FlashCard copyWith({
     String id,
     String lessonId,
+    String partId,
+    String unitId,
     String content,
+    int ordinalNumber,
     int language,
     int sizeContent,
     int contentPosition,
@@ -1902,7 +1966,10 @@ class FlashCard {
     return FlashCard(
       id: id ?? this.id,
       lessonId: lessonId ?? this.lessonId,
+      partId: partId ?? this.partId,
+      unitId: unitId ?? this.unitId,
       content: content ?? this.content,
+      ordinalNumber: ordinalNumber ?? this.ordinalNumber,
       language: language ?? this.language,
       sizeContent: sizeContent ?? this.sizeContent,
       contentPosition: contentPosition ?? this.contentPosition,
