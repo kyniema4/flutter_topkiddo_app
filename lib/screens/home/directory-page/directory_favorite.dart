@@ -24,13 +24,6 @@ class _DirectoryFavoriteState extends State<DirectoryFavorite> {
   List listFavoriteSentences = [];
   String dataBoxName = "sentence";
 
-  show() async {
-    print('run show');
-    var box = Hive.box(dataBoxName);
-
-    print('debugging');
-  }
-
   getListSentenceFavoriteFromLocal() async {
     var result = await dbHelper.queryAllRows();
     if (result.isNotEmpty) {
@@ -46,6 +39,8 @@ class _DirectoryFavoriteState extends State<DirectoryFavorite> {
     }
   }
 
+  
+
   deleteSentenceFromLocal(String id) async {
     print(id);
     bool result = await dbHelper.delete(id);
@@ -59,7 +54,6 @@ class _DirectoryFavoriteState extends State<DirectoryFavorite> {
     // TODO: implement initState
     super.initState();
     getListSentenceFavoriteFromLocal();
-    show();
   }
 
   @override

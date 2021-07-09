@@ -2,7 +2,8 @@ import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HiveService {
-  String keyFlashCard = "currentData";
+  String keyFlashCard = "keyCurrentData";
+  String keyFavoriteSentence = "keyFavoriveSentence";
 
   isExists({String boxName}) async {
     final openBox = await Hive.openBox(boxName);
@@ -42,6 +43,8 @@ class HiveService {
 
     return boxList;
   }
+
+ 
 
   clearBoxes(String boxName) async {
     final openBox = await Hive.openBox(boxName);

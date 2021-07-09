@@ -24,12 +24,15 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreen extends State<LoginScreen> {
   final bgImage = AssetImage('assets/images/background/bg_iphone.jpg');
-  TextEditingController numberController =
-      new TextEditingController(text: "0772026582");
-  TextEditingController passwordController =
-      new TextEditingController(text: "123456");
+  // TextEditingController numberController =
+  //     new TextEditingController(text: "0772026582");
+  // TextEditingController passwordController =
+  //     new TextEditingController(text: "123456");
+  TextEditingController numberController=TextEditingController();
+  TextEditingController passwordController=TextEditingController();
 
   _changeHomePage() {
+    
     if (numberController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
           // SnackBar(content: Text(Languages.of(context).canNotPhoneNumber)));
@@ -195,9 +198,7 @@ class _LoginScreen extends State<LoginScreen> {
                                               focusedBorder: styleOutline,
                                               enabledBorder: styleUnderline,
                                               border: InputBorder.none,
-                                              hintText: 'phoneNumber'
-                                                  .tr()
-                                                  .toUpperCase(),
+                                              hintText: 'phoneNumber'.tr(),
                                               hintStyle: TextStyle(
                                                   fontSize: height > 600
                                                       ? 18.sp

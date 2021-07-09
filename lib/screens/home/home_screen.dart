@@ -214,7 +214,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     } else {
       print('học lần đầu');
-      //await fetchListUnit();
+      await fetchListUnit();
     }
   }
 
@@ -248,9 +248,10 @@ class _HomeScreenState extends State<HomeScreen> {
               resultListLesson['data']['docs'].length > 0) {
             List listSaveContent = [...resultListLesson['data']['docs']];
             print('debugging');
-            for (var i = 0; i < listSaveContent.length; i++) {
-              await downloadListContent(listSaveContent[i]);
-            }
+            //chuyển download vào trong phần library
+            // for (var i = 0; i < listSaveContent.length; i++) {
+            //   await downloadListContent(listSaveContent[i]);
+            // }
             //setCurrentUnit(resultListUnit['data']['docs'][0]['_id']);
             await hiveService.addBoxes(listSaveContent, boxContent);
           }
@@ -527,7 +528,7 @@ class TopButton extends StatelessWidget {
                                       fit: BoxFit.contain),
                                 )),
                             onTap: () {
-                              clearAllDataApp();
+                              //clearAllDataApp();
                               // _showModalMenu(context);
                               // Navigator.push(
                               //     context,

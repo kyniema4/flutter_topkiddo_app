@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -30,7 +31,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
   String keyTo = 'en';
   String query = "";
   String dataBoxName = "lesson";
-  
+  AudioPlayer audioPlayer = AudioPlayer();
   Timer debouncer = null;
   final dbHelper = DatabaseHelper.instance;
   Box box;
@@ -142,6 +143,37 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
     return;
   }
 
+  playSound(String idAudio) async {
+    try {
+      String sourceUrl = BaseUrl +
+          "resources/get_resource_from_local" +
+          '?token=${(await getToken())}&resourceId=${idAudio}&time=${DateTime.now().toString()}';
+
+      audioPlayer.setVolume(0.2);
+      var result = await audioPlayer.play(sourceUrl);
+      if (result != 1) {
+        return (await showDialog(
+          context: context,
+          builder: (context) => new AlertDialog(
+            // title: new Text('Are you sure?'),
+            content: Text('alertDirectorySound'.tr()),
+            actions: <Widget>[
+              // TextButton(
+              //   onPressed: () => Navigator.of(context).pop(false),
+              //   child: const Text('Cancel'),
+              // ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        ));
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
   // insertSetenceToFavorite(data) async {
   //   final value = FavoriteSentenceModel(
   //       data.id,
@@ -410,8 +442,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                                                                 width: 10.w,
                                                                               ),
                                                                               onTap: () async {
-                                                                                await box.clear();
-                                                                                print('success');
+                                                                                await playSound(listSentences[index].idTranslatedAudioResource);
                                                                                 // final allRows = await dbHelper.queryAllRows();
                                                                                 // print('query all rows:');
                                                                                 // allRows.forEach(print);

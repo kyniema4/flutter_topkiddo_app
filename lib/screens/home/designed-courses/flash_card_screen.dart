@@ -198,30 +198,29 @@ class _FlashCardScreen extends State<FlashCardScreen>
     print(tempList);
     print('debugging');
     store.setListFlashCard(tempList);
-    await handleInitial(pageNumber);
+    await handleInitial(pageNumber + ordinalNumber);
   }
 
+  // khởi chạy lại flashcard học dở
   handleInitial(int page) async {
-    var data = store.listDataFlashCard[page];
-
     if (page >= 0) {
       Map sourceAudio = store.listDataFlashCard[page].sourceAudio;
       // List dataFlashCard = store.listDataFlashCard;
       // print('debugging');
       // await checkExistDataFuture(page, dataFlashCard);
       playAudio(sourceAudio);
+      if (store.listDataFlashCard[page].timeFrame != null &&
+          store.listDataFlashCard[page].isAnimation == true) {
+        store.setAnimation(true);
+        animationLetter(
+            timeFrame: store.listDataFlashCard[page].timeFrame,
+            letterResources: store.listDataFlashCard[page].letterResources);
+      }
     }
     if (page < 0 && store.listDataFlashCard[0].sourceAudio != null) {
       playAudio(store.listDataFlashCard[0].sourceAudio);
     }
-    if (store.listDataFlashCard[page].timeFrame != null &&
-        store.listDataFlashCard[page].isAnimation == true) {
-      print('debugging');
-      store.setAnimation(true);
-      animationLetter(
-          timeFrame: store.listDataFlashCard[page].timeFrame,
-          letterResources: store.listDataFlashCard[page].letterResources);
-    }
+
     List dataFlashCard = store.listDataFlashCard;
     await checkExistDataFuture(page < 0 ? 0 : page, dataFlashCard);
   }
@@ -541,9 +540,12 @@ class _FlashCardScreen extends State<FlashCardScreen>
   //   if (path != null) await audioPlayer.play(path, isLocal: true);
   // }
 
+  //http://backend.topkiddovn.com/resources/get_resource_from_local?token=eyJhbGciOiJIUzI1NiJ9.NjBlNjcwNjJkZDM4ZmMxOTE4ODFhMzcw.EzgjXON02uXmC25w8vUyPkSbxITURx5ttBrMq-Xzvy0&resourceId=60d088e9dd38fc19188193c6&time=1625826548939
+  //http://backend.topkiddovn.com/resources/get_resource_from_local?token=eyJhbGciOiJIUzI1NiJ9.NjBlN2Y4MTZkZDM4ZmMxOTE4ODFhNjlm.ixdMoMf_o-AyfPuJNpZZ7CTHwfm8hg5OgqK45QiVZkw&resourceId=60dc7dd8dd38fc191881a16b&time=2021-07-09 17:27:51.733820
   playAudio(sourceAudio) async {
     String lessonId = widget.lessonDetail['_id'];
-
+    audioPlayer.setVolume(0.5);
+    
     await audioPlayer.stop();
 
     try {
@@ -593,6 +595,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
 
   playAudioOutsideResources(Map sourceAudio, String lessonId) async {
     String letter = sourceAudio['letter'] ?? "";
+    audioPlayer.setVolume(0.5);
     if (letter.length > 0 && store.isPlayAudio) {
       String soundPath = await fetchAudioLetter(letter);
       if (soundPath != null) {
@@ -834,6 +837,8 @@ class _FlashCardScreen extends State<FlashCardScreen>
   void dispose() {
     animationController.repeat(reverse: false);
     animationController.dispose();
+    audioPlayer.stop();
+    audioPlayer.dispose();
     //_controllerVideo.dispose();
     //store.dispose;
     super.dispose();
@@ -1577,6 +1582,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
       margin: EdgeInsets.all(8.5.w),
       child: Wrap(
           crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 10.w,
           alignment: WrapAlignment.center,
           children: listSubsentence ?? []),
     );
@@ -1589,7 +1595,6 @@ class _FlashCardScreen extends State<FlashCardScreen>
     return Observer(
         name: 'subSentence',
         builder: (_) => Column(children: [
-              Padding(padding: EdgeInsets.only(right: 15.w, left: 15.w)),
               GestureDetector(
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -1818,11 +1823,17 @@ class _TopButtonState extends State<TopButton> {
                                             fit: BoxFit.contain),
                                       )),
                                   onTap: () {
-                                    Navigator.push(
+                                    //   Navigator.push(
+                                    //       context,
+                                    //       MaterialPageRoute(
+                                    //           builder: (BuildContext context) =>
+                                    //               HomeScreen()));
+                                    // }),
+                                    Navigator.pushAndRemoveUntil(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (BuildContext context) =>
-                                                HomeScreen()));
+                                            builder: (context) => HomeScreen()),
+                                        (route) => false);
                                   }),
                               SizedBox(
                                 width: 8.w,
