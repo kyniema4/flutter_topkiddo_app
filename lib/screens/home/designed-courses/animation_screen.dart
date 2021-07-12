@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:topkiddo/Utils/hive_service.dart';
+import 'package:topkiddo/components/Loading_dialog.dart';
 import 'package:topkiddo/components/languages_app.dart';
 import '../../../theme/style.dart';
 import '../../../theme/theme.dart' as Theme;
@@ -8,6 +10,8 @@ import 'design_course_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AnimationScreen extends StatefulWidget {
+  final unitId;
+  const AnimationScreen({Key key, this.unitId}) : super(key: key);
   @override
   _AnimationScreenState createState() => _AnimationScreenState();
 }
@@ -23,6 +27,7 @@ class _AnimationScreenState extends State<AnimationScreen>
   Animation<double> _fireworkOpacityFive;
   Animation<double> _fireworkOpacitySix;
   Animation<double> _fireworkOpacitySeven;
+
   @override
   void initState() {
     super.initState();
@@ -306,7 +311,7 @@ class _AnimationScreenState extends State<AnimationScreen>
                                 'assets/images/lesson/text-completed.png',
                                 height: 30.w,
                                 fit: BoxFit.contain))),
-                    TopButton(),
+                    TopButton(unitId: widget.unitId),
                   ],
                 )),
           ],
@@ -316,21 +321,105 @@ class _AnimationScreenState extends State<AnimationScreen>
   }
 }
 
-class TopButton extends StatelessWidget {
+class TopButton extends StatefulWidget {
+  final unitId;
+
+  const TopButton({Key key, this.unitId}) : super(key: key);
+  @override
+  _TopButtonState createState() => _TopButtonState();
+}
+
+class _TopButtonState extends State<TopButton> {
+  final HiveService hiveService = HiveService();
+  String boxLesson = "lesson";
+  String boxFlashCard = "flashCard";
+  String key = "currentData";
+
+  getListLesson() async {
+    Dialogs.showLoadingDialog(context);
+    var currentUnitId = widget.unitId;
+    if (currentUnitId != null && currentUnitId.length > 0) {
+      var listLesson =
+          await hiveService.getBoxesWithKey(currentUnitId, boxLesson);
+
+      if (listLesson != null && listLesson.length > 0) {
+        Navigator.of(context, rootNavigator: true).pop();
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => DesignCourseScreen(lesson: listLesson)),
+            (route) => false);
+      } else {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     return Container(
-        height: 32.w,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Expanded(
-              child: Back(buttonImage: 'assets/images/button/close-button.png'),
+      padding: new EdgeInsets.only(top: 9.w),
+      height: MediaQuery.of(context).size.height,
+      child: Stack(
+        children: <Widget>[
+          Positioned(
+            top: 4.5.w,
+            left: -69.w,
+            // right: 0,
+            child: Align(
+              child: Image.asset(
+                'assets/images/button/bar-long.png',
+                height: 12.w,
+                fit: BoxFit.fill,
+              ),
             ),
-          ],
-        ));
+          ),
+          Positioned(
+            top: 1.w,
+            left: 15.w,
+            child: GestureDetector(
+                child: Container(
+                    width: 20.w,
+                    height: 20.w,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage(
+                            'assets/images/button/close-button.png',
+                          ),
+                          fit: BoxFit.contain),
+                    )),
+                onTap: () {
+                  // Navigator.pop(context);
+                  getListLesson();
+                }),
+          )
+        ],
+      ),
+    );
+    // return Container(
+    //     height: 32.w,
+    //     child: Row(
+    //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //       crossAxisAlignment: CrossAxisAlignment.start,
+    //       mainAxisSize: MainAxisSize.max,
+    //       children: [
+    //         GestureDetector(
+    //           child: Container(
+    //               width: 20.w,
+    //               height: 20.w,
+    //               decoration: BoxDecoration(
+    //                 image: DecorationImage(
+    //                     image: AssetImage(
+    //                       'assets/images/button/close-button.png',
+    //                     ),
+    //                     fit: BoxFit.contain),
+    //               )),
+    //         )
+    //         // Expanded(
+    //         //   child: Back(buttonImage: 'assets/images/button/close-button.png'),
+    //         // ),
+    //       ],
+    //     ));
   }
 }

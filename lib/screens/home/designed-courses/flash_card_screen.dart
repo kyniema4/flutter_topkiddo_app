@@ -17,6 +17,7 @@ import 'package:mobx/mobx.dart';
 import 'package:provider/provider.dart';
 import 'package:topkiddo/Utils/hive_service.dart';
 import 'package:topkiddo/components/Loading_dialog.dart';
+import 'package:topkiddo/screens/home/designed-courses/animation_screen.dart';
 import 'package:topkiddo/screens/home/designed-courses/design_course_screen.dart';
 import 'package:video_player/video_player.dart';
 import 'package:topkiddo/Utils/download_data.dart';
@@ -90,7 +91,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
     Map fashCardIsLearning = await hiveService.getBoxesWithKey(
         hiveService.keyFlashCard, boxFlashCard);
     print('debugging');
-    //mới học lần đầu check show hướng dẫn
+    //mới học lần đầu check show guide
 
     if (fashCardIsLearning != null &&
         fashCardIsLearning['flashCardId'] != null) {
@@ -192,6 +193,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
     //tới flashcard đã học
     int pageNumber =
         tempList.indexWhere((e) => e["data"].id == idPageLearning) ?? 0;
+
     _pageController
         .jumpToPage(pageNumber >= 0 ? (pageNumber + ordinalNumber) : 0);
     //_pageController.jumpToPage(90);
@@ -217,6 +219,9 @@ class _FlashCardScreen extends State<FlashCardScreen>
         //     timeFrame: store.listDataFlashCard[page].timeFrame,
         //     letterResources: store.listDataFlashCard[page].letterResources);
         animationLetter(store.listDataFlashCard[page]);
+      }
+      if (page == store.listDataFlashCard.length - 1) {
+        store.setPreventSwipe(true);
       }
     }
     if (page < 0 && store.listDataFlashCard[0].sourceAudio != null) {
@@ -650,11 +655,13 @@ class _FlashCardScreen extends State<FlashCardScreen>
     store.setCheckData(false);
     store.setShowTopButton(false);
     print("Current Page: " + page.toString());
-    print(store.listFlashCard.length);
+    print('controller page: ' + _pageController.page.toInt().toString());
+    print("List flashcard length: " + store.listFlashCard.length.toString());
 
     store.setAnimation(false);
     List dataFlashCard = store.listDataFlashCard;
     FlashCard data = dataFlashCard[page];
+    print('debugging');
     if (data.isVideo) {}
     //animation cho câu
     if (data.timeFrame != null && data.isAnimation == true) {
@@ -677,19 +684,14 @@ class _FlashCardScreen extends State<FlashCardScreen>
     if (page == 1) {
       checkRemoveGuideFlashCard(page);
     }
-    //kiểm tra trước data đã có chưa
+    //kiểm tra trước, data đã có chưa
     if (page % 10 == 0 && (page + 10) < dataFlashCard.length) {
       print('debugging');
       checkExistDataFuture(page + 10, dataFlashCard);
     }
-  }
-
-  handleSwipeUp() async {
-    print('debugging');
-  }
-
-  handleSwipeDown() async {
-    print('debugging');
+    if (store.currentPage == dataFlashCard.length - 1) {
+      store.setPreventSwipe(true);
+    }
   }
 
   //xử lý mọi tác động lên flahscard;
@@ -844,7 +846,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
     } else
       return;
 
-    store.setPreventSwipe(true);
+    store.setPreventSwipe(false);
   }
 
   reset() {
@@ -1089,7 +1091,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                 child: SwipeDetector(
                                   child: PageView(
                                       controller: _pageController,
-                                      physics: store.isPreventSwipe
+                                      physics: !store.isPreventSwipe
                                           ? BouncingScrollPhysics()
                                           : NeverScrollableScrollPhysics(),
                                       //onPageChanged: _onPageViewChange,
@@ -1111,20 +1113,35 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                   },
                                   onSwipeDown: () {
                                     print('down');
-                                    // playAudio();
-                                    // setState(() {
-                                    //   _swipeDirection = "Swipe Down";
-                                    // });
+
                                     handleImpactFlashCard(store.currentPage,
                                         type: 1);
                                     store.setShowTopButton(true);
                                   },
                                   onSwipeLeft: () {
-                                    print('left');
-                                    print('debugging');
+                                    Navigator.pushAndRemoveUntil(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                AnimationScreen(
+                                                    unitId: widget
+                                                        .lessonDetail['unit'])),
+                                        (route) => false);
                                   },
-                                  onSwipeRight: () {
+                                  onSwipeRight: () async {
                                     print('right');
+                                    store.setPreventSwipe(false);
+                                    int page = store.currentPage - 1;
+                                    print('debugging');
+                                    store.setCurrentPage(page);
+                                    await _pageController.animateToPage(
+                                      page,
+                                      curve: Curves.easeIn,
+                                      duration: Duration(milliseconds: 500),
+                                      
+                                    );
+                                    _pageController.jumpToPage(page);
+                                    
                                   },
                                   swipeConfiguration: SwipeConfiguration(
                                       verticalSwipeMinVelocity: 100.0,
