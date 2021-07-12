@@ -198,6 +198,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
     print(tempList);
     print('debugging');
     store.setListFlashCard(tempList);
+    store.setCurrentPage(pageNumber + ordinalNumber);
     await handleInitial(pageNumber + ordinalNumber);
   }
 
@@ -212,9 +213,10 @@ class _FlashCardScreen extends State<FlashCardScreen>
       if (store.listDataFlashCard[page].timeFrame != null &&
           store.listDataFlashCard[page].isAnimation == true) {
         store.setAnimation(true);
-        animationLetter(
-            timeFrame: store.listDataFlashCard[page].timeFrame,
-            letterResources: store.listDataFlashCard[page].letterResources);
+        // animationLetter(
+        //     timeFrame: store.listDataFlashCard[page].timeFrame,
+        //     letterResources: store.listDataFlashCard[page].letterResources);
+        animationLetter(store.listDataFlashCard[page]);
       }
     }
     if (page < 0 && store.listDataFlashCard[0].sourceAudio != null) {
@@ -545,7 +547,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
   playAudio(sourceAudio) async {
     String lessonId = widget.lessonDetail['_id'];
     audioPlayer.setVolume(0.5);
-    
+
     await audioPlayer.stop();
 
     try {
@@ -644,6 +646,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
     //   print('debugging');
     // }
     print('checkData ' + store.checkData.toString());
+    store.setCurrentPage(page);
     store.setCheckData(false);
     store.setShowTopButton(false);
     print("Current Page: " + page.toString());
@@ -656,15 +659,16 @@ class _FlashCardScreen extends State<FlashCardScreen>
     //animation cho câu
     if (data.timeFrame != null && data.isAnimation == true) {
       store.setAnimation(true);
-      animationLetter(
-          timeFrame: data.timeFrame, letterResources: data.letterResources);
+      // animationLetter(
+      //     timeFrame: data.timeFrame, letterResources: data.letterResources);
+      animationLetter(data);
     }
     //animation chữ
     animationController.forward().then((value) {
       animationController.reverse();
     });
     //play audio
-    if (data != null && data?.sourceAudio != null) {
+    if (data != null && data?.sourceAudio != null && data.isAnimation != true) {
       playAudio(data.sourceAudio);
     }
     //lưu vị trí
@@ -677,6 +681,25 @@ class _FlashCardScreen extends State<FlashCardScreen>
     if (page % 10 == 0 && (page + 10) < dataFlashCard.length) {
       print('debugging');
       checkExistDataFuture(page + 10, dataFlashCard);
+    }
+  }
+
+  handleSwipeUp() async {
+    print('debugging');
+  }
+
+  handleSwipeDown() async {
+    print('debugging');
+  }
+
+  //xử lý mọi tác động lên flahscard;
+  handleImpactFlashCard(int pageCurrent, {int type: 0}) async {
+    //type 0: onTap
+    //type 1: SwipeUp
+    //type 2: Swipe Down
+    FlashCard data = store.listDataFlashCard[pageCurrent];
+    if (data.sourceAudio != null) {
+      playAudio(data.sourceAudio);
     }
   }
 
@@ -803,14 +826,16 @@ class _FlashCardScreen extends State<FlashCardScreen>
     }
   }
 
-  animationLetter({List timeFrame, List letterResources}) async {
+  // animationLetter({List timeFrame, List letterResources}) async {
+  animationLetter(FlashCard data) async {
     //store.setPreventSwipe(false);
-    if (timeFrame != null && letterResources != null) {
-      for (var i = 0; i < letterResources.length; i++) {
+    if (data.timeFrame != null && data.letterResources != null) {
+      playAudio(data.sourceAudio);
+      for (var i = 0; i < data.letterResources.length; i++) {
         if (store.isAnimation == false) break;
-        int time = (timeFrame[i]['time'] * 1000).round();
+        int time = (data.timeFrame[i]['time'] * 1000).round();
         await Future.delayed(Duration(milliseconds: time), () {
-          store.setAnimationId(letterResources[i]['_id']);
+          store.setAnimationId(data.letterResources[i]['_id']);
         });
       }
       await Future.delayed(Duration(milliseconds: 1000), () {
@@ -819,7 +844,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
     } else
       return;
 
-    // store.setPreventSwipe(true);
+    store.setPreventSwipe(true);
   }
 
   reset() {
@@ -1035,74 +1060,82 @@ class _FlashCardScreen extends State<FlashCardScreen>
                     children: <Widget>[
                       Center(
                         child: Container(
-                          height: store.isShowQuestion
-                              ? (height > 600 ? 0.85.sh : null)
-                              : 165.w,
-                          width: store.isShowQuestion ? 0.9.sw : 321.w,
-                          // khi đến phần câu hỏi thì bỏ bảng trắng
-                          decoration: store.isShowQuestion
-                              ? BoxDecoration(image: null)
-                              : BoxDecoration(
-                                  image: DecorationImage(
-                                    image: AssetImage(
-                                      'assets/images/lesson/ip-full-board-white.png',
+                            height: store.isShowQuestion
+                                ? (height > 600 ? 0.85.sh : null)
+                                : 165.w,
+                            width: store.isShowQuestion ? 0.9.sw : 321.w,
+                            // khi đến phần câu hỏi thì bỏ bảng trắng
+                            decoration: store.isShowQuestion
+                                ? BoxDecoration(image: null)
+                                : BoxDecoration(
+                                    image: DecorationImage(
+                                      image: AssetImage(
+                                        'assets/images/lesson/ip-full-board-white.png',
+                                      ),
+                                      fit: BoxFit.fill,
                                     ),
-                                    fit: BoxFit.fill,
                                   ),
-                                ),
-                          child: Container(
-                            alignment: Alignment.center,
-                            margin: EdgeInsets.all(4.5.w),
-                            clipBehavior: Clip.hardEdge,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(11.5.w)),
-                            child: SwipeDetector(
-                              child: PageView(
-                                  controller: _pageController,
-                                  physics: store.isPreventSwipe
-                                      ? BouncingScrollPhysics()
-                                      : NeverScrollableScrollPhysics(),
-                                  //onPageChanged: _onPageViewChange,
-                                  onPageChanged: (page) {
-                                    _onPageViewChange(page);
+                            child: GestureDetector(
+                              onTap: () {
+                                handleImpactFlashCard(store.currentPage);
+                              },
+                              child: Container(
+                                alignment: Alignment.center,
+                                margin: EdgeInsets.all(4.5.w),
+                                clipBehavior: Clip.hardEdge,
+                                decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.circular(11.5.w)),
+                                child: SwipeDetector(
+                                  child: PageView(
+                                      controller: _pageController,
+                                      physics: store.isPreventSwipe
+                                          ? BouncingScrollPhysics()
+                                          : NeverScrollableScrollPhysics(),
+                                      //onPageChanged: _onPageViewChange,
+                                      onPageChanged: (page) {
+                                        _onPageViewChange(page);
+                                      },
+                                      children: store.listWidget != null
+                                          ? [...store.listWidget]
+                                          : []),
+                                  onSwipeUp: () {
+                                    // setState(() {
+                                    //   _swipeDirection = "Swipe Up";
+                                    //   reset();
+                                    // });
+                                    //playAudio();
+                                    store.setShowTopButton(false);
+                                    handleImpactFlashCard(store.currentPage,
+                                        type: 1);
+                                  },
+                                  onSwipeDown: () {
+                                    print('down');
+                                    // playAudio();
+                                    // setState(() {
+                                    //   _swipeDirection = "Swipe Down";
+                                    // });
+                                    handleImpactFlashCard(store.currentPage,
+                                        type: 1);
+                                    store.setShowTopButton(true);
+                                  },
+                                  onSwipeLeft: () {
+                                    print('left');
                                     print('debugging');
                                   },
-                                  children: store.listWidget != null
-                                      ? [...store.listWidget]
-                                      : []),
-                              onSwipeUp: () {
-                                // setState(() {
-                                //   _swipeDirection = "Swipe Up";
-                                //   reset();
-                                // });
-                                //playAudio();
-                                store.setShowTopButton(false);
-                              },
-                              onSwipeDown: () {
-                                print('down');
-                                // playAudio();
-                                // setState(() {
-                                //   _swipeDirection = "Swipe Down";
-                                // });
-                                store.setShowTopButton(true);
-                              },
-                              onSwipeLeft: () {
-                                print('left');
-                                print('debugging');
-                              },
-                              onSwipeRight: () {
-                                print('right');
-                              },
-                              swipeConfiguration: SwipeConfiguration(
-                                  verticalSwipeMinVelocity: 100.0,
-                                  verticalSwipeMinDisplacement: 50.0,
-                                  verticalSwipeMaxWidthThreshold: 100.0,
-                                  horizontalSwipeMaxHeightThreshold: 50.0,
-                                  horizontalSwipeMinDisplacement: 50.0,
-                                  horizontalSwipeMinVelocity: 200.0),
-                            ),
-                          ),
-                        ),
+                                  onSwipeRight: () {
+                                    print('right');
+                                  },
+                                  swipeConfiguration: SwipeConfiguration(
+                                      verticalSwipeMinVelocity: 100.0,
+                                      verticalSwipeMinDisplacement: 50.0,
+                                      verticalSwipeMaxWidthThreshold: 100.0,
+                                      horizontalSwipeMaxHeightThreshold: 50.0,
+                                      horizontalSwipeMinDisplacement: 50.0,
+                                      horizontalSwipeMinVelocity: 200.0),
+                                ),
+                              ),
+                            )),
                       ),
                       store.isShowTopButton
                           ? TopButton(
@@ -1363,9 +1396,9 @@ class _FlashCardScreen extends State<FlashCardScreen>
       //         'assets/images/flashcard/image1.jpg',
       //         fit: BoxFit.contain,
       // ),
-      onTap: () async {
-        print('tap image full');
-      },
+      // onTap: () async {
+      //   print('tap image full');
+      // },
     );
   }
 
