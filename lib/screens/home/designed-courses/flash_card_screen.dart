@@ -710,7 +710,17 @@ class _FlashCardScreen extends State<FlashCardScreen>
     }
     switch(type) {
       case 0:
-
+        break;
+      case 1:
+        timer = Timer(Duration(seconds: 5), () {
+          animationController.stop();
+          animationController.value = 1;
+        });
+        animationController.repeat(reverse: true).then((value) {
+          if(timer.isActive){
+            timer.cancel();
+          }
+        });
         break;
     }
   }
@@ -1118,14 +1128,11 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                     // });
                                     //playAudio();
                                     store.setShowTopButton(false);
-                                    handleImpactFlashCard(store.currentPage,
-                                        type: 1);
+                                    handleImpactFlashCard(store.currentPage, type: 1);
                                   },
                                   onSwipeDown: () {
                                     print('down');
-
-                                    handleImpactFlashCard(store.currentPage,
-                                        type: 1);
+                                    handleImpactFlashCard(store.currentPage, type: 1);
                                     store.setShowTopButton(true);
                                   },
                                   onSwipeLeft: () {
