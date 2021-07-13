@@ -13,7 +13,7 @@ abstract class _FlashCardStore with Store {
   @observable
   bool checkData = true;
   @observable
-  List listFlashCard =[];
+  List listFlashCard = [];
   @observable
   List<Widget> listWidget = [];
   @observable
@@ -27,7 +27,7 @@ abstract class _FlashCardStore with Store {
   @observable
   bool isReload = false;
   @observable
-  bool isPreventSwipe = true;
+  bool isPreventSwipe = false;
   @observable
   String animationId;
   @observable
@@ -66,9 +66,9 @@ abstract class _FlashCardStore with Store {
   @action
   void setMuteSound() {
     muteSound = !muteSound;
-    if(muteSound==true){
+    if (muteSound == true) {
       VolumeControl.setVolume(0.0);
-    }else{
+    } else {
       VolumeControl.setVolume(0.2);
     }
   }
