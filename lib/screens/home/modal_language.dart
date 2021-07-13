@@ -1,14 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:topkiddo/components/Loading_dialog.dart';
+import 'package:topkiddo/screens/home/designed-courses/library_screen.dart';
 import '../../theme/theme.dart' as Theme;
 
 class ModalLanguage extends StatefulWidget {
+  final typeLanguage;
+
+  const ModalLanguage({Key key, this.typeLanguage}) : super(key: key);
+
   @override
   _ModalLanguageState createState() => _ModalLanguageState();
 }
 
+List listTextLanguage = [
+  'textVietnameseBac',
+  'textVietnameseNam',
+  'textSpanish',
+  'textJapanese',
+  'textChinese',
+  'textFrance',
+  'textEnglish',
+  'textUsUk'
+];
+
 class _ModalLanguageState extends State<ModalLanguage> {
+  handelChangeLanguage({int type: 0}) {
+    //Dialogs.showLoadingDialog(context);
+
+    //Navigator.of(context, rootNavigator: true).pop();
+    print(widget.typeLanguage);
+    // Navigator.pushAndRemoveUntil(
+    //     context,
+    //     MaterialPageRoute(builder: (context) => LibraryScreen()),
+    //     (route) => false);
+
+    Map typeDataLanguage = {'type': type, 'text': listTextLanguage[type]};
+    if (type != widget.typeLanguage) {
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+              builder: (context) => LibraryScreen(
+                    typeDataLanguage: typeDataLanguage,
+                  )),
+          (route) => false);
+    } else {
+      Navigator.pop(context, false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -50,7 +91,8 @@ class _ModalLanguageState extends State<ModalLanguage> {
                             margin: new EdgeInsets.only(top: 7.w),
                             child: TextButton(
                               onPressed: () => {
-                                Navigator.pop(context, false) //translate
+                                // Navigator.pop(context, false) //translate
+                                handelChangeLanguage(type: 0)
                               },
                               child: Image.asset(
                                 'assets/images/button/vietnames-flag.png',
@@ -93,7 +135,8 @@ class _ModalLanguageState extends State<ModalLanguage> {
                             margin: new EdgeInsets.only(top: 7.w),
                             child: TextButton(
                               onPressed: () => {
-                                Navigator.pop(context, false) //translate
+                                //Navigator.pop(context, false) //translate
+                                handelChangeLanguage(type: 1)
                               },
                               child: Image.asset(
                                 'assets/images/button/vietnames-flag.png',
@@ -136,7 +179,8 @@ class _ModalLanguageState extends State<ModalLanguage> {
                             margin: new EdgeInsets.only(top: 7.w),
                             child: TextButton(
                               onPressed: () => {
-                                Navigator.pop(context, false) //translate
+                                //Navigator.pop(context, false) //translate
+                                handelChangeLanguage(type: 2)
                               },
                               child: Image.asset(
                                 'assets/images/languages/flagArtboard-spain.png',
@@ -179,7 +223,8 @@ class _ModalLanguageState extends State<ModalLanguage> {
                             margin: new EdgeInsets.only(top: 7.w),
                             child: TextButton(
                               onPressed: () => {
-                                Navigator.pop(context, false) //translate
+                                //Navigator.pop(context, false) //translate
+                                handelChangeLanguage(type: 3)
                               },
                               child: Image.asset(
                                 'assets/images/languages/flagArtboard-japan.png',
@@ -229,7 +274,7 @@ class _ModalLanguageState extends State<ModalLanguage> {
                               top: 10.w,
                               child: TextButton(
                                 onPressed: () =>
-                                    {Navigator.pop(context, false)},
+                                    {handelChangeLanguage(type: 4)},
                                 child: Image.asset(
                                   'assets/images/languages/flagArtboard-china.png',
                                   width: 23.w,
@@ -279,7 +324,7 @@ class _ModalLanguageState extends State<ModalLanguage> {
                               top: 10.w,
                               child: TextButton(
                                 onPressed: () =>
-                                    {Navigator.pop(context, false)},
+                                    {handelChangeLanguage(type: 5)},
                                 child: Image.asset(
                                   'assets/images/languages/flagArtboard-france.png',
                                   width: 23.w,
@@ -329,7 +374,7 @@ class _ModalLanguageState extends State<ModalLanguage> {
                               top: 10.w,
                               child: TextButton(
                                 onPressed: () =>
-                                    {Navigator.pop(context, false)},
+                                    {handelChangeLanguage(type: 6)},
                                 child: Image.asset(
                                   'assets/images/button/enlish-flag.png',
                                   width: 23.w,
@@ -379,7 +424,7 @@ class _ModalLanguageState extends State<ModalLanguage> {
                               top: 10.w,
                               child: TextButton(
                                 onPressed: () =>
-                                    {Navigator.pop(context, false)},
+                                    {handelChangeLanguage(type: 7)},
                                 child: Image.asset(
                                   'assets/images/languages/flagArtboard-usa.png',
                                   width: 23.w,

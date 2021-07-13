@@ -88,22 +88,24 @@ class _FlashCardScreen extends State<FlashCardScreen>
   }
 
   checkBeforeCreateFlashCard() async {
-    Map fashCardIsLearning = await hiveService.getBoxesWithKey(
+    Map flashCardIsLearning = await hiveService.getBoxesWithKey(
         hiveService.keyFlashCard, boxFlashCard);
-    print('debugging');
+    // List game = await hiveService.getBoxesWithKey(
+    //     "60bc545edd38fc1918818f47", hiveService.boxGame);
+
     //mới học lần đầu check show guide
 
-    if (fashCardIsLearning != null &&
-        fashCardIsLearning['flashCardId'] != null) {
+    if (flashCardIsLearning != null &&
+        flashCardIsLearning['flashCardId'] != null) {
       List listData = widget.lessonDetail['part'];
-      String flashCardId = fashCardIsLearning['flashCardId'];
-      int ordinalNumber = fashCardIsLearning['ordinalNumber'] ?? 0;
+      String flashCardId = flashCardIsLearning['flashCardId'];
+      int ordinalNumber = flashCardIsLearning['ordinalNumber'] ?? 0;
       //store.setShowQuestion(true);
       createFlashCard(
           idPageLearning: flashCardId, ordinalNumber: ordinalNumber);
     } else {
       print('debugging');
-      if (fashCardIsLearning['showGuide'] == true) {
+      if (flashCardIsLearning['showGuide'] == true) {
         List tempList = [];
         var flashCard = FlashCard();
         flashCard.height = MediaQuery.of(context).size.height;
@@ -131,7 +133,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
         // for (var i = partCurrent; i < numberGetPath; i++) {
         for (var i = 0; i < listPart.length; i++) {
           List listContent = listPart[i]['content'];
-          //lấy content của topic
+          //lấy content của topic & game
           if (listPart[i]['topic'] != null) {
             try {
               var result = await dealerWidget(listPart[i], listPart[i]['_id']);
@@ -197,6 +199,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
     _pageController
         .jumpToPage(pageNumber >= 0 ? (pageNumber + ordinalNumber) : 0);
     //_pageController.jumpToPage(90);
+
     print(tempList);
     print('debugging');
     store.setListFlashCard(tempList);
@@ -246,7 +249,9 @@ class _FlashCardScreen extends State<FlashCardScreen>
     List listLetterResource = flashCard.letterResources;
     //-------------------------trường hợp title có hoặc k có ảnh, âm thanh
     if (data['topic'] != null) {
-      flashCard.sourceAudio = data['audio'] != null
+      FlashCard flashCardTitle = flashCard.copyWith();
+      flashCardTitle.gameId = data['game'] != null ? data['game'] : null;
+      flashCardTitle.sourceAudio = data['audio'] != null
           ? {
               '_id': data['audio']['_id'] ?? "",
               'localPath': data['audio']['localPath'] ?? ""
@@ -254,9 +259,10 @@ class _FlashCardScreen extends State<FlashCardScreen>
           : {};
 
       tempList.add(oneFlashCard = {
-        'data': flashCard,
-        'widget': cardTitle(context, flashCard)
+        'data': flashCardTitle,
+        'widget': cardTitle(context, flashCardTitle)
       });
+      flashCard.ordinalNumber = 1;
       flashCard.sourceImage = data['image'] != null
           ? {
               '_id': data['image']['_id'] ?? "",
@@ -661,7 +667,6 @@ class _FlashCardScreen extends State<FlashCardScreen>
     store.setAnimation(false);
     List dataFlashCard = store.listDataFlashCard;
     FlashCard data = dataFlashCard[page];
-    print('debugging');
     if (data.isVideo) {}
     //animation cho câu
     if (data.timeFrame != null && data.isAnimation == true) {
@@ -692,6 +697,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
     if (store.currentPage == dataFlashCard.length - 1) {
       store.setPreventSwipe(true);
     }
+    
   }
 
   //xử lý mọi tác động lên flahscard;
@@ -1097,6 +1103,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                       //onPageChanged: _onPageViewChange,
                                       onPageChanged: (page) {
                                         _onPageViewChange(page);
+                                        print('debugging');
                                       },
                                       children: store.listWidget != null
                                           ? [...store.listWidget]
@@ -1129,19 +1136,15 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                         (route) => false);
                                   },
                                   onSwipeRight: () async {
-                                    print('right');
-                                    store.setPreventSwipe(false);
                                     int page = store.currentPage - 1;
-                                    print('debugging');
                                     store.setCurrentPage(page);
                                     await _pageController.animateToPage(
                                       page,
                                       curve: Curves.easeIn,
                                       duration: Duration(milliseconds: 500),
-                                      
                                     );
                                     _pageController.jumpToPage(page);
-                                    
+                                    store.setPreventSwipe(false);
                                   },
                                   swipeConfiguration: SwipeConfiguration(
                                       verticalSwipeMinVelocity: 100.0,
@@ -1381,6 +1384,8 @@ class _FlashCardScreen extends State<FlashCardScreen>
 
   //trường hợp ảnh full
   Widget cardImageFull({Map pathImage}) {
+    print(pathImage);
+
     return GestureDetector(
       child: pathImage['type'] == 2
           ?
@@ -1926,6 +1931,7 @@ class FlashCard {
   String partId;
   String lessonId;
   String unitId;
+  String gameId;
   String content;
   int ordinalNumber;
   int language;
@@ -1950,6 +1956,7 @@ class FlashCard {
     this.partId,
     this.lessonId,
     this.unitId,
+    this.gameId,
     this.content,
     this.ordinalNumber,
     this.language,

@@ -76,7 +76,7 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
     });
     try {
       List data = await hiveService.getBoxes(boxContent);
-
+      //List game
       print('debugging');
       if (data.length > 0 && data.isNotEmpty) {
         Map isLearning = await hiveService.getBoxesWithKey(
@@ -168,7 +168,7 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
     bool select = await LessonDialog()
         .learningDifferenceLesson(context, listLesson[index]['name']);
 
-    //học lesson vừa chòn
+    //học lesson vừa chọn
     if (select == false) {
       Dialogs.showLoadingDialog(context);
       await checkDataLessonInitial(lessonDetail);
@@ -219,7 +219,6 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
   //   }
   // }
 
-  //lấy data 5 flashcard đâu tiên
   checkDataLessonInitial(dataLesson) async {
     if (dataLesson['part'].length > 0) {
       List<Future> listDataHandle = [];
@@ -233,10 +232,9 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
           listDataHandle
               .add(download.downloadFile(item['image'], dataLesson['_id']));
         }
-        // if (item['game'] != null) {
-        //   print(item['game']);
-        //   print('debugging');
-        // }
+        if (item['game'] != null) {
+          listDataHandle.add(getGame(item['game']));
+        }
       }
       // int getNumber = dataLesson['part'][0]['content'].length < 5
       //     ? dataLesson['part'][0]['content'].length
@@ -286,6 +284,27 @@ class _DesignCourseScreen extends State<DesignCourseScreen>
     }
   }
 
+  getGame(String gameId) async {
+    try {
+      var resultGameIfo = await fetch(
+        url: ApiList.getGameInfo,
+        body: {"gameId": gameId},
+      );
+
+      print('debugging');
+      if (resultGameIfo['success'] &&
+          resultGameIfo['data']['content'].length > 0) {
+        List dataGameContent = resultGameIfo['data']['content'];
+        print('debugging');
+        await hiveService.putBoxesWithKey(
+            gameId, dataGameContent, hiveService.boxGame);
+      }
+
+      return resultGameIfo;
+    } catch (e) {
+      print('error get gameInfo ' + e);
+    }
+  }
   // Future downloadData(List listResource, String lessonId) async {
   //   if (listResource.length > 0 && listResource.isNotEmpty) {
   //     List<Future> listDataHandle = [];
