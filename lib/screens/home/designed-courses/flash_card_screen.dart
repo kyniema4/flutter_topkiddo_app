@@ -74,10 +74,8 @@ class _FlashCardScreen extends State<FlashCardScreen>
     // store.setup();
     s = PageController();
 
-    animationController = AnimationController(
-        duration: const Duration(milliseconds: 700), vsync: this);
-    animation = tween.animate(
-        CurvedAnimation(parent: animationController, curve: Curves.elasticOut));
+    animationController = AnimationController(duration: Duration(milliseconds: 300), vsync: this);
+    // animation = tween.animate(CurvedAnimation(parent: animationController, curve: Curves.elasticOut));
   }
 
   @override
@@ -660,9 +658,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
           timeFrame: data.timeFrame, letterResources: data.letterResources);
     }
     //animation chữ
-    animationController.forward().then((value) {
-      animationController.reverse();
-    });
+    animationController.repeat(reverse: true);
     //play audio
     if (data != null && data?.sourceAudio != null) {
       playAudio(data.sourceAudio);
@@ -1372,18 +1368,21 @@ class _FlashCardScreen extends State<FlashCardScreen>
 // trường hợp chữ ngắn
   Widget cardShortText(FlashCard data) {
     FlashCard flashCard = data;
-    return Container(
-      alignment: Alignment.center,
-      margin: EdgeInsets.all(8.5.w),
-      child: Text(flashCard.content ?? "",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              fontSize: flashCard.height > 600 ? 70.sp : 100.sp,
-              // fontWeight: FontWeight.w900,
-              color: Color(int.parse(
-                      flashCard.colorContent.replaceAll('#', '0xff'))) ??
-                  Theme.Colors.orange900,
-              fontFamily: 'UTMCooperBlack')),
+    return FadeTransition(
+      opacity: animationController,
+      child: Container(
+        alignment: Alignment.center,
+        margin: EdgeInsets.all(8.5.w),
+        child: Text(flashCard.content ?? "",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                fontSize: flashCard.height > 600 ? 70.sp : 100.sp,
+                // fontWeight: FontWeight.w900,
+                color: Color(int.parse(
+                        flashCard.colorContent.replaceAll('#', '0xff'))) ??
+                    Theme.Colors.orange900,
+                fontFamily: 'UTMCooperBlack')),
+      ),
     );
   }
 
@@ -1391,7 +1390,6 @@ class _FlashCardScreen extends State<FlashCardScreen>
   Widget cardClickEachImage(
       {pathImg1: '', pathImg2: '', pathSound1: '', pathSound2: ''}) {
     double height = MediaQuery.of(context).size.height;
-
     return Container(
         margin: EdgeInsets.all(8.5.w),
         child: Column(
