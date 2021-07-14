@@ -19,8 +19,9 @@ class _AnimationAutoScreen extends State<AnimationAutoScreen> {
   bool showKid3 = false;
   bool showCloud = true;
   List<Widget> listCloud = [];
-  AudioPlayer audioPlayer = AudioPlayer(mode: PlayerMode.LOW_LATENCY);
-  final String audioPath = 'assets/sounds/opening.mp3';
+  AudioPlayer fixedPlayer;
+  AudioCache player;
+  final String audioPath = 'sounds/opening.mp3';
   final bgImage = Image.asset('assets/images/background/bg_iphone.jpg');
 
   movingAnimation() async {
@@ -84,17 +85,12 @@ class _AnimationAutoScreen extends State<AnimationAutoScreen> {
     });
   }
 
-  playAudio() async {
-    int result = await audioPlayer.play(audioPath, isLocal: true);
-    if (result == 1) {
-      print('play success');
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    playAudio();
+    fixedPlayer = AudioPlayer(mode: PlayerMode.LOW_LATENCY);
+    player = AudioCache(fixedPlayer: fixedPlayer);
+    player.play(audioPath);
     movingAnimation();
     handleShowCloud();
     //timer();
@@ -126,7 +122,6 @@ class _AnimationAutoScreen extends State<AnimationAutoScreen> {
 
   @override
   void dispose() {
-    audioPlayer.dispose();
     super.dispose();
   }
 
