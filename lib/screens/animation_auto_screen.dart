@@ -1,8 +1,6 @@
-import 'package:easy_localization/easy_localization.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import 'package:topkiddo/theme/style.dart';
 
 class AnimationAutoScreen extends StatefulWidget {
   final bool kidAction;
@@ -15,12 +13,14 @@ class AnimationAutoScreen extends StatefulWidget {
 
 class _AnimationAutoScreen extends State<AnimationAutoScreen> {
   bool move = false;
-  bool moveClound = false;
+  bool moveCloud = false;
   bool showKid1 = true;
   bool showKid2 = false;
   bool showKid3 = false;
-  bool showClound = true;
-  List<Widget> listClound = [];
+  bool showCloud = true;
+  List<Widget> listCloud = [];
+  AudioPlayer audioPlayer = AudioPlayer(mode: PlayerMode.LOW_LATENCY);
+  final String audioPath = 'assets/sounds/opening.mp3';
   final bgImage = Image.asset('assets/images/background/bg_iphone.jpg');
 
   movingAnimation() async {
@@ -28,10 +28,10 @@ class _AnimationAutoScreen extends State<AnimationAutoScreen> {
       if (!mounted) return;
       setState(() {
         move = true;
-        moveClound = true;
+        moveCloud = true;
       });
     });
-    await Future.delayed(Duration(seconds: 3), () {
+    await Future.delayed(Duration(seconds: 5), () {
       if (!mounted) return;
 
       setState(() {
@@ -63,32 +63,40 @@ class _AnimationAutoScreen extends State<AnimationAutoScreen> {
     });
   }
 
-  handleShowClound() {
-    String pathClound = 'assets/images/animation/cloud';
-    List<Widget> clounds = [
-      Clound(path: pathClound + '1.png', top: 15, left: 0, width: 400)
-          .buildWidgetClound(),
-      Clound(path: pathClound + '2.png', top: 55, left: 0, width: 300)
-          .buildWidgetClound(),
-      Clound(path: pathClound + '3.png', top: 15, left: 0, width: 350)
-          .buildWidgetClound(),
-      Clound(path: pathClound + '4.png', top: 50, left: -30, width: 350)
-          .buildWidgetClound(),
-      Clound(path: pathClound + '5.png', top: 15, left: 0, width: 350)
-          .buildWidgetClound(),
-      Clound(path: pathClound + '6.png', top: 20, left: 0, width: 350)
-          .buildWidgetClound(),
+  handleShowCloud() {
+    String pathCloud = 'assets/images/animation/cloud';
+    List<Widget> clouds = [
+      Cloud(path: pathCloud + '1.png', top: 15, left: 0, width: 400)
+          .buildWidgetCloud(),
+      Cloud(path: pathCloud + '2.png', top: 55, left: 0, width: 300)
+          .buildWidgetCloud(),
+      Cloud(path: pathCloud + '3.png', top: 15, left: 0, width: 350)
+          .buildWidgetCloud(),
+      Cloud(path: pathCloud + '4.png', top: 50, left: -30, width: 350)
+          .buildWidgetCloud(),
+      Cloud(path: pathCloud + '5.png', top: 15, left: 0, width: 350)
+          .buildWidgetCloud(),
+      Cloud(path: pathCloud + '6.png', top: 20, left: 0, width: 350)
+          .buildWidgetCloud(),
     ];
     setState(() {
-      listClound = [...clounds];
+      listCloud = [...clouds];
     });
+  }
+
+  playAudio() async {
+    int result = await audioPlayer.play(audioPath, isLocal: true);
+    if (result == 1) {
+      print('play success');
+    }
   }
 
   @override
   void initState() {
     super.initState();
+    playAudio();
     movingAnimation();
-    handleShowClound();
+    handleShowCloud();
     //timer();
   }
 
@@ -118,9 +126,8 @@ class _AnimationAutoScreen extends State<AnimationAutoScreen> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
+    audioPlayer.dispose();
     super.dispose();
-    print('handle dispose');
   }
 
   @override
@@ -167,79 +174,79 @@ class _AnimationAutoScreen extends State<AnimationAutoScreen> {
                           fit: BoxFit.contain)),
                 ),
                 Positioned(
-                  bottom: 40.w,
-                  left: 40.w,
+                  bottom: 22.w,
+                  left: 50.w,
                   child: Container(
                       // color: Colors.blue,
-                      height: 30.w,
+                      height: 25.w,
                       child: Image.asset('assets/images/animation/house1.gif',
                           fit: BoxFit.contain)),
                 ),
                 Positioned(
-                  bottom: 75.w,
-                  right: 0.w,
+                  bottom: 42.w,
+                  right: 15.w,
                   child: Container(
                       // color: Colors.blue,
-                      height: 35.w,
+                      height: 30.w,
                       child: Image.asset('assets/images/animation/house2.gif',
                           fit: BoxFit.contain)),
                 ),
+                AnimatedPositioned(
+                  top: 0.w,
+                  right: moveCloud ? -400.w : 50.w,
+                  child: Container(
+                    width: width,
+                    height: height,
+                    child: Stack(children: listCloud),
+                  ),
+                  duration: Duration(seconds: 30),
+                ),
+                AnimatedPositioned(
+                  top: 0.w,
+                  right: moveCloud ? 0.w : 350.w,
+                  child: Container(
+                    width: width,
+                    height: height,
+                    child: Stack(children: listCloud),
+                  ),
+                  duration: Duration(seconds: 30),
+                ),
                 showKid1 && widget.kidAction
                     ? AnimatedPositioned(
-                        bottom: -50.w,
-                        right: move ? 50.w : 30.w,
-                        width: 150.w,
-                        child: Center(
-                            child: Image.asset(
-                                'assets/images/animation/kid1.gif',
-                                fit: BoxFit.contain)),
-                        duration: Duration(seconds: 1),
-                      )
+                  bottom: 2.w,
+                  right: move ? 50.w : 30.w,
+                  width: 90.w,
+                  child: Center(
+                      child: Image.asset(
+                          'assets/images/animation/kid1.gif',
+                          fit: BoxFit.contain)),
+                  duration: Duration(seconds: 2),
+                )
                     : Container(),
                 showKid2 && widget.kidAction
                     ? AnimatedPositioned(
-                        bottom: -12.w,
-                        right: move ? 200.w : 30.w,
-                        width: 150.w,
-                        child: Center(
-                            child: Image.asset(
-                                'assets/images/animation/kid2.gif',
-                                fit: BoxFit.contain)),
-                        duration: Duration(seconds: 5),
-                      )
+                  bottom: 24.w,
+                  right: move ? 220.w : 40.w,
+                  width: 90.w,
+                  child: Center(
+                      child: Image.asset(
+                          'assets/images/animation/kid2.gif',
+                          fit: BoxFit.contain)),
+                  duration: Duration(seconds: 5),
+                )
                     : Container(),
                 showKid3 && widget.kidAction
                     ? AnimatedPositioned(
-                        bottom: -12.w,
-                        right: move ? 200.w : 30.w,
-                        width: 150.w,
-                        child: Center(
-                            child: Image.asset(
-                                'assets/images/animation/kid3.gif',
-                                fit: BoxFit.contain)),
-                        duration: Duration(seconds: 5),
-                      )
+                  bottom: 24.w,
+                  right: move ? 220.w : 40.w,
+                  width: 90.w,
+                  child: Center(
+                      child: Image.asset(
+                          'assets/images/animation/kid3.gif',
+                          fit: BoxFit.contain)),
+                  duration: Duration(seconds: 5),
+                )
                     : Container(),
-                AnimatedPositioned(
-                  top: 0.w,
-                  right: moveClound ? -400.w : 50.w,
-                  child: Container(
-                    width: width,
-                    height: height,
-                    child: Stack(children: listClound),
-                  ),
-                  duration: Duration(seconds: 30),
-                ),
-                AnimatedPositioned(
-                  top: 0.w,
-                  right: moveClound ? 0.w : 350.w,
-                  child: Container(
-                    width: width,
-                    height: height,
-                    child: Stack(children: listClound),
-                  ),
-                  duration: Duration(seconds: 30),
-                ),
               ],
             ),
           ),
@@ -249,7 +256,7 @@ class _AnimationAutoScreen extends State<AnimationAutoScreen> {
   }
 }
 
-class Clound {
+class Cloud {
   String path;
   int bottom;
   int right;
@@ -257,7 +264,7 @@ class Clound {
   int top;
   int width;
   int height;
-  Clound({
+  Cloud({
     this.path,
     this.bottom,
     this.right,
@@ -267,7 +274,7 @@ class Clound {
     this.height,
   });
 
-  buildWidgetClound() {
+  buildWidgetCloud() {
     return Positioned(
       top: top.w,
       left: left.w,
