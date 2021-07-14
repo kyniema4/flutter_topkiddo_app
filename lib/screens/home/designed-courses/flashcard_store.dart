@@ -33,7 +33,7 @@ abstract class _FlashCardStore with Store {
   @observable
   bool isAnimation;
   @observable
-  String currentPartId;
+  int currentPart = 0;
   @observable
   int currentPage = 0;
   @observable
@@ -102,10 +102,10 @@ abstract class _FlashCardStore with Store {
     listDataFlashCard = [...tempListDataFlashCard];
   }
 
-  // @action
-  // void setCurrentPartId(String value) {
-  //   currentPartId = value;
-  // }
+  @action
+  void setCurrentPart(int value) {
+    currentPart = value;
+  }
 
   // @action
   // void setPageInPart(int value) {
@@ -132,6 +132,9 @@ abstract class _FlashCardStore with Store {
     print(listFlashCard[currentPage]['data']);
   }
 
+  Future waitPreventSwipe(bool value) async {
+    setPreventSwipe(value);
+  }
   // @computed
   // bool get unitId {
   //   if (listFlashCard != null) {

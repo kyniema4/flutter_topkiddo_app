@@ -175,18 +175,18 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
     });
   }
 
-  final _$currentPartIdAtom = Atom(name: '_FlashCardStore.currentPartId');
+  final _$currentPartAtom = Atom(name: '_FlashCardStore.currentPart');
 
   @override
-  String get currentPartId {
-    _$currentPartIdAtom.reportRead();
-    return super.currentPartId;
+  int get currentPart {
+    _$currentPartAtom.reportRead();
+    return super.currentPart;
   }
 
   @override
-  set currentPartId(String value) {
-    _$currentPartIdAtom.reportWrite(value, super.currentPartId, () {
-      super.currentPartId = value;
+  set currentPart(int value) {
+    _$currentPartAtom.reportWrite(value, super.currentPart, () {
+      super.currentPart = value;
     });
   }
 
@@ -342,6 +342,17 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
   }
 
   @override
+  void setCurrentPart(int value) {
+    final _$actionInfo = _$_FlashCardStoreActionController.startAction(
+        name: '_FlashCardStore.setCurrentPart');
+    try {
+      return super.setCurrentPart(value);
+    } finally {
+      _$_FlashCardStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setShowQuestion(bool value) {
     final _$actionInfo = _$_FlashCardStoreActionController.startAction(
         name: '_FlashCardStore.setShowQuestion');
@@ -399,7 +410,7 @@ isReload: ${isReload},
 isPreventSwipe: ${isPreventSwipe},
 animationId: ${animationId},
 isAnimation: ${isAnimation},
-currentPartId: ${currentPartId},
+currentPart: ${currentPart},
 currentPage: ${currentPage},
 pageInPart: ${pageInPart},
 isPlayAudio: ${isPlayAudio},
