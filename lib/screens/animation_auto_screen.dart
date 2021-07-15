@@ -151,6 +151,7 @@ class _AnimationAutoScreen extends State<AnimationAutoScreen> with TickerProvide
 
   @override
   void dispose() {
+    animationController.dispose();
     super.dispose();
   }
 
