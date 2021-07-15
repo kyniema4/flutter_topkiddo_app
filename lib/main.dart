@@ -84,7 +84,7 @@ class _MyAppState extends State<MyApp> {
               routes: {
                 // '/': (BuildContext context) => SplashScreen(),
                 '/': (BuildContext context) => AnimationAutoScreen(),
-                //'/': (BuildContext context) => HomeScreen(),
+                // '/': (BuildContext context) => HomeScreen(),
                 // '/': (BuildContext context) => FlashCardScreen(),
                 // '/': (BuildContext context) => AnimationScreen(),
                 // '/': (BuildContext context) => ModalLanguage(),

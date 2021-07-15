@@ -1,11 +1,15 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:topkiddo/screens/splash_screen.dart';
 
 class AnimationAutoScreen extends StatefulWidget {
   final bool kidAction;
+  final bool isHome;
   AnimationAutoScreen({
     this.kidAction: true,
+    this.isHome: false,
   }) : super();
 
   _AnimationAutoScreen createState() => _AnimationAutoScreen();
@@ -19,9 +23,8 @@ class _AnimationAutoScreen extends State<AnimationAutoScreen> {
   bool showKid3 = false;
   bool showCloud = true;
   List<Widget> listCloud = [];
-  AudioPlayer fixedPlayer;
-  AudioCache player;
-  final String audioPath = 'sounds/opening.mp3';
+  static AudioPlayer fixedPlayer;
+  static AudioCache cachePlayer;
   final bgImage = Image.asset('assets/images/background/bg_iphone.jpg');
 
   movingAnimation() async {
@@ -62,6 +65,16 @@ class _AnimationAutoScreen extends State<AnimationAutoScreen> {
         move = true;
       });
     });
+    if(!widget.isHome) {
+      await Future.delayed(const Duration(seconds: 6), () {
+        Navigator.of(context).pushAndRemoveUntil(
+          CupertinoPageRoute(
+            builder: (ctx) => SplashScreen(),
+          ),
+              (_) => true,
+        );
+      });
+    }
   }
 
   handleShowCloud() {
@@ -85,12 +98,25 @@ class _AnimationAutoScreen extends State<AnimationAutoScreen> {
     });
   }
 
+  void playSound() async {
+    cachePlayer = AudioCache(prefix: 'assets/sounds/');
+    fixedPlayer = await cachePlayer.loop('opening.mp3');
+  }
+
+  void stopSound() {
+    if(fixedPlayer != null) {
+      fixedPlayer.stop();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    fixedPlayer = AudioPlayer(mode: PlayerMode.LOW_LATENCY);
-    player = AudioCache(fixedPlayer: fixedPlayer);
-    player.play(audioPath);
+    if(widget.isHome) {
+      stopSound();
+    } else {
+      playSound();
+    }
     movingAnimation();
     handleShowCloud();
     //timer();

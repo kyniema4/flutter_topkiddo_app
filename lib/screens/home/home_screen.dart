@@ -388,6 +388,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Container(
               // decoration: backgroundImage,
               child: AnimationAutoScreen(
+                isHome: true,
                 kidAction: false,
               ),
             ),
