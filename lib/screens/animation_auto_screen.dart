@@ -15,9 +15,8 @@ class AnimationAutoScreen extends StatefulWidget {
   _AnimationAutoScreen createState() => _AnimationAutoScreen();
 }
 
-class _AnimationAutoScreen extends State<AnimationAutoScreen> {
+class _AnimationAutoScreen extends State<AnimationAutoScreen> with TickerProviderStateMixin{
   bool move = false;
-  bool moveCloud = false;
   bool showKid1 = true;
   bool showKid2 = false;
   bool showKid3 = false;
@@ -25,6 +24,8 @@ class _AnimationAutoScreen extends State<AnimationAutoScreen> {
   List<Widget> listCloud = [];
   static AudioPlayer fixedPlayer;
   static AudioCache cachePlayer;
+  AnimationController animationController;
+  Animation animation;
   final bgImage = Image.asset('assets/images/background/bg_iphone.jpg');
 
   movingAnimation() async {
@@ -32,7 +33,6 @@ class _AnimationAutoScreen extends State<AnimationAutoScreen> {
       if (!mounted) return;
       setState(() {
         move = true;
-        moveCloud = true;
       });
     });
     await Future.delayed(Duration(seconds: 5), () {
@@ -117,8 +117,11 @@ class _AnimationAutoScreen extends State<AnimationAutoScreen> {
     } else {
       playSound();
     }
-    movingAnimation();
     handleShowCloud();
+    animationController = AnimationController(vsync: this, duration: Duration(seconds: 30));
+    animation = Tween<Offset>(begin: Offset.zero, end: Offset(1, 0)).animate(animationController);
+    animationController.repeat();
+    movingAnimation();
     //timer();
   }
 
@@ -212,25 +215,27 @@ class _AnimationAutoScreen extends State<AnimationAutoScreen> {
                       child: Image.asset('assets/images/animation/house2.gif',
                           fit: BoxFit.contain)),
                 ),
-                AnimatedPositioned(
-                  top: 0.w,
-                  right: moveCloud ? -400.w : 50.w,
-                  child: Container(
-                    width: width,
-                    height: height,
-                    child: Stack(children: listCloud),
+                Positioned(
+                  left: 0,
+                  child: SlideTransition(
+                    position: animation,
+                    child: Container(
+                      height: height,
+                      width: width,
+                      child: Stack(children: listCloud,),
+                    ),
                   ),
-                  duration: Duration(seconds: 30),
                 ),
-                AnimatedPositioned(
-                  top: 0.w,
-                  right: moveCloud ? 0.w : 350.w,
-                  child: Container(
-                    width: width,
-                    height: height,
-                    child: Stack(children: listCloud),
+                Positioned(
+                  left: -350.w,
+                  child: SlideTransition(
+                    position: animation,
+                    child: Container(
+                      height: height,
+                      width: width,
+                      child: Stack(children: listCloud,),
+                    ),
                   ),
-                  duration: Duration(seconds: 30),
                 ),
                 showKid1 && widget.kidAction
                     ? AnimatedPositioned(
