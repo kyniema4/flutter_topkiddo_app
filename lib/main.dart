@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart' as pathProvider;
 import 'package:provider/provider.dart';
+import 'package:topkiddo/screens/animation_auto_screen.dart';
 import 'package:topkiddo/screens/home/designed-courses/flashcard_store.dart';
 import 'package:topkiddo/screens/new_game/login_screen.dart';
 import 'package:topkiddo/data_local/favorite_sentence_model.dart';
@@ -81,7 +82,8 @@ class _MyAppState extends State<MyApp> {
               debugShowCheckedModeBanner: false,
 
               routes: {
-                '/': (BuildContext context) => SplashScreen(),
+                // '/': (BuildContext context) => SplashScreen(),
+                '/': (BuildContext context) => AnimationAutoScreen(),
                 //'/': (BuildContext context) => HomeScreen(),
                 // '/': (BuildContext context) => FlashCardScreen(),
                 // '/': (BuildContext context) => AnimationScreen(),

@@ -53,10 +53,10 @@ class _FlashCardScreen extends State<FlashCardScreen>
   ScrollController s;
   AnimationController animationController;
   Animation animation;
-  PageController _pageController =
-      PageController(viewportFraction: 1, keepPage: true);
+  PageController _pageController = PageController(viewportFraction: 1, keepPage: true);
   int currentPage = 0;
   Tween<double> tween = Tween(begin: 1.5, end: 5);
+  Timer timer;
   List listFlashCard = [];
   HandleDownload download = HandleDownload();
   final FlashCardStore store = FlashCardStore();
@@ -76,10 +76,9 @@ class _FlashCardScreen extends State<FlashCardScreen>
     // store.setup();
     s = PageController();
 
-    animationController = AnimationController(
-        duration: const Duration(milliseconds: 700), vsync: this);
-    animation = tween.animate(
-        CurvedAnimation(parent: animationController, curve: Curves.elasticOut));
+    animationController = AnimationController(duration: Duration(milliseconds: 300), vsync: this);
+    animation = CurvedAnimation(parent: animationController, curve: Curves.easeIn);
+    // animation = tween.animate(CurvedAnimation(parent: animationController, curve: Curves.elasticOut));
   }
 
   @override
@@ -738,8 +737,14 @@ class _FlashCardScreen extends State<FlashCardScreen>
       animationLetter(data);
     }
     //animation chữ
-    animationController.forward().then((value) {
-      animationController.reverse();
+    timer = Timer(Duration(seconds: 5), () {
+      animationController.stop();
+      animationController.value = 1;
+    });
+    animationController.repeat(reverse: true).then((value) {
+      if(timer.isActive){
+        timer.cancel();
+      }
     });
     //play audio
     if (data != null && data?.sourceAudio != null && data.isAnimation != true) {
@@ -761,7 +766,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
     }
   }
 
-  //xử lý mọi tác động lên flahscard;
+  //xử lý mọi tác động lên flashcard;
   handleImpactFlashCard(int pageCurrent, {int type: 0}) async {
     //type 0: onTap
     //type 1: SwipeUp
@@ -769,6 +774,21 @@ class _FlashCardScreen extends State<FlashCardScreen>
     FlashCard data = store.listDataFlashCard[pageCurrent];
     if (data.sourceAudio != null) {
       playAudio(data.sourceAudio);
+    }
+    switch(type) {
+      case 0:
+        break;
+      case 1:
+        timer = Timer(Duration(seconds: 5), () {
+          animationController.stop();
+          animationController.value = 1;
+        });
+        animationController.repeat(reverse: true).then((value) {
+          if(timer.isActive){
+            timer.cancel();
+          }
+        });
+        break;
     }
   }
 
@@ -1176,14 +1196,11 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                     // });
                                     //playAudio();
                                     store.setShowTopButton(false);
-                                    handleImpactFlashCard(store.currentPage,
-                                        type: 1);
+                                    handleImpactFlashCard(store.currentPage, type: 1);
                                   },
                                   onSwipeDown: () {
                                     print('down');
-
-                                    handleImpactFlashCard(store.currentPage,
-                                        type: 1);
+                                    handleImpactFlashCard(store.currentPage, type: 1);
                                     store.setShowTopButton(true);
                                   },
                                   onSwipeLeft: () {
@@ -1491,18 +1508,21 @@ class _FlashCardScreen extends State<FlashCardScreen>
 // trường hợp chữ ngắn
   Widget cardShortText(FlashCard data) {
     FlashCard flashCard = data;
-    return Container(
-      alignment: Alignment.center,
-      margin: EdgeInsets.all(8.5.w),
-      child: Text(flashCard.content ?? "",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              fontSize: flashCard.height > 600 ? 70.sp : 100.sp,
-              // fontWeight: FontWeight.w900,
-              color: Color(int.parse(
-                      flashCard.colorContent.replaceAll('#', '0xff'))) ??
-                  Theme.Colors.orange900,
-              fontFamily: 'UTMCooperBlack')),
+    return FadeTransition(
+      opacity: animation,
+      child: Container(
+        alignment: Alignment.center,
+        margin: EdgeInsets.all(8.5.w),
+        child: Text(flashCard.content ?? "",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                fontSize: flashCard.height > 600 ? 70.sp : 150.sp,
+                // fontWeight: FontWeight.w900,
+                color: Color(int.parse(
+                        flashCard.colorContent.replaceAll('#', '0xff'))) ??
+                    Theme.Colors.orange900,
+                fontFamily: 'UTMCooperBlack')),
+      ),
     );
   }
 
@@ -1510,7 +1530,6 @@ class _FlashCardScreen extends State<FlashCardScreen>
   Widget cardClickEachImage(
       {pathImg1: '', pathImg2: '', pathSound1: '', pathSound2: ''}) {
     double height = MediaQuery.of(context).size.height;
-
     return Container(
         margin: EdgeInsets.all(8.5.w),
         child: Column(
@@ -1589,33 +1608,23 @@ class _FlashCardScreen extends State<FlashCardScreen>
     //  cardFewText({Animation animation, AnimationController controller}) {
 
     FlashCard flashCard = data;
-    return GestureDetector(
-      child: Container(
-        alignment: Alignment.center,
-        margin: EdgeInsets.all(8.5.w),
-        child: ScaleTransition(
-          // scale: _FlashCardScreen().tween.animate(CurvedAnimation(
-          //     parent: _FlashCardScreen().controller, curve: Curves.elasticOut)),
-          scale: animation,
-          child: SizedBox(
-            child: Text(flashCard.content ?? '',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: flashCard.height > 600 ? 35.sp : 75.sp,
-                    // fontWeight: FontWeight.w900,
-                    color: Color(int.parse(
-                            flashCard.colorContent.replaceAll('#', '0xff'))) ??
-                        Theme.Colors.orange900,
-                    //Theme.Colors.orange900,
+    return FadeTransition(
+        opacity: animation,
+        child: Container(
+          alignment: Alignment.center,
+          margin: EdgeInsets.all(8.5.w),
+          child: Text(flashCard.content ?? '',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: flashCard.height > 600 ? 75.sp : 150.sp,
+                  // fontWeight: FontWeight.w900,
+                  color: Color(int.parse(
+                      flashCard.colorContent.replaceAll('#', '0xff'))) ??
+                      Theme.Colors.orange900,
+                  //Theme.Colors.orange900,
 
-                    fontFamily: 'UTMCooperBlack')),
-          ),
+                  fontFamily: 'UTMCooperBlack')),
         ),
-      ),
-      onTap: () async {
-        // animationController.repeat();
-        // _FlashCardScreen().test();
-      },
     );
   }
 
