@@ -1212,8 +1212,6 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                     await _pageController.animateToPage(
                                       page,
                                       curve: Curves.easeIn,
-                                      duration: Duration(milliseconds: 500),
-                                      curve: Curves.easeInOut,
                                       duration: Duration(milliseconds: 300),
                                     );
                                     _pageController.jumpToPage(page);
@@ -1300,9 +1298,9 @@ class _FlashCardScreen extends State<FlashCardScreen>
           textAlign: TextAlign.center,
           style: TextStyle(
               height: 1.2,
-              fontSize: flashCard.height > 600 ? 80.sp : 160.sp,
+              fontSize: flashCard.height > 600 ? 80.sp : 150.sp,
               // fontWeight: FontWeight.w900,
-              color: Theme.Colors.orange900,
+              color: Theme.Colors.orange500,
               fontFamily: 'UTMCooperBlack')),
     );
   }
