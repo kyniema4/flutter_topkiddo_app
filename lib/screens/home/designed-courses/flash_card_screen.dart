@@ -211,6 +211,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
       // print('debugging');
       // await checkExistDataFuture(page, dataFlashCard);
       playAudio(sourceAudio);
+      animationText();
       if (store.listDataFlashCard[page].timeFrame != null &&
           store.listDataFlashCard[page].isAnimation == true) {
         store.setAnimation(true);
@@ -670,15 +671,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
       animationLetter(data);
     }
     //animation chữ
-    timer = Timer(Duration(seconds: 5), () {
-      animationController.stop();
-      animationController.value = 1;
-    });
-    animationController.repeat(reverse: true).then((value) {
-      if(timer.isActive){
-        timer.cancel();
-      }
-    });
+    animationText();
     //play audio
     if (data != null && data?.sourceAudio != null && data.isAnimation != true) {
       playAudio(data.sourceAudio);
@@ -712,15 +705,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
       case 0:
         break;
       case 1:
-        timer = Timer(Duration(seconds: 5), () {
-          animationController.stop();
-          animationController.value = 1;
-        });
-        animationController.repeat(reverse: true).then((value) {
-          if(timer.isActive){
-            timer.cancel();
-          }
-        });
+        animationText();
         break;
     }
   }
@@ -869,10 +854,16 @@ class _FlashCardScreen extends State<FlashCardScreen>
     store.setPreventSwipe(false);
   }
 
-  reset() {
-    print("Previous page: $number");
-    animationController.repeat();
-    // _controller.forward();
+  animationText() {
+    timer = Timer(Duration(seconds: 5), () {
+      animationController.stop();
+      animationController.value = 1;
+    });
+    animationController.repeat(reverse: true).then((value) {
+      if(timer.isActive){
+        timer.cancel();
+      }
+    });
   }
 
   @override
