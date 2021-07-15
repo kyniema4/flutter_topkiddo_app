@@ -1144,9 +1144,8 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                     store.setCurrentPage(page);
                                     await _pageController.animateToPage(
                                       page,
-                                      curve: Curves.easeIn,
-                                      duration: Duration(milliseconds: 500),
-                                      
+                                      curve: Curves.easeInOut,
+                                      duration: Duration(milliseconds: 300),
                                     );
                                     _pageController.jumpToPage(page);
                                     
@@ -1225,165 +1224,17 @@ class _FlashCardScreen extends State<FlashCardScreen>
   Widget cardTitle(BuildContext context, FlashCard data,
       {pathAudio, pathImg, isShowHand: true}) {
     FlashCard flashCard = data;
+    List<String> string = flashCard.content.toUpperCase().split(' ');
     return Container(
       alignment: Alignment.center,
-      margin: EdgeInsets.all(8.5.w),
-      child: Stack(
-        clipBehavior: Clip.none,
-        alignment: Alignment.center,
-        children: [
-          Container(
-            child: Text(flashCard.content ?? "",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    height: 1.2,
-                    fontSize: flashCard.height > 600 ? 80.sp : 140.sp,
-                    // fontWeight: FontWeight.w900,
-                    color: Theme.Colors.orange900,
-                    fontFamily: 'UTMCooperBlack')),
-          ),
-
-          //mũi tên phía trái
-          isShowHand
-              ? Positioned(
-                  left: 10.w,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Container(
-                        width: 50.w,
-                        height: 28.w,
-                        child: RotatedBox(
-                          quarterTurns: 2,
-                          child: Image.asset(
-                            'assets/images/lesson/hand/swipt-arrow.png',
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        right: 10.w,
-                        top: 9.w,
-                        // bottom: -12.w,
-                        child: Text('Previous',
-                            style: TextStyle(
-                                fontSize:
-                                    flashCard.height > 600 ? 21.sp : 25.sp,
-                                color: Theme.Colors.yellow300,
-                                fontFamily: 'UTMCooperBlack')),
-                      ),
-                      Positioned(
-                        left: 0,
-                        bottom: -12.w,
-                        child: Container(
-                          height: 25.w,
-                          child: Image.asset(
-                            'assets/images/lesson/hand/hand-click1.png',
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                )
-              : Container(),
-
-          //mũi tên ở giữa
-          isShowHand
-              ? Positioned(
-                  top: flashCard.height > 600 ? 30.w : 0.25.sh,
-                  // bottom: 0,
-                  // bottom: -30.w,
-                  // left: 10.w,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      RotatedBox(
-                        quarterTurns: -1,
-                        child: Container(
-                          width: 40.w,
-                          height: 28.w,
-                          child: Image.asset(
-                            'assets/images/lesson/hand/swipt-arrow.png',
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        right: 11.w,
-                        top: 6.w,
-                        // bottom: -12.w,
-                        child: RotatedBox(
-                          quarterTurns: -1,
-                          child: Text('Repeat',
-                              style: TextStyle(
-                                  fontSize:
-                                      flashCard.height > 600 ? 21.sp : 25.sp,
-                                  color: Theme.Colors.yellow300,
-                                  fontFamily: 'UTMCooperBlack')),
-                        ),
-                      ),
-                      Positioned(
-                          right: -30,
-                          top: 0,
-                          child: RotatedBox(
-                            quarterTurns: -1,
-                            child: Container(
-                              height: 25.w,
-                              child: Image.asset(
-                                'assets/images/lesson/hand/hand-click1.png',
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                          ))
-                    ],
-                  ),
-                )
-              : Container(),
-
-          //mũi tên phía phải
-          isShowHand
-              ? Positioned(
-                  right: 10.w,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Container(
-                        width: 50.w,
-                        height: 28.w,
-                        child: Image.asset(
-                          'assets/images/lesson/hand/swipt-arrow.png',
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                      Positioned(
-                        left: 15.w,
-                        top: 9.w,
-                        // bottom: -12.w,
-                        child: Text('Next',
-                            style: TextStyle(
-                                fontSize:
-                                    flashCard.height > 600 ? 21.sp : 25.sp,
-                                color: Theme.Colors.yellow300,
-                                fontFamily: 'UTMCooperBlack')),
-                      ),
-                      Positioned(
-                        right: 0,
-                        bottom: -12.w,
-                        child: Container(
-                          height: 25.w,
-                          child: Image.asset(
-                            'assets/images/lesson/hand/hand-click1.png',
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                )
-              : Container(),
-        ],
-      ),
+      child: Text("${string[0]}\n${string[1]}" ?? "",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+              height: 1.2,
+              fontSize: flashCard.height > 600 ? 80.sp : 160.sp,
+              // fontWeight: FontWeight.w900,
+              color: Theme.Colors.orange900,
+              fontFamily: 'UTMCooperBlack')),
     );
   }
 
