@@ -17,7 +17,7 @@
   "flexibleLearning":"Học theo chủ đề tự do",
   "expressionsPhrases":"Mẫu câu cụm từ giao tiếp với con",
   "phoneNumber":"Số điện thoại",
-  "phoneNumbetExist":"Số điện thoại này đã tồn tại",
+  "phoneNumberExist":"Số điện thoại này đã tồn tại",
   "password":"Mật khẩu",
   "confirmPassword":"Nhập lại mật khẩu",
   "searchFor":"Tìm kiếm câu",
@@ -101,6 +101,11 @@
   "enterCodeTitle": "CHO TRUY CẬP KHÔNG GIỚI HẠN",
   "enterKey": "Nhập khóa cấp phép",
   "forgotKey": "Quên khóa cấp phép?",
-  "buyKey": "Mua khóa cấp phép?"
-
+  "buyKey": "Mua khóa cấp phép?",
+  "previousLearningInLesson":"Bạn có muốn học tiếp tục tại slide lần trước đã học không? hay học lại từ đầu ?",
+  "learningDifferenceLesson":"Bạn đang học dang dở {}, bạn có muốn tiếp tục học {} ?",
+  "alertConnectionInternet":"Bạn nên kết nối mạng và thử lại",
+  "alertDirectorySound":"Hiện tại topkiddo chưa có âm thanh cho bản dịch này. Chúng tôi sẽ bổ sung sớm nhất. Cám ơn bạn"
+  
 }
+

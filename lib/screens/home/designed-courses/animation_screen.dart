@@ -2,16 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:topkiddo/Utils/hive_service.dart';
 import 'package:topkiddo/components/Loading_dialog.dart';
 import 'package:topkiddo/components/languages_app.dart';
+import 'package:topkiddo/screens/home/designed-courses/flash_card_screen.dart';
 import '../../../theme/style.dart';
 import '../../../theme/theme.dart' as Theme;
 import '../../../components/back.dart';
 import '../../../components/languages_app.dart';
 import 'design_course_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class AnimationScreen extends StatefulWidget {
-  final unitId;
-  const AnimationScreen({Key key, this.unitId}) : super(key: key);
+  final lessonDetail;
+  final currentPart;
+  const AnimationScreen({Key key, this.lessonDetail, this.currentPart})
+      : super(key: key);
   @override
   _AnimationScreenState createState() => _AnimationScreenState();
 }
@@ -27,11 +31,96 @@ class _AnimationScreenState extends State<AnimationScreen>
   Animation<double> _fireworkOpacityFive;
   Animation<double> _fireworkOpacitySix;
   Animation<double> _fireworkOpacitySeven;
+  final HiveService hiveService = HiveService();
+  String boxLesson = "lesson";
+  String boxFlashCard = "flashCard";
+  String key = "currentData";
+  String congratulations = "";
+
+  checkProgressLesson() async {
+    int currentPart = widget.currentPart ?? 0;
+
+    print(widget.lessonDetail['part'].length);
+    if (currentPart == widget.lessonDetail['part'].length - 1) {
+      if (!mounted) return;
+      setState(() {
+        congratulations = "completed";
+      });
+    }
+    if (currentPart < widget.lessonDetail['part'].length - 1) {
+      String text;
+      switch (currentPart) {
+        case 0:
+          text = "great";
+          break;
+        case 1:
+          text = "good";
+          break;
+        case 2:
+          text = "awesome";
+          break;
+        case 3:
+          text = "perfect";
+          break;
+        case 4:
+          text = "exellent";
+          break;
+
+        default:
+          text = "exellent";
+      }
+      if (!mounted) return;
+      setState(() {
+        congratulations = text;
+      });
+      //await nextToLesson();
+    }
+  }
+
+  // nextToLesson() async {
+  //   List listLesson = widget.lessonDetail['part'];
+  //   if (listLesson != null && listLesson.length > 0) {
+  //     int indexPart = (widget.currentPart + 1) < (listLesson.length - 1)
+  //         ? (widget.currentPart + 1)
+  //         : 0;
+  //     print('debugging');
+  //     // Navigator.pushAndRemoveUntil(
+  //     //     context,
+  //     //     MaterialPageRoute(
+  //     //         builder: (context) => FlashCardScreen(
+  //     //               lessonDetail: widget.lessonDetail,
+  //     //               addIndexPart: indexPart,
+  //     //             )),
+  //     //     (route) => false);
+  //   } else {
+  //     // Navigator.of(context, rootNavigator: true).pop();
+  //   }
+  // }
+
+  // getListLesson() async {
+  //   Dialogs.showLoadingDialog(context);
+  //   var currentUnitId = widget.lessonDetail['unit'];
+  //   if (currentUnitId != null && currentUnitId.length > 0) {
+  //     var listLesson =
+  //         await hiveService.getBoxesWithKey(currentUnitId, boxLesson);
+
+  //     if (listLesson != null && listLesson.length > 0) {
+  //       Navigator.of(context, rootNavigator: true).pop();
+  //       Navigator.pushAndRemoveUntil(
+  //           context,
+  //           MaterialPageRoute(
+  //               builder: (context) => DesignCourseScreen(lesson: listLesson)),
+  //           (route) => false);
+  //     } else {
+  //       Navigator.of(context, rootNavigator: true).pop();
+  //     }
+  //   }
+  // }
 
   @override
   void initState() {
     super.initState();
-
+    checkProgressLesson();
     // As the class itself is the TickerProvider we can pass this in the vsync argument
     _controller = AnimationController(
         vsync: this, duration: new Duration(milliseconds: 1500));
@@ -308,10 +397,14 @@ class _AnimationScreenState extends State<AnimationScreen>
                     Center(
                         child: Container(
                             child: Image.asset(
-                                'assets/images/lesson/text-completed.png',
+                                //'assets/images/lesson/text-xuatsac.png',
+                                congratulations.tr(),
                                 height: 30.w,
                                 fit: BoxFit.contain))),
-                    TopButton(unitId: widget.unitId),
+                    TopButton(
+                      lessonDetail: widget.lessonDetail,
+                      currentPart: widget.currentPart,
+                    ),
                   ],
                 )),
           ],
@@ -322,9 +415,11 @@ class _AnimationScreenState extends State<AnimationScreen>
 }
 
 class TopButton extends StatefulWidget {
-  final unitId;
+  final lessonDetail;
+  final currentPart;
 
-  const TopButton({Key key, this.unitId}) : super(key: key);
+  const TopButton({Key key, this.lessonDetail, this.currentPart})
+      : super(key: key);
   @override
   _TopButtonState createState() => _TopButtonState();
 }
@@ -335,9 +430,46 @@ class _TopButtonState extends State<TopButton> {
   String boxFlashCard = "flashCard";
   String key = "currentData";
 
+  autorun() async {
+    await Future.delayed(Duration(seconds: 3)).then((value) {
+      if (!mounted) return;
+      checkProgressLesson();
+    });
+  }
+
+  checkProgressLesson() async {
+    List listLesson = widget.lessonDetail['part'];
+    if (widget.currentPart < listLesson.length - 1) {
+      if (!mounted) return;
+      await nextToLesson();
+    }
+    if (widget.currentPart == listLesson.length - 1) {
+      if (!mounted) return;
+      await getListLesson();
+    }
+  }
+
+  nextToLesson() async {
+    List listLesson = widget.lessonDetail['part'];
+    if (listLesson != null && listLesson.length > 0) {
+      int indexPart = (widget.currentPart) < (listLesson.length - 1) ? 1 : 0;
+      print('debugging');
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+              builder: (context) => FlashCardScreen(
+                    lessonDetail: widget.lessonDetail,
+                    addIndexPart: indexPart,
+                  )),
+          (route) => false);
+    } else {
+      // Navigator.of(context, rootNavigator: true).pop();
+    }
+  }
+
   getListLesson() async {
     Dialogs.showLoadingDialog(context);
-    var currentUnitId = widget.unitId;
+    var currentUnitId = widget.lessonDetail['unit'];
     if (currentUnitId != null && currentUnitId.length > 0) {
       var listLesson =
           await hiveService.getBoxesWithKey(currentUnitId, boxLesson);
@@ -353,6 +485,20 @@ class _TopButtonState extends State<TopButton> {
         Navigator.of(context, rootNavigator: true).pop();
       }
     }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    autorun();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    autorun();
   }
 
   @override
@@ -389,9 +535,10 @@ class _TopButtonState extends State<TopButton> {
                           ),
                           fit: BoxFit.contain),
                     )),
-                onTap: () {
+                onTap: () async {
                   // Navigator.pop(context);
-                  getListLesson();
+                  // getListLesson();
+                  await checkProgressLesson();
                 }),
           )
         ],

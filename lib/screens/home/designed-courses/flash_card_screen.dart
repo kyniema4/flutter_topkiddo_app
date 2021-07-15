@@ -35,8 +35,9 @@ import '../../home/home_screen.dart';
 
 class FlashCardScreen extends StatefulWidget {
   final lessonDetail;
-
-  FlashCardScreen({Key key, this.lessonDetail}) : super(key: key);
+  final addIndexPart;
+  FlashCardScreen({Key key, this.lessonDetail, this.addIndexPart: 0})
+      : super(key: key);
   @override
   _FlashCardScreen createState() => _FlashCardScreen();
 }
@@ -87,22 +88,33 @@ class _FlashCardScreen extends State<FlashCardScreen>
   }
 
   checkBeforeCreateFlashCard() async {
-    Map fashCardIsLearning = await hiveService.getBoxesWithKey(
+    Map flashCardIsLearning = await hiveService.getBoxesWithKey(
         hiveService.keyFlashCard, boxFlashCard);
-    print('debugging');
+    // List game = await hiveService.getBoxesWithKey(
+    //     "60bc545edd38fc1918818f47", hiveService.boxGame);
+
     //mới học lần đầu check show guide
 
-    if (fashCardIsLearning != null &&
-        fashCardIsLearning['flashCardId'] != null) {
+    if (flashCardIsLearning != null &&
+        flashCardIsLearning['flashCardId'] != null) {
       List listData = widget.lessonDetail['part'];
-      String flashCardId = fashCardIsLearning['flashCardId'];
-      int ordinalNumber = fashCardIsLearning['ordinalNumber'] ?? 0;
+      int indexPart = listData
+              .indexWhere((e) => e["_id"] == flashCardIsLearning['partId']) ??
+          0;
+      //addIndexPart cộng thêm 1 khi hoàn thành part trước đó trong AnimationScreen
+      store.setCurrentPart(indexPart + widget.addIndexPart ?? 0);
+      print('debugging');
+      String flashCardId = flashCardIsLearning['flashCardId'];
+      //ordinalNumber khi 1 content tạo ra nhiều flashcard
+      int ordinalNumber = flashCardIsLearning['ordinalNumber'] ?? 0;
       //store.setShowQuestion(true);
       createFlashCard(
-          idPageLearning: flashCardId, ordinalNumber: ordinalNumber);
+          idPageLearning: flashCardId,
+          ordinalNumber: ordinalNumber,
+          indexPart: indexPart + widget.addIndexPart);
     } else {
       print('debugging');
-      if (fashCardIsLearning['showGuide'] == true) {
+      if (flashCardIsLearning['showGuide'] == true) {
         List tempList = [];
         var flashCard = FlashCard();
         flashCard.height = MediaQuery.of(context).size.height;
@@ -120,42 +132,82 @@ class _FlashCardScreen extends State<FlashCardScreen>
   }
 
   //check part and add data
-  createFlashCard({idPageLearning: "", ordinalNumber: 0}) async {
+  createFlashCard({idPageLearning: "", ordinalNumber: 0, indexPart: 0}) async {
     Map data = widget.lessonDetail;
     List tempList = [...store.listFlashCard];
+
     if (data != null) {
       List listPart = data['part'];
+      print(indexPart);
 
+      print('debugging');
       if (data.length > 0) {
         // for (var i = partCurrent; i < numberGetPath; i++) {
-        for (var i = 0; i < listPart.length; i++) {
-          List listContent = listPart[i]['content'];
-          //lấy content của topic
-          if (listPart[i]['topic'] != null) {
-            try {
-              var result = await dealerWidget(listPart[i], listPart[i]['_id']);
-              print('debugging');
-              tempList.addAll(result);
-            } catch (e) {
-              print(e);
-            }
-          }
-          // lấy content trong topic
-          if (listContent.length > 0) {
-            await Future.forEach(listContent, (content) async {
-              try {
-                var result = await dealerWidget(content, listPart[i]['_id']);
-                if (result != null) {
-                  tempList.addAll(result);
-                  print('debugging');
-                }
-              } catch (e) {
-                print(e);
-                return;
-              }
-            });
+        // for (var i = 0; i < listPart.length; i++) {
+        List listContent = listPart[indexPart]['content'];
+        //lấy content của topic
+        if (listPart[indexPart]['topic'] != null) {
+          try {
+            var result = await dealerWidgetLesson(
+                listPart[indexPart], listPart[indexPart]['_id']);
+            print('debugging');
+            tempList.addAll(result);
+          } catch (e) {
+            print(e);
           }
         }
+        // lấy content trong topic
+        if (listContent.length > 0) {
+          await Future.forEach(listContent, (content) async {
+            try {
+              var result =
+                  await dealerWidgetLesson(content, listPart[indexPart]['_id']);
+              if (result != null) {
+                tempList.addAll(result);
+                print('debugging');
+              }
+            } catch (e) {
+              print(e);
+              return;
+            }
+          });
+        }
+        //lấy game trong topic
+        if (listPart[indexPart]['game'] != null) {
+          try {
+            var gameData = await hiveService.getBoxesWithKey(
+                listPart[indexPart]['game'], hiveService.boxGame);
+            if (gameData != null) {
+              var result = await dealerWidgetGame(gameData);
+              //tempList.addAll(result);
+            } else {
+              try {
+                var resultGameIfo = await fetch(
+                  url: ApiList.getGameInfo,
+                  body: {"gameId": listPart[indexPart]['game']},
+                );
+
+                print('debugging');
+                if (resultGameIfo['success'] &&
+                    resultGameIfo['data']['content'].length > 0) {
+                  List dataGameContent = resultGameIfo['data']['content'];
+                  print('debugging');
+                  await hiveService.putBoxesWithKey(listPart[indexPart]['game'],
+                      dataGameContent, hiveService.boxGame);
+                }
+                return resultGameIfo;
+              } catch (e) {
+                print('error get gameInfo ' + e);
+              }
+            }
+
+            // tempList.addAll(result);
+          } catch (e) {
+            print(e);
+          }
+        }
+        // }
+
         // await Future.forEach(listPart, (part) async {
         //   List listContent = part['content'];
         //   //lấy content của topic
@@ -192,10 +244,11 @@ class _FlashCardScreen extends State<FlashCardScreen>
     //tới flashcard đã học
     int pageNumber =
         tempList.indexWhere((e) => e["data"].id == idPageLearning) ?? 0;
-
+    print('debugging');
     _pageController
         .jumpToPage(pageNumber >= 0 ? (pageNumber + ordinalNumber) : 0);
     //_pageController.jumpToPage(90);
+
     print(tempList);
     print('debugging');
     store.setListFlashCard(tempList);
@@ -205,6 +258,8 @@ class _FlashCardScreen extends State<FlashCardScreen>
 
   // khởi chạy lại flashcard học dở
   handleInitial(int page) async {
+    print(page);
+    print('debugging');
     if (page >= 0) {
       Map sourceAudio = store.listDataFlashCard[page].sourceAudio;
       // List dataFlashCard = store.listDataFlashCard;
@@ -221,7 +276,11 @@ class _FlashCardScreen extends State<FlashCardScreen>
         animationLetter(store.listDataFlashCard[page]);
       }
       if (page == store.listDataFlashCard.length - 1) {
-        store.setPreventSwipe(true);
+        // store.setPreventSwipe(true);
+        await store.waitPreventSwipe(true);
+      }
+      if (page == 0) {
+        await savePositionFlashCard(store.listDataFlashCard[page]);
       }
     }
     if (page < 0 && store.listDataFlashCard[0].sourceAudio != null) {
@@ -233,7 +292,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
   }
 
   //chia flashcard
-  Future dealerWidget(Map data, String partId) async {
+  Future dealerWidgetLesson(Map data, String partId) async {
     List tempList = [];
     Map<String, dynamic> oneFlashCard;
     var flashCard = FlashCard();
@@ -246,7 +305,9 @@ class _FlashCardScreen extends State<FlashCardScreen>
     List listLetterResource = flashCard.letterResources;
     //-------------------------trường hợp title có hoặc k có ảnh, âm thanh
     if (data['topic'] != null) {
-      flashCard.sourceAudio = data['audio'] != null
+      FlashCard flashCardTitle = flashCard.copyWith();
+      flashCardTitle.gameId = data['game'] != null ? data['game'] : null;
+      flashCardTitle.sourceAudio = data['audio'] != null
           ? {
               '_id': data['audio']['_id'] ?? "",
               'localPath': data['audio']['localPath'] ?? ""
@@ -254,9 +315,10 @@ class _FlashCardScreen extends State<FlashCardScreen>
           : {};
 
       tempList.add(oneFlashCard = {
-        'data': flashCard,
-        'widget': cardTitle(context, flashCard)
+        'data': flashCardTitle,
+        'widget': cardTitle(context, flashCardTitle)
       });
+      flashCard.ordinalNumber = 1;
       flashCard.sourceImage = data['image'] != null
           ? {
               '_id': data['image']['_id'] ?? "",
@@ -478,6 +540,11 @@ class _FlashCardScreen extends State<FlashCardScreen>
     }
   }
 
+  dealerWidgetGame(gameData) async {
+    print(gameData);
+    print('debugging');
+  }
+
   // lấy ảnh trong local
   getPathImage(sourceImage) async {
     String lessonId = widget.lessonDetail['_id'];
@@ -661,7 +728,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
     store.setAnimation(false);
     List dataFlashCard = store.listDataFlashCard;
     FlashCard data = dataFlashCard[page];
-    print('debugging');
+
     if (data.isVideo) {}
     //animation cho câu
     if (data.timeFrame != null && data.isAnimation == true) {
@@ -1132,23 +1199,25 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 AnimationScreen(
-                                                    unitId: widget
-                                                        .lessonDetail['unit'])),
+                                                  lessonDetail:
+                                                      widget.lessonDetail,
+                                                  currentPart:
+                                                      store.currentPart,
+                                                )),
                                         (route) => false);
                                   },
                                   onSwipeRight: () async {
-                                    print('right');
-                                    store.setPreventSwipe(false);
                                     int page = store.currentPage - 1;
-                                    print('debugging');
                                     store.setCurrentPage(page);
                                     await _pageController.animateToPage(
                                       page,
+                                      curve: Curves.easeIn,
+                                      duration: Duration(milliseconds: 500),
                                       curve: Curves.easeInOut,
                                       duration: Duration(milliseconds: 300),
                                     );
                                     _pageController.jumpToPage(page);
-                                    
+                                    store.setPreventSwipe(false);
                                   },
                                   swipeConfiguration: SwipeConfiguration(
                                       verticalSwipeMinVelocity: 100.0,
@@ -1240,6 +1309,8 @@ class _FlashCardScreen extends State<FlashCardScreen>
 
   //trường hợp ảnh full
   Widget cardImageFull({Map pathImage}) {
+    print(pathImage);
+
     return GestureDetector(
       child: pathImage['type'] == 2
           ?
@@ -1777,6 +1848,7 @@ class FlashCard {
   String partId;
   String lessonId;
   String unitId;
+  String gameId;
   String content;
   int ordinalNumber;
   int language;
@@ -1801,6 +1873,7 @@ class FlashCard {
     this.partId,
     this.lessonId,
     this.unitId,
+    this.gameId,
     this.content,
     this.ordinalNumber,
     this.language,

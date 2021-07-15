@@ -22,6 +22,9 @@ import 'package:easy_localization/easy_localization.dart';
 import '../modal_language.dart';
 
 class LibraryScreen extends StatefulWidget {
+  final Map typeDataLanguage;
+
+  const LibraryScreen({Key key, this.typeDataLanguage}) : super(key: key);
   @override
   _LibraryScreenState createState() => _LibraryScreenState();
 }
@@ -409,7 +412,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    TopButton(),
+                    TopButton(typeDataLanguage: widget.typeDataLanguage),
                     Container(
                       height: height - 37.w,
                       child: Row(
@@ -440,14 +443,27 @@ class _LibraryScreenState extends State<LibraryScreen> {
 }
 
 class TopButton extends StatelessWidget {
+  Map typeDataLanguage;
+  TopButton({Key key, this.typeDataLanguage}) : super(key: key);
   _showModalLanguage(context) {
-    showDialog(
-        context: context,
-        useSafeArea: false,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return ModalLanguage();
-        });
+    if (typeDataLanguage == null) {
+      typeDataLanguage = {"type": 8};
+      showDialog(
+          context: context,
+          useSafeArea: false,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return ModalLanguage(typeLanguage: typeDataLanguage['type']);
+          });
+    } else {
+      showDialog(
+          context: context,
+          useSafeArea: false,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return ModalLanguage(typeLanguage: typeDataLanguage['type']);
+          });
+    }
   }
 
   @override
@@ -505,14 +521,15 @@ class TopButton extends StatelessWidget {
               ),
             )),
             Container(
-                width: 180.w,
-                height: 27.w,
-                alignment: Alignment.topCenter,
-                decoration: BoxDecoration(
-                  color: Theme.Colors.green200,
-                  borderRadius:
-                      BorderRadius.vertical(bottom: Radius.circular(9.w)),
-                ),
+              width: 180.w,
+              height: 27.w,
+              alignment: Alignment.topCenter,
+              decoration: BoxDecoration(
+                color: Theme.Colors.green200,
+                borderRadius:
+                    BorderRadius.vertical(bottom: Radius.circular(9.w)),
+              ),
+              child: GestureDetector(
                 child: Container(
                     width: 176.w,
                     height: 25.w,
@@ -548,45 +565,50 @@ class TopButton extends StatelessWidget {
                               ),
                             ),
                             Positioned(
-                                left: -10.w,
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      width: 19.w,
-                                      height: 19.w,
-                                      child: Image.asset(
-                                          'assets/images/unit/language-flag.png',
-                                          fit: BoxFit.contain),
+                              left: -10.w,
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 19.w,
+                                    height: 19.w,
+                                    child: Image.asset(
+                                        'assets/images/unit/language-flag.png',
+                                        fit: BoxFit.contain),
+                                  ),
+                                  Container(
+                                    width: 60.w,
+                                    // color: Colors.red,
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 4.w),
+                                    child: Text(
+                                      typeDataLanguage != null
+                                          ? '${typeDataLanguage['text']}'.tr()
+                                          : 'textUsUk'.tr(),
+                                      // 'Việt - miền Nam',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          // fontSize: 14,
+                                          fontSize:
+                                              height > 600 ? 17.sp : 24.sp,
+                                          fontFamily: 'UTMCooperBlack',
+                                          fontWeight: FontWeight.w900,
+                                          color: Theme.Colors.orange100),
                                     ),
-                                    Container(
-                                      width: 60.w,
-                                      // color: Colors.red,
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 4.w),
-                                      child: GestureDetector(
-                                          child: Text(
-                                            'Việt - miền Nam',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                // fontSize: 14,
-                                                fontSize: height > 600
-                                                    ? 17.sp
-                                                    : 24.sp,
-                                                fontFamily: 'UTMCooperBlack',
-                                                fontWeight: FontWeight.w900,
-                                                color: Theme.Colors.orange100),
-                                          ),
-                                          onTap: () {
-                                            _showModalLanguage(context);
-                                          }),
-                                    )
-                                  ],
-                                ))
+                                  )
+                                ],
+                              ),
+                            )
                           ],
                         ),
                       ],
-                    ))),
-            Expanded(child: LanguagesApp()),
+                    )),
+                onTap: () {
+                  _showModalLanguage(context);
+                },
+              ),
+            ),
+            Expanded(child: Container()),
+            //Expanded(child: LanguagesApp()),
           ],
         ));
   }
