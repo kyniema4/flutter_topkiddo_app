@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:async/async.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:just_audio/just_audio.dart' as justAudio;
 import 'package:better_player/better_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chewie/chewie.dart';
@@ -53,7 +55,8 @@ class _FlashCardScreen extends State<FlashCardScreen>
   ScrollController s;
   AnimationController animationController;
   Animation animation;
-  PageController _pageController = PageController(viewportFraction: 1, keepPage: true);
+  PageController _pageController =
+      PageController(viewportFraction: 1, keepPage: true);
   int currentPage = 0;
   Tween<double> tween = Tween(begin: 1.5, end: 5);
   Timer timer;
@@ -62,13 +65,26 @@ class _FlashCardScreen extends State<FlashCardScreen>
   final FlashCardStore store = FlashCardStore();
 
   AudioPlayer audioPlayer = AudioPlayer();
+  justAudio.AudioPlayer player;
   final HiveService hiveService = HiveService();
   String boxFlashCard = "flashCard";
   int pageInPart = 0;
-  // VideoPlayerController _controllerVideo;
-  // ChewieController _chewieController;
-  // Future<void> _initializeVideoPlayerFuture;
-  // BetterPlayerController _betterPlayerController;
+  List listAudioCorrect = [
+    'assets/sounds/AUDIO - TRA LOI DUNG/Correct - Amora.mp3',
+    'assets/sounds/AUDIO - TRA LOI DUNG/Correct - Deron.mp3',
+    'assets/sounds/AUDIO - TRA LOI DUNG/Great job.mp3',
+    'assets/sounds/AUDIO - TRA LOI DUNG/great job - deron.mp3',
+    'assets/sounds/AUDIO - TRA LOI DUNG/youre right - Amora.mp3',
+    'assets/sounds/AUDIO - TRA LOI DUNG/youre right - Deron.mp3',
+  ];
+  List listAudioWrong = [
+    'assets/sounds/AUDIO - TRA LOI SAI/good try try again - amora.mp3',
+    'assets/sounds/AUDIO - TRA LOI SAI/good try try again - Deron.mp3',
+    'assets/sounds/AUDIO - TRA LOI SAI/Lets try that again - Amaura.mp3',
+    'assets/sounds/AUDIO - TRA LOI SAI/Lets try that again - Deron.mp3',
+    'assets/sounds/AUDIO - TRA LOI SAI/try again.mp3',
+    'assets/sounds/AUDIO - TRA LOI SAI/Try again - Deron.mp3',
+  ];
 
   @override
   void initState() {
@@ -76,8 +92,10 @@ class _FlashCardScreen extends State<FlashCardScreen>
     // store.setup();
     s = PageController();
 
-    animationController = AnimationController(duration: Duration(milliseconds: 300), vsync: this);
-    animation = CurvedAnimation(parent: animationController, curve: Curves.easeIn);
+    animationController =
+        AnimationController(duration: Duration(milliseconds: 300), vsync: this);
+    animation =
+        CurvedAnimation(parent: animationController, curve: Curves.easeIn);
     // animation = tween.animate(CurvedAnimation(parent: animationController, curve: Curves.elasticOut));
   }
 
@@ -92,8 +110,6 @@ class _FlashCardScreen extends State<FlashCardScreen>
         hiveService.keyFlashCard, boxFlashCard);
     // List game = await hiveService.getBoxesWithKey(
     //     "60bc545edd38fc1918818f47", hiveService.boxGame);
-
-    //mới học lần đầu check show guide
 
     if (flashCardIsLearning != null &&
         flashCardIsLearning['flashCardId'] != null) {
@@ -113,6 +129,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
           ordinalNumber: ordinalNumber,
           indexPart: indexPart + widget.addIndexPart);
     } else {
+      //mới học lần đầu check show guide
       print('debugging');
       if (flashCardIsLearning['showGuide'] == true) {
         List tempList = [];
@@ -138,18 +155,19 @@ class _FlashCardScreen extends State<FlashCardScreen>
 
     if (data != null) {
       List listPart = data['part'];
+      int number = indexPart >= 0 ? indexPart : 0;
       print(indexPart);
 
       print('debugging');
       if (data.length > 0) {
         // for (var i = partCurrent; i < numberGetPath; i++) {
         // for (var i = 0; i < listPart.length; i++) {
-        List listContent = listPart[indexPart]['content'];
+        List listContent = listPart[number]['content'];
         //lấy content của topic
-        if (listPart[indexPart]['topic'] != null) {
+        if (listPart[number]['topic'] != null) {
           try {
             var result = await dealerWidgetLesson(
-                listPart[indexPart], listPart[indexPart]['_id']);
+                listPart[number], listPart[number]['_id']);
             print('debugging');
             tempList.addAll(result);
           } catch (e) {
@@ -161,7 +179,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
           await Future.forEach(listContent, (content) async {
             try {
               var result =
-                  await dealerWidgetLesson(content, listPart[indexPart]['_id']);
+                  await dealerWidgetLesson(content, listPart[number]['_id']);
               if (result != null) {
                 tempList.addAll(result);
                 print('debugging');
@@ -173,38 +191,42 @@ class _FlashCardScreen extends State<FlashCardScreen>
           });
         }
         //lấy game trong topic
-        if (listPart[indexPart]['game'] != null) {
-          try {
-            var gameData = await hiveService.getBoxesWithKey(
-                listPart[indexPart]['game'], hiveService.boxGame);
-            if (gameData != null) {
-              var result = await dealerWidgetGame(gameData);
-              //tempList.addAll(result);
-            } else {
-              try {
-                var resultGameIfo = await fetch(
-                  url: ApiList.getGameInfo,
-                  body: {"gameId": listPart[indexPart]['game']},
-                );
+        if (listPart[number]['game'] != null) {
+          var result = await handleDataGame(
+              listPart[number]['game'], listPart[number]['_id']);
 
-                print('debugging');
-                if (resultGameIfo['success'] &&
-                    resultGameIfo['data']['content'].length > 0) {
-                  List dataGameContent = resultGameIfo['data']['content'];
-                  print('debugging');
-                  await hiveService.putBoxesWithKey(listPart[indexPart]['game'],
-                      dataGameContent, hiveService.boxGame);
-                }
-                return resultGameIfo;
-              } catch (e) {
-                print('error get gameInfo ' + e);
-              }
-            }
+          store.setLisFlashCardGame(result);
+          // try {
+          //   var gameData = await hiveService.getBoxesWithKey(
+          //       listPart[number]['game'], hiveService.boxGame);
+          //   if (gameData != null) {
+          //     var result = await dealerWidgetGame(gameData);
+          //     //tempList.addAll(result);
+          //   } else {
+          //     try {
+          //       var resultGameIfo = await fetch(
+          //         url: ApiList.getGameInfo,
+          //         body: {"gameId": listPart[number]['game']},
+          //       );
 
-            // tempList.addAll(result);
-          } catch (e) {
-            print(e);
-          }
+          //       print('debugging');
+          //       if (resultGameIfo['success'] &&
+          //           resultGameIfo['data']['content'].length > 0) {
+          //         List dataGameContent = resultGameIfo['data']['content'];
+          //         print('debugging');
+          //         await hiveService.putBoxesWithKey(listPart[number]['game'],
+          //             dataGameContent, hiveService.boxGame);
+          //       }
+          //       return resultGameIfo;
+          //     } catch (e) {
+          //       print('error get gameInfo ' + e);
+          //     }
+          //   }
+
+          //   // tempList.addAll(result);
+          // } catch (e) {
+          //   print(e);
+          // }
         }
         // }
 
@@ -261,6 +283,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
     print(page);
     print('debugging');
     if (page >= 0) {
+      print('debuging');
       Map sourceAudio = store.listDataFlashCard[page].sourceAudio;
       // List dataFlashCard = store.listDataFlashCard;
       // print('debugging');
@@ -278,19 +301,21 @@ class _FlashCardScreen extends State<FlashCardScreen>
         // store.setPreventSwipe(true);
         await store.waitPreventSwipe(true);
       }
-      if (page == 0) {
-        await savePositionFlashCard(store.listDataFlashCard[page]);
-      }
+      // if (page == 0) {
+      //   print('debuging');
+      //   await savePositionFlashCard(store.listDataFlashCard[page]);
+      // }
     }
     if (page < 0 && store.listDataFlashCard[0].sourceAudio != null) {
       playAudio(store.listDataFlashCard[0].sourceAudio);
+      await savePositionFlashCard(store.listDataFlashCard[0]);
     }
 
     List dataFlashCard = store.listDataFlashCard;
     await checkExistDataFuture(page < 0 ? 0 : page, dataFlashCard);
   }
 
-  //chia flashcard
+  //lesson
   Future dealerWidgetLesson(Map data, String partId) async {
     List tempList = [];
     Map<String, dynamic> oneFlashCard;
@@ -539,9 +564,127 @@ class _FlashCardScreen extends State<FlashCardScreen>
     }
   }
 
-  dealerWidgetGame(gameData) async {
-    print(gameData);
-    print('debugging');
+  handleDataGame(String e, String partId) async {
+    String gameId = "60bc545edd38fc1918818f47";
+    var gameData =
+        await hiveService.getBoxesWithKey(gameId, hiveService.boxGame);
+    if (gameData != null) {
+      var result = await dealerWidgetGame(gameData, partId);
+      //tempList.addAll(result);
+
+      return result;
+    } else {
+      try {
+        var resultGameIfo = await fetch(
+          url: ApiList.getGameInfo,
+          body: {"gameId": gameId},
+        );
+
+        print('debugging');
+        if (resultGameIfo['success'] &&
+            resultGameIfo['data']['content'].length > 0) {
+          List dataGameContent = resultGameIfo['data']['content'];
+          print('debugging');
+          await hiveService.putBoxesWithKey(
+              gameId, dataGameContent, hiveService.boxGame);
+        }
+        return resultGameIfo;
+      } catch (e) {
+        print('error get gameInfo ' + e);
+      }
+    }
+  }
+
+  //game
+  dealerWidgetGame(List listGameData, String partId) async {
+    List tempList = [];
+    Map<String, dynamic> oneFlashCard;
+    var flashCard = FlashCard();
+    flashCard.partId = partId;
+    flashCard.isGame = true;
+    for (var game in listGameData) {
+      List listAnswer = game['answerList'];
+      var question = game['question'];
+      int isCorrectAnswer = game['isCorrectAnswer'];
+      //---------------trường hợp trả lời ảnh =>chỉ có audio câu hỏi
+      if (listAnswer.length > 0 &&
+          listAnswer[0]['type'] != null &&
+          listAnswer[0]['type'] == 2) {
+        List listIamgeAnswer = [];
+        if (question['resource'] != null && question['resource'].length >= 0) {
+          //var sourceImage = question['resources'].where((e) => e['type'] == 1);
+          var sourceAudio = question['resource'].where((e) => e['type'] == 2);
+          flashCard.sourceAudio = {
+            '_id': sourceAudio.single['_id'] ?? "",
+            'localPath': sourceAudio.single['localPath'] ?? ""
+          };
+          flashCard.content = question["textContent"] ?? "";
+        }
+        if (listAnswer != null && listAnswer.length >= 2) {
+          for (var item in listAnswer) {
+            Map sourceImage = {
+              '_id': item['resource']['_id'] ?? "",
+              'localPath': item['resource']['localPath'] ?? ""
+            };
+            Map answer = {
+              "id": item['_id'],
+              "source": await getPathImage(sourceImage)
+            };
+            print('debuging');
+            //listIamgeAnswer.add(await getPathImage(sourceImage));
+
+            //store.setDataAnswer(item['_id'], false);
+            listIamgeAnswer.add(answer);
+          }
+        }
+        oneFlashCard = {
+          'data': flashCard,
+          'widget': _buildQuestionTypeOne(
+              flashCard, listIamgeAnswer, isCorrectAnswer - 1)
+        };
+
+        tempList.add(oneFlashCard);
+      }
+      //---------------------trường hợp trả lời chữ
+      if (listAnswer.length > 0 &&
+          listAnswer[0]['type'] != null &&
+          listAnswer[0]['type'] == 1) {
+        List listWordAnswer = [];
+
+        print('debugging');
+        var sourceImage = question['resource'].where((e) => e['type'] == 1);
+        var sourceAudio = question['resource'].where((e) => e['type'] == 2);
+
+        flashCard.sourceAudio = {
+          '_id': sourceAudio.single['_id'] ?? "",
+          'localPath': sourceAudio.single['localPath'] ?? ""
+        };
+        flashCard.sourceImage = {
+          '_id': sourceImage.single['_id'] ?? "",
+          'localPath': sourceImage.single['localPath'] ?? ""
+        };
+        flashCard.content = question["textContent"] ?? "";
+
+        if (listAnswer != null && listAnswer.length >= 2) {
+          for (var item in listAnswer) {
+            Map answer = {"id": item['_id'], "source": item['textContent']};
+            listWordAnswer.add(answer);
+          }
+        }
+
+        oneFlashCard = {
+          'data': flashCard,
+          'widget': _buildQuestionTypeTwo(
+              flashCard, listWordAnswer, isCorrectAnswer - 1,
+              pathImgQ: await getPathImage(flashCard.sourceImage))
+        };
+
+        print('debugging');
+        tempList.add(oneFlashCard);
+        // print('debugging');
+      }
+    }
+    return tempList;
   }
 
   // lấy ảnh trong local
@@ -713,9 +856,6 @@ class _FlashCardScreen extends State<FlashCardScreen>
   //   }
 
   _onPageViewChange(int page) async {
-    // if (page == 0) {
-    //   print('debugging');
-    // }
     print('checkData ' + store.checkData.toString());
     store.setCurrentPage(page);
     store.setCheckData(false);
@@ -728,7 +868,6 @@ class _FlashCardScreen extends State<FlashCardScreen>
     List dataFlashCard = store.listDataFlashCard;
     FlashCard data = dataFlashCard[page];
 
-    if (data.isVideo) {}
     //animation cho câu
     if (data.timeFrame != null && data.isAnimation == true) {
       store.setAnimation(true);
@@ -742,7 +881,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
       animationController.value = 1;
     });
     animationController.repeat(reverse: true).then((value) {
-      if(timer.isActive){
+      if (timer.isActive) {
         timer.cancel();
       }
     });
@@ -751,9 +890,11 @@ class _FlashCardScreen extends State<FlashCardScreen>
       playAudio(data.sourceAudio);
     }
     //lưu vị trí
-    await savePositionFlashCard(data);
+    if (!data.isGame) {
+      await savePositionFlashCard(data);
+    }
 
-    if (page == 1) {
+    if (page == 1 && !data.isGame) {
       checkRemoveGuideFlashCard(page);
     }
     //kiểm tra trước, data đã có chưa
@@ -762,11 +903,59 @@ class _FlashCardScreen extends State<FlashCardScreen>
       checkExistDataFuture(page + 10, dataFlashCard);
     }
     if (store.currentPage == dataFlashCard.length - 1) {
+      //store.addLisFlashCardGame(store.listFlashCardGame);
+      // store.setShowQuestion(true);
+      // print('debugging');
       store.setPreventSwipe(true);
     }
   }
 
-  //xử lý mọi tác động lên flashcard;
+  handleLastFlashCard(BuildContext context) async {
+    if (store.listFlashCardGame != null && store.listFlashCardGame.length > 0) {
+      store.setListFlashCard(store.listFlashCardGame);
+      if (store.listWidget != null && store.listWidget.length > 0) {
+        store.setShowQuestion(true);
+        store.setCurrentPage(0);
+        store.setLisFlashCardGame([]);
+        store.setShowGame(true);
+        // await _pageController.animateToPage(
+        //   0,
+        //   curve: Curves.easeIn,
+        //   duration: Duration(milliseconds: 500),
+        // );
+        _pageController.jumpToPage(0);
+        FlashCard data = store.listDataFlashCard[0];
+        if (data.sourceAudio != null) {
+          playAudio(data.sourceAudio);
+        }
+        store.setShowTopButton(false);
+        store.setPreventSwipe(true);
+      }
+    } else {
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+              builder: (context) => AnimationScreen(
+                    lessonDetail: widget.lessonDetail,
+                    currentPart: store.currentPart,
+                  )),
+          (route) => false);
+    }
+
+    // Navigator.pushAndRemoveUntil(
+    //     context,
+    //     MaterialPageRoute(
+    //         builder: (context) => AnimationScreen(
+    //               lessonDetail: widget.lessonDetail,
+    //               currentPart: store.currentPart,
+    //             )),
+    //     (route) => false);
+  }
+
+  handleFlashCardGame() async {
+    print('debugging');
+  }
+
   handleImpactFlashCard(int pageCurrent, {int type: 0}) async {
     //type 0: onTap
     //type 1: SwipeUp
@@ -775,7 +964,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
     if (data.sourceAudio != null) {
       playAudio(data.sourceAudio);
     }
-    switch(type) {
+    switch (type) {
       case 0:
         break;
       case 1:
@@ -784,7 +973,7 @@ class _FlashCardScreen extends State<FlashCardScreen>
           animationController.value = 1;
         });
         animationController.repeat(reverse: true).then((value) {
-          if(timer.isActive){
+          if (timer.isActive) {
             timer.cancel();
           }
         });
@@ -801,7 +990,6 @@ class _FlashCardScreen extends State<FlashCardScreen>
       "ordinalNumber": data?.ordinalNumber ?? 0,
       "showGuide": false
     };
-
     await hiveService.putBoxesWithKey(
         hiveService.keyFlashCard, items, boxFlashCard);
     print(hiveService.getBoxesWithKey(hiveService.keyFlashCard, boxFlashCard));
@@ -936,6 +1124,58 @@ class _FlashCardScreen extends State<FlashCardScreen>
     store.setPreventSwipe(false);
   }
 
+  checkAnswer(String answerId, String correctId) async {
+    store.setChooseAnswer(answerId);
+    final random = new Random();
+    if (answerId == correctId) {
+      player = justAudio.AudioPlayer();
+      print('debugging');
+      var element = listAudioCorrect[random.nextInt(listAudioCorrect.length)];
+      await player.setAsset(element);
+      player.play();
+
+      player.playerStateStream.listen((state) async {
+        if (state.processingState == justAudio.ProcessingState.completed) {
+          int nextPage = store.currentPage + 1;
+          if (nextPage < store.listWidget.length) {
+            print('debugging');
+            await _pageController.animateToPage(
+              nextPage,
+              curve: Curves.easeIn,
+              duration: Duration(milliseconds: 500),
+            );
+            _pageController.jumpToPage(nextPage);
+            store.setChooseAnswer("");
+
+            player.dispose();
+          }
+          if (nextPage >= store.listWidget.length) {
+            player.dispose();
+            await handleLastFlashCard(context);
+          }
+        }
+      });
+    }
+    if (answerId != correctId) {
+      player = justAudio.AudioPlayer();
+      var element = listAudioWrong[random.nextInt(listAudioWrong.length)];
+
+      await player.setAsset(element);
+      player.play();
+
+      player.playerStateStream.listen((state) {
+        if (state.processingState == justAudio.ProcessingState.completed) {
+          store.setChooseAnswer("");
+          player.dispose();
+        }
+      });
+    }
+
+    //60bc545edd38fc1918818f4c
+    //60bc545edd38fc1918818f4d
+    print('debugging');
+  }
+
   reset() {
     print("Previous page: $number");
     animationController.repeat();
@@ -951,174 +1191,14 @@ class _FlashCardScreen extends State<FlashCardScreen>
   void dispose() {
     animationController.repeat(reverse: false);
     animationController.dispose();
-    audioPlayer.stop();
-    audioPlayer.dispose();
-    //_controllerVideo.dispose();
+    _pageController.dispose();
+    audioPlayer?.stop();
+    audioPlayer?.dispose();
+    player?.stop();
+    player?.dispose();
     //store.dispose;
+    timer?.cancel();
     super.dispose();
-  }
-
-  //trường hợp câu hỏi chữ và trả lời ảnh
-  _buildQuestionTypeOne(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
-    double width = MediaQuery.of(context).size.width;
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        Container(
-          alignment: Alignment.center,
-          margin: EdgeInsets.all(8.5.w),
-          child: Text('Câu hỏi: Which One Is "Cat" ?',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: height > 600 ? 35.sp : 50.sp,
-                  // fontWeight: FontWeight.w900,
-                  color: Colors.white,
-                  fontFamily: 'UTMCooperBlack')),
-        ),
-        Container(
-          width: 1.sw,
-          height: height > 600 ? 0.65.sh : 0.7.sh,
-          child: Wrap(
-            alignment: WrapAlignment.center,
-            runAlignment: WrapAlignment.center,
-            children: [
-              for (var i = 0; i < 4; i++)
-                Stack(
-                  alignment: Alignment.center,
-                  clipBehavior: Clip.none,
-                  children: [
-                    Container(
-                      height: height > 600 ? 60.w : 50.w,
-                      width: height > 600 ? 114.w : 94.w,
-                      margin: EdgeInsets.symmetric(
-                          horizontal: 10.w, vertical: height > 600 ? 8.w : 4.w),
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage(
-                            'assets/images/lesson/khung.png',
-                          ),
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                      child: Container(
-                        alignment: Alignment.center,
-                        margin: EdgeInsets.all(3.w),
-                        clipBehavior: Clip.hardEdge,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(
-                                height > 600 ? 11.w : 8.5.w)),
-                        child: Center(
-                          child: Image.asset(
-                              'assets/images/flashcard/image5.jpg',
-                              fit: BoxFit.contain),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                        bottom: -1.w,
-                        child: Image.asset(
-                          // 'assets/images/lesson/correct.png',
-                          'assets/images/lesson/false.png',
-                          width: height > 600 ? 25.w : 20.w,
-                          fit: BoxFit.contain,
-                        ))
-                  ],
-                )
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  //trường hợp câu hỏi ảnh và trả lời chữ
-  _buildQuestionTypeTwo(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
-    double width = MediaQuery.of(context).size.width;
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        Container(
-          alignment: Alignment.center,
-          margin: EdgeInsets.all(8.5.w),
-          child: Text('Câu hỏi: Choose The Word That Goes With The Picture ?',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: height > 600 ? 30.sp : 45.sp,
-                  // fontWeight: FontWeight.w900,
-                  color: Colors.white,
-                  fontFamily: 'UTMCooperBlack')),
-        ),
-        Container(
-          height: height > 600 ? 85.w : 68.w,
-          width: height > 600 ? 163.w : 129.w,
-          margin: EdgeInsets.symmetric(
-              horizontal: 10.w, vertical: height > 600 ? 8.w : 2.w),
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(
-                'assets/images/lesson/khung.png',
-              ),
-              fit: BoxFit.fill,
-            ),
-          ),
-          child: Container(
-            alignment: Alignment.center,
-            margin: EdgeInsets.all(3.5.w),
-            clipBehavior: Clip.hardEdge,
-            decoration: BoxDecoration(
-                borderRadius:
-                    BorderRadius.circular(height > 600 ? 17.w : 12.w)),
-            child: Center(
-              child: Image.asset('assets/images/flashcard/image5.jpg',
-                  fit: BoxFit.contain),
-            ),
-          ),
-        ),
-        Container(
-          height: 0.24.sh,
-          width: 1.sw,
-          child: Wrap(
-            alignment: WrapAlignment.center,
-            runAlignment: WrapAlignment.center,
-            children: [
-              for (var i = 0; i < 6; i++)
-                Wrap(
-                    alignment: WrapAlignment.center,
-                    runAlignment: WrapAlignment.center,
-                    children: [
-                      Stack(
-                        alignment: Alignment.center,
-                        clipBehavior: Clip.none,
-                        children: [
-                          Container(
-                            margin: EdgeInsets.symmetric(horizontal: 12.w),
-                            child: Text('Fish',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontSize: height > 600 ? 45.sp : 60.sp,
-                                    color: Colors.white,
-                                    fontFamily: 'UTMCooperBlack')),
-                          ),
-                          // Positioned(
-                          //     bottom: -1.w,
-                          //     child: Image.asset(
-                          //       // 'assets/images/lesson/correct.png',
-                          //       'assets/images/lesson/false.png',
-                          //       width: 20.w,
-                          //       fit: BoxFit.contain,
-                          //     ))
-                        ],
-                      )
-                    ]),
-            ],
-          ),
-        ),
-      ],
-    );
   }
 
   @override
@@ -1196,36 +1276,43 @@ class _FlashCardScreen extends State<FlashCardScreen>
                                     // });
                                     //playAudio();
                                     store.setShowTopButton(false);
-                                    handleImpactFlashCard(store.currentPage, type: 1);
+                                    handleImpactFlashCard(store.currentPage,
+                                        type: 1);
                                   },
                                   onSwipeDown: () {
                                     print('down');
-                                    handleImpactFlashCard(store.currentPage, type: 1);
+                                    handleImpactFlashCard(store.currentPage,
+                                        type: 1);
                                     store.setShowTopButton(true);
                                   },
                                   onSwipeLeft: () {
-                                    Navigator.pushAndRemoveUntil(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                AnimationScreen(
-                                                  lessonDetail:
-                                                      widget.lessonDetail,
-                                                  currentPart:
-                                                      store.currentPart,
-                                                )),
-                                        (route) => false);
+                                    // Navigator.pushAndRemoveUntil(
+                                    //     context,
+                                    //     MaterialPageRoute(
+                                    //         builder: (context) =>
+                                    //             AnimationScreen(
+                                    //               lessonDetail:
+                                    //                   widget.lessonDetail,
+                                    //               currentPart:
+                                    //                   store.currentPart,
+                                    //             )),
+                                    //     (route) => false);
+                                    store.isShowGame
+                                        ? handleFlashCardGame()
+                                        : handleLastFlashCard(context);
                                   },
                                   onSwipeRight: () async {
-                                    int page = store.currentPage - 1;
-                                    store.setCurrentPage(page);
-                                    await _pageController.animateToPage(
-                                      page,
-                                      curve: Curves.easeIn,
-                                      duration: Duration(milliseconds: 500),
-                                    );
-                                    _pageController.jumpToPage(page);
-                                    store.setPreventSwipe(false);
+                                    if (!store.isShowGame) {
+                                      int page = store.currentPage - 1;
+                                      store.setCurrentPage(page);
+                                      await _pageController.animateToPage(
+                                        page,
+                                        curve: Curves.easeIn,
+                                        duration: Duration(milliseconds: 500),
+                                      );
+                                      _pageController.jumpToPage(page);
+                                      store.setPreventSwipe(false);
+                                    }
                                   },
                                   swipeConfiguration: SwipeConfiguration(
                                       verticalSwipeMinVelocity: 100.0,
@@ -1253,7 +1340,6 @@ class _FlashCardScreen extends State<FlashCardScreen>
   }
 
   //Dynamic widet
-
   Widget cardMultisensory() {
     double height = MediaQuery.of(context).size.height;
     return Container(
@@ -1609,25 +1695,436 @@ class _FlashCardScreen extends State<FlashCardScreen>
 
     FlashCard flashCard = data;
     return FadeTransition(
-        opacity: animation,
-        child: Container(
-          alignment: Alignment.center,
-          margin: EdgeInsets.all(8.5.w),
-          child: Text(flashCard.content ?? '',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: flashCard.height > 600 ? 75.sp : 150.sp,
-                  // fontWeight: FontWeight.w900,
-                  color: Color(int.parse(
-                      flashCard.colorContent.replaceAll('#', '0xff'))) ??
-                      Theme.Colors.orange900,
-                  //Theme.Colors.orange900,
+      opacity: animation,
+      child: Container(
+        alignment: Alignment.center,
+        margin: EdgeInsets.all(8.5.w),
+        child: Text(flashCard.content ?? '',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                fontSize: flashCard.height > 600 ? 75.sp : 150.sp,
+                // fontWeight: FontWeight.w900,
+                color: Color(int.parse(
+                        flashCard.colorContent.replaceAll('#', '0xff'))) ??
+                    Theme.Colors.orange900,
+                //Theme.Colors.orange900,
 
-                  fontFamily: 'UTMCooperBlack')),
-        ),
+                fontFamily: 'UTMCooperBlack')),
+      ),
     );
   }
 
+//here
+//trường hợp câu hỏi chữ và trả lời ảnh
+  Widget _buildQuestionTypeOne(
+      FlashCard data, List listAnswer, int isCorrectAnswer) {
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
+    listAnswer;
+    print('debugging');
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        Container(
+          alignment: Alignment.center,
+          margin: EdgeInsets.all(8.5.w),
+          child:
+              // Text('Câu hỏi: Which One Is "Cat" ?',
+              Text(data.content,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: height > 600 ? 35.sp : 50.sp,
+                      // fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                      fontFamily: 'UTMCooperBlack')),
+        ),
+        Container(
+          width: 1.sw,
+          height: height > 600 ? 0.65.sh : 0.7.sh,
+          child: Observer(
+              name: 'answerTypeOne',
+              builder: (_) {
+                return Wrap(
+                  alignment: WrapAlignment.center,
+                  runAlignment: WrapAlignment.center,
+                  children: [
+                    for (var i = 0; i < listAnswer.length; i++)
+                      GestureDetector(
+                          onTap: () async {
+                            if (store.canTapAnswer) {
+                              await checkAnswer(listAnswer[i]['id'],
+                                  listAnswer[isCorrectAnswer]['id']);
+                            }
+                          },
+                          child: Stack(
+                            alignment: Alignment.center,
+                            clipBehavior: Clip.none,
+                            children: [
+                              Container(
+                                height: height > 600 ? 60.w : 50.w,
+                                width: height > 600 ? 114.w : 94.w,
+                                margin: EdgeInsets.symmetric(
+                                    horizontal: 10.w,
+                                    vertical: height > 600 ? 8.w : 4.w),
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: AssetImage(
+                                      'assets/images/lesson/khung.png',
+                                    ),
+                                    fit: BoxFit.fill,
+                                  ),
+                                ),
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  margin: EdgeInsets.all(3.w),
+                                  clipBehavior: Clip.hardEdge,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(
+                                          height > 600 ? 11.w : 8.5.w)),
+                                  child: Center(
+                                    // child: Image.asset(
+                                    //     'assets/images/flashcard/image5.jpg',
+                                    //     fit: BoxFit.contain),
+                                    child: listAnswer[i]['source']['type'] == 2
+                                        ? CachedNetworkImage(
+                                            imageUrl: listAnswer[i]['source']
+                                                ['path'],
+                                            // placeholder: (context, url) => CircularProgressIndicator(),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    Icon(Icons.error),
+                                            fit: BoxFit.contain,
+                                          )
+                                        : listAnswer[i]['source']['type'] == 1
+                                            ? Image(
+                                                image: FileImage(File(
+                                                    listAnswer[i]['source']
+                                                        ['path'])),
+                                                fit: BoxFit.contain,
+                                              )
+                                            : Center(
+                                                child:
+                                                    CircularProgressIndicator()),
+                                  ),
+                                ),
+                              ),
+
+                              // store.tempListAnswer.indexWhere(
+                              //             (e) => e == listAnswer[i]['id']) >=
+                              //         0
+                              //true
+                              //store.tempListAnswer[i]
+                              listAnswer[i]['id'] == store.chooseAnswer
+                                  ? Positioned(
+                                      bottom: -1.w,
+                                      child: isCorrectAnswer == i
+                                          ? Image.asset(
+                                              'assets/images/lesson/correct.png',
+                                              width: height > 600 ? 25.w : 20.w,
+                                              fit: BoxFit.contain,
+                                            )
+                                          : Image.asset(
+                                              'assets/images/lesson/false.png',
+                                              width: height > 600 ? 25.w : 20.w,
+                                              fit: BoxFit.contain,
+                                            ))
+                                  : Positioned(
+                                      bottom: -1.w, child: Container()),
+                              // Positioned(
+                              //     bottom: -1.w,
+                              //     child: Image.asset(
+                              //       'assets/images/lesson/correct.png',
+                              //       // 'assets/images/lesson/false.png',
+                              //       width: height > 600 ? 25.w : 20.w,
+                              //       fit: BoxFit.contain,
+                              //     ))
+                            ],
+                          ))
+                  ],
+                );
+              }),
+        ),
+      ],
+    );
+  }
+
+// //trường hợp câu hỏi chữ và trả lời ảnh
+//   Widget _buildQuestionTypeOne(
+//       FlashCard data, List listAnswer, int isCorrectAnswer) {
+//     double height = MediaQuery.of(context).size.height;
+//     double width = MediaQuery.of(context).size.width;
+//     listAnswer;
+//     print('debugging');
+//     return Column(
+//       mainAxisAlignment: MainAxisAlignment.spaceAround,
+//       children: [
+//         Container(
+//           alignment: Alignment.center,
+//           margin: EdgeInsets.all(8.5.w),
+//           child:
+//               // Text('Câu hỏi: Which One Is "Cat" ?',
+//               Text(data.content,
+//                   textAlign: TextAlign.center,
+//                   style: TextStyle(
+//                       fontSize: height > 600 ? 35.sp : 50.sp,
+//                       // fontWeight: FontWeight.w900,
+//                       color: Colors.white,
+//                       fontFamily: 'UTMCooperBlack')),
+//         ),
+//         Container(
+//           width: 1.sw,
+//           height: height > 600 ? 0.65.sh : 0.7.sh,
+//           child: Wrap(
+//             alignment: WrapAlignment.center,
+//             runAlignment: WrapAlignment.center,
+//             children: [
+//               // for (var i = 0; i < listAnswer.length; i++)
+//               ListView.builder(
+//                   shrinkWrap: false,
+//                   physics: BouncingScrollPhysics(),
+//                   scrollDirection: Axis.horizontal,
+//                   itemCount: listAnswer.length,
+//                   itemBuilder: (context, index) {
+//                     return GestureDetector(
+//                         onTap: () {
+//                           // ObservableList<bool> tempList =
+//                           //     ObservableList<bool>.of([true, true]);
+//                           List tempList=[true,true];
+//                           store.setTempListAnswer(tempList);
+//                           // print(store.tempListAnswer[index]);
+//                           // print(
+//                           //     store.tempListAnswer.indexWhere((e) => e == i) >=
+//                           //         0);
+//                           print('debugging');
+//                         },
+//                         child: Observer(
+//                             name: 'answerTypeOne',
+//                             builder: (_) {
+//                               return Stack(
+//                                 alignment: Alignment.center,
+//                                 clipBehavior: Clip.none,
+//                                 children: [
+//                                   Container(
+//                                     height: height > 600 ? 60.w : 50.w,
+//                                     width: height > 600 ? 114.w : 94.w,
+//                                     margin: EdgeInsets.symmetric(
+//                                         horizontal: 10.w,
+//                                         vertical: height > 600 ? 8.w : 4.w),
+//                                     decoration: BoxDecoration(
+//                                       image: DecorationImage(
+//                                         image: AssetImage(
+//                                           'assets/images/lesson/khung.png',
+//                                         ),
+//                                         fit: BoxFit.fill,
+//                                       ),
+//                                     ),
+//                                     child: Container(
+//                                       alignment: Alignment.center,
+//                                       margin: EdgeInsets.all(3.w),
+//                                       clipBehavior: Clip.hardEdge,
+//                                       decoration: BoxDecoration(
+//                                           borderRadius: BorderRadius.circular(
+//                                               height > 600 ? 11.w : 8.5.w)),
+//                                       child: Center(
+//                                         // child: Image.asset(
+//                                         //     'assets/images/flashcard/image5.jpg',
+//                                         //     fit: BoxFit.contain),
+//                                         child: listAnswer[index]['type'] == 2
+//                                             ? CachedNetworkImage(
+//                                                 imageUrl: listAnswer[index]
+//                                                     ['path'],
+//                                                 // placeholder: (context, url) => CircularProgressIndicator(),
+//                                                 errorWidget:
+//                                                     (context, url, error) =>
+//                                                         Icon(Icons.error),
+//                                                 fit: BoxFit.contain,
+//                                               )
+//                                             : listAnswer[index]['type'] == 1
+//                                                 ? Image(
+//                                                     image: FileImage(File(
+//                                                         listAnswer[index]
+//                                                             ['path'])),
+//                                                     fit: BoxFit.contain,
+//                                                   )
+//                                                 : Center(
+//                                                     child:
+//                                                         CircularProgressIndicator()),
+//                                       ),
+//                                     ),
+//                                   ),
+
+//                                   //store.tempListAnswer.indexWhere((e) => e == i) >= 0
+//                                   // true
+//                                   store.tempListAnswer[index]
+//                                       ? Positioned(
+//                                           bottom: -1.w,
+//                                           child: isCorrectAnswer == index + 1
+//                                               ? Image.asset(
+//                                                   'assets/images/lesson/correct.png',
+//                                                   width: height > 600
+//                                                       ? 25.w
+//                                                       : 20.w,
+//                                                   fit: BoxFit.contain,
+//                                                 )
+//                                               : Image.asset(
+//                                                   'assets/images/lesson/false.png',
+//                                                   width: height > 600
+//                                                       ? 25.w
+//                                                       : 20.w,
+//                                                   fit: BoxFit.contain,
+//                                                 ))
+//                                       : Positioned(
+//                                           bottom: -1.w, child: Container()),
+//                                   // Positioned(
+//                                   //     bottom: -1.w,
+//                                   //     child: Image.asset(
+//                                   //       'assets/images/lesson/correct.png',
+//                                   //       // 'assets/images/lesson/false.png',
+//                                   //       width: height > 600 ? 25.w : 20.w,
+//                                   //       fit: BoxFit.contain,
+//                                   //     ))
+//                                 ],
+//                               );
+//                             }));
+//                   })
+//             ],
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+
+  //trường hợp câu hỏi ảnh và trả lời chữ
+  Widget _buildQuestionTypeTwo(
+      FlashCard data, List listWordAnswer, int isCorrectAnswer,
+      {Map pathImgQ}) {
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
+    pathImgQ;
+    print('debugging');
+    return Observer(
+        name: 'answerTypeTwo',
+        builder: (_) => Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Container(
+                  alignment: Alignment.center,
+                  margin: EdgeInsets.all(8.5.w),
+                  child: Text(
+                      'Câu hỏi: Choose The Word That Goes With The Picture ?',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontSize: height > 600 ? 30.sp : 45.sp,
+                          // fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                          fontFamily: 'UTMCooperBlack')),
+                ),
+                Container(
+                  height: height > 600 ? 85.w : 68.w,
+                  width: height > 600 ? 163.w : 129.w,
+                  margin: EdgeInsets.symmetric(
+                      horizontal: 10.w, vertical: height > 600 ? 8.w : 2.w),
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage(
+                        'assets/images/lesson/khung.png',
+                      ),
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                  child: Container(
+                    alignment: Alignment.center,
+                    margin: EdgeInsets.all(3.5.w),
+                    clipBehavior: Clip.hardEdge,
+                    decoration: BoxDecoration(
+                        borderRadius:
+                            BorderRadius.circular(height > 600 ? 17.w : 12.w)),
+                    child: Center(
+                      // child: Image.asset('assets/images/flashcard/image5.jpg',
+                      //     fit: BoxFit.contain),
+                      child: pathImgQ['type'] == 2
+                          ? CachedNetworkImage(
+                              imageUrl: pathImgQ['path'],
+                              // placeholder: (context, url) => CircularProgressIndicator(),
+                              errorWidget: (context, url, error) =>
+                                  Icon(Icons.error),
+                              fit: BoxFit.contain,
+                            )
+                          : pathImgQ['type'] == 1
+                              ? Image(
+                                  image: FileImage(File(pathImgQ['path'])),
+                                  fit: BoxFit.contain,
+                                )
+                              : Center(child: CircularProgressIndicator()),
+                    ),
+                  ),
+                ),
+                Container(
+                  height: 0.24.sh,
+                  width: 1.sw,
+                  child: Wrap(
+                    alignment: WrapAlignment.center,
+                    runAlignment: WrapAlignment.center,
+                    children: [
+                      for (var i = 0; i < listWordAnswer.length; i++)
+                        GestureDetector(
+                            onTap: () async {
+                              if (store.canTapAnswer) {
+                                await checkAnswer(listWordAnswer[i]['id'],
+                                    listWordAnswer[isCorrectAnswer]['id']);
+                              }
+                            },
+                            child: Wrap(
+                                alignment: WrapAlignment.center,
+                                runAlignment: WrapAlignment.center,
+                                children: [
+                                  Stack(
+                                    alignment: Alignment.center,
+                                    clipBehavior: Clip.none,
+                                    children: [
+                                      Container(
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: 12.w),
+                                        child: Text(
+                                            listWordAnswer[i]['source'] ?? "",
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                fontSize: height > 600
+                                                    ? 45.sp
+                                                    : 60.sp,
+                                                color: Colors.white,
+                                                fontFamily: 'UTMCooperBlack')),
+                                      ),
+                                      listWordAnswer[i]['id'] ==
+                                              store.chooseAnswer
+                                          ? Positioned(
+                                              bottom: -1.w,
+                                              child: isCorrectAnswer == i
+                                                  ? Image.asset(
+                                                      'assets/images/lesson/correct.png',
+                                                      width: height > 600
+                                                          ? 25.w
+                                                          : 20.w,
+                                                      fit: BoxFit.contain,
+                                                    )
+                                                  : Image.asset(
+                                                      'assets/images/lesson/false.png',
+                                                      width: height > 600
+                                                          ? 25.w
+                                                          : 20.w,
+                                                      fit: BoxFit.contain,
+                                                    ))
+                                          : Positioned(
+                                              bottom: -1.w, child: Container()),
+                                    ],
+                                  )
+                                ])),
+                    ],
+                  ),
+                ),
+              ],
+            ));
+  }
   //trường hợp video
   //  cardVideo() {
   //   return Container(
@@ -2022,6 +2519,7 @@ class FlashCard {
   double height;
   Widget widget;
   bool isAnimation;
+  bool isGame;
   bool isVideo;
 
   FlashCard({
@@ -2046,6 +2544,7 @@ class FlashCard {
     this.sourceImage,
     this.height,
     this.widget,
+    this.isGame = false,
     this.isAnimation = false,
     this.isVideo = false,
   });
@@ -2128,6 +2627,8 @@ class FlashCard {
     );
   }
 }
+
+//flashcard game
 
 class CardVideo extends StatefulWidget {
   final String videoUrl;

@@ -39,6 +39,22 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
     });
   }
 
+  final _$listFlashCardGameAtom =
+      Atom(name: '_FlashCardStore.listFlashCardGame');
+
+  @override
+  List<dynamic> get listFlashCardGame {
+    _$listFlashCardGameAtom.reportRead();
+    return super.listFlashCardGame;
+  }
+
+  @override
+  set listFlashCardGame(List<dynamic> value) {
+    _$listFlashCardGameAtom.reportWrite(value, super.listFlashCardGame, () {
+      super.listFlashCardGame = value;
+    });
+  }
+
   final _$listWidgetAtom = Atom(name: '_FlashCardStore.listWidget');
 
   @override
@@ -51,6 +67,21 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
   set listWidget(List<Widget> value) {
     _$listWidgetAtom.reportWrite(value, super.listWidget, () {
       super.listWidget = value;
+    });
+  }
+
+  final _$listWidgetGameAtom = Atom(name: '_FlashCardStore.listWidgetGame');
+
+  @override
+  List<Widget> get listWidgetGame {
+    _$listWidgetGameAtom.reportRead();
+    return super.listWidgetGame;
+  }
+
+  @override
+  set listWidgetGame(List<Widget> value) {
+    _$listWidgetGameAtom.reportWrite(value, super.listWidgetGame, () {
+      super.listWidgetGame = value;
     });
   }
 
@@ -250,8 +281,75 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
     });
   }
 
+  final _$isShowGameAtom = Atom(name: '_FlashCardStore.isShowGame');
+
+  @override
+  bool get isShowGame {
+    _$isShowGameAtom.reportRead();
+    return super.isShowGame;
+  }
+
+  @override
+  set isShowGame(bool value) {
+    _$isShowGameAtom.reportWrite(value, super.isShowGame, () {
+      super.isShowGame = value;
+    });
+  }
+
+  final _$chooseAnswerAtom = Atom(name: '_FlashCardStore.chooseAnswer');
+
+  @override
+  String get chooseAnswer {
+    _$chooseAnswerAtom.reportRead();
+    return super.chooseAnswer;
+  }
+
+  @override
+  set chooseAnswer(String value) {
+    _$chooseAnswerAtom.reportWrite(value, super.chooseAnswer, () {
+      super.chooseAnswer = value;
+    });
+  }
+
+  final _$tempListAnswerAtom = Atom(name: '_FlashCardStore.tempListAnswer');
+
+  @override
+  ObservableList<String> get tempListAnswer {
+    _$tempListAnswerAtom.reportRead();
+    return super.tempListAnswer;
+  }
+
+  @override
+  set tempListAnswer(ObservableList<String> value) {
+    _$tempListAnswerAtom.reportWrite(value, super.tempListAnswer, () {
+      super.tempListAnswer = value;
+    });
+  }
+
   final _$_FlashCardStoreActionController =
       ActionController(name: '_FlashCardStore');
+
+  @override
+  void setChooseAnswer(String id) {
+    final _$actionInfo = _$_FlashCardStoreActionController.startAction(
+        name: '_FlashCardStore.setChooseAnswer');
+    try {
+      return super.setChooseAnswer(id);
+    } finally {
+      _$_FlashCardStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setTempListAnswer(String value) {
+    final _$actionInfo = _$_FlashCardStoreActionController.startAction(
+        name: '_FlashCardStore.setTempListAnswer');
+    try {
+      return super.setTempListAnswer(value);
+    } finally {
+      _$_FlashCardStoreActionController.endAction(_$actionInfo);
+    }
+  }
 
   @override
   void setCurrentPage(int value) {
@@ -342,6 +440,28 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
   }
 
   @override
+  void setLisFlashCardGame(List<dynamic> value) {
+    final _$actionInfo = _$_FlashCardStoreActionController.startAction(
+        name: '_FlashCardStore.setLisFlashCardGame');
+    try {
+      return super.setLisFlashCardGame(value);
+    } finally {
+      _$_FlashCardStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setShowGame(bool value) {
+    final _$actionInfo = _$_FlashCardStoreActionController.startAction(
+        name: '_FlashCardStore.setShowGame');
+    try {
+      return super.setShowGame(value);
+    } finally {
+      _$_FlashCardStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setCurrentPart(int value) {
     final _$actionInfo = _$_FlashCardStoreActionController.startAction(
         name: '_FlashCardStore.setCurrentPart');
@@ -401,7 +521,9 @@ mixin _$FlashCardStore on _FlashCardStore, Store {
     return '''
 checkData: ${checkData},
 listFlashCard: ${listFlashCard},
+listFlashCardGame: ${listFlashCardGame},
 listWidget: ${listWidget},
+listWidgetGame: ${listWidgetGame},
 listDataFlashCard: ${listDataFlashCard},
 isShowQuestion: ${isShowQuestion},
 isShowTopButton: ${isShowTopButton},
@@ -414,7 +536,10 @@ currentPart: ${currentPart},
 currentPage: ${currentPage},
 pageInPart: ${pageInPart},
 isPlayAudio: ${isPlayAudio},
-muteSound: ${muteSound}
+muteSound: ${muteSound},
+isShowGame: ${isShowGame},
+chooseAnswer: ${chooseAnswer},
+tempListAnswer: ${tempListAnswer}
     ''';
   }
 }

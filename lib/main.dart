@@ -82,8 +82,8 @@ class _MyAppState extends State<MyApp> {
               debugShowCheckedModeBanner: false,
 
               routes: {
-                // '/': (BuildContext context) => SplashScreen(),
-                '/': (BuildContext context) => AnimationAutoScreen(),
+                '/': (BuildContext context) => SplashScreen(),
+                //'/': (BuildContext context) => AnimationAutoScreen(),
                 //'/': (BuildContext context) => HomeScreen(),
                 // '/': (BuildContext context) => FlashCardScreen(),
                 // '/': (BuildContext context) => AnimationScreen(),

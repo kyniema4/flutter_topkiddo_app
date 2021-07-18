@@ -15,7 +15,11 @@ abstract class _FlashCardStore with Store {
   @observable
   List listFlashCard = [];
   @observable
+  List listFlashCardGame = [];
+  @observable
   List<Widget> listWidget = [];
+  @observable
+  List<Widget> listWidgetGame = [];
   @observable
   List listDataFlashCard = [];
   @observable
@@ -42,6 +46,27 @@ abstract class _FlashCardStore with Store {
   bool isPlayAudio = true;
   @observable
   bool muteSound = false;
+  @observable
+  bool isShowGame = false;
+  // @observable
+  // List<String> tempListAnswer = [];
+  @observable
+  String chooseAnswer = "";
+  @observable
+  ObservableList<String> tempListAnswer = ObservableList<String>.of([]);
+
+  @action
+  void setChooseAnswer(String id) {
+    chooseAnswer = id;
+  }
+
+  @computed
+  bool get canTapAnswer => chooseAnswer.isEmpty;
+  @action
+  void setTempListAnswer(String value) {
+    tempListAnswer.add(value);
+    print(tempListAnswer);
+  }
 
   @action
   void setCurrentPage(int value) {
@@ -100,6 +125,33 @@ abstract class _FlashCardStore with Store {
     // listDataFlashCard = [...value.map((e) => e['data'])];
     listWidget = [...tempListWidget];
     listDataFlashCard = [...tempListDataFlashCard];
+  }
+
+  // @action
+  // void addLisFlashCardGame(List value) {
+  //   List<Widget> tempListWidget = [];
+  //   List tempListDataFlashCard = [];
+  //   for (var item in value) {
+  //     if (item['widget'] != null) {
+  //       tempListWidget.add(item['widget']);
+  //     }
+  //     if (item['data'] != null) {
+  //       tempListDataFlashCard.add(item['data']);
+  //     }
+  //   }
+
+  //   listWidget = [...tempListWidget];
+  //   listDataFlashCard = [...tempListDataFlashCard];
+  // }
+
+  @action
+  void setLisFlashCardGame(List value) {
+    listFlashCardGame = value;
+  }
+
+  @action
+  void setShowGame(bool value) {
+    isShowGame = value;
   }
 
   @action

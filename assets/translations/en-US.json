@@ -105,7 +105,12 @@
   "previousLearningInLesson":"Bạn có muốn học tiếp tục tại slide lần trước đã học không? hay học lại từ đầu ?",
   "learningDifferenceLesson":"Bạn đang học dang dở {}, bạn có muốn tiếp tục học {} ?",
   "alertConnectionInternet":"Bạn nên kết nối mạng và thử lại",
-  "alertDirectorySound":"Hiện tại topkiddo chưa có âm thanh cho bản dịch này. Chúng tôi sẽ bổ sung sớm nhất. Cám ơn bạn"
-  
+  "alertDirectorySound":"Hiện tại topkiddo chưa có âm thanh cho bản dịch này. Chúng tôi sẽ bổ sung sớm nhất. Cám ơn bạn",
+  "great":"assets/images/lesson/text-great.png",
+  "good":"assets/images/lesson/text-good.png",
+  "awesome":"assets/images/lesson/text-awesome.png",
+  "perfect":"assets/images/lesson/text-perfect.png",
+  "exellent":"assets/images/lesson/text-exellent.png",
+  "completed":"assets/images/lesson/text-completed.png"
 }
 
